@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Env files — never commit real secrets or connection strings.
+# .env.example and .env.test.example are templates and SHOULD be committed.
+.env
+.env.*
+.env.local
+.env.*.local
+.env.development.local
+.env.production.local
+.env.test
+.env.production
+
+# Keep template files tracked while ignoring real local env files.
+!.env.example
+!.env.test.example
+
+# Prisma
+prisma/*.db
+
+# Testing
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Misc
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel

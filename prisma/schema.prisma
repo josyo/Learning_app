@@ -1,0 +1,420 @@
+// Phase 1: identity, roles, Better Auth's required tables.
+// Phase 2: learning model — paths, modules, prerequisites, enrollment.
+// Phase 3: lesson content and per-learner lesson completion.
+// Phase 4: assignments, submissions, mentor review, mentor overrides.
+// Phase 5+ adds full content CRUD — no new tables needed for that,
+// it's UI over what already exists.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  LEARNER
+  MENTOR
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(LEARNER)
+  banned        Boolean   @default(false)
+  banReason     String?
+  banExpires    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Better Auth relations
+  sessions Session[]
+  accounts Account[]
+
+  // Mentor/learner pairing (kept here now; Enrollment also carries a
+  // per-enrollment mentorId for when a learner has multiple paths
+  // with different mentors — this field is just the simple default).
+  mentorId String?
+  mentor   User?   @relation("MentorToLearners", fields: [mentorId], references: [id])
+  learners User[]  @relation("MentorToLearners")
+
+  enrollments Enrollment[]
+  lessonProgress LessonProgress[]
+  submissions Submission[]
+  reviewsGiven SubmissionReview[] @relation("Reviewer")
+  moduleOverridesReceived ModuleOverride[] @relation("OverrideRecipient")
+  moduleOverridesGiven    ModuleOverride[] @relation("OverrideGrantedBy")
+  mentorAssignmentsReceived MentorAssignment[] @relation("MentorAssignmentRecipient")
+  mentorAssignmentsGiven    MentorAssignment[] @relation("MentorAssignmentGrantedBy")
+  notifications Notification[]
+
+  @@map("user")
+}
+
+// --- Phase 2: learning model ---
+
+model LearningPath {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pathModules PathModule[]
+  enrollments Enrollment[]
+
+  @@map("learning_path")
+}
+
+// A reusable unit of learning. The same Module row can be attached
+// to multiple LearningPaths via PathModule — this is the piece that
+// prevents duplicating "JavaScript Fundamentals" across Frontend,
+// Backend, and Full Stack paths (BRD §6).
+model Module {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pathModules PathModule[]
+  lessons     Lesson[]
+  assignments Assignment[]
+  overrides   ModuleOverride[]
+
+  // Prerequisites are defined at the Module level, not per-path, so
+  // a dependency holds everywhere the module is reused.
+  requiresModules  ModulePrerequisite[] @relation("DependentModule")
+  requiredByModule ModulePrerequisite[] @relation("RequiredModule")
+
+  @@map("module")
+}
+
+// Places a Module inside a LearningPath at a given order. Order is
+// path-specific even though the Module itself is shared.
+model PathModule {
+  id       String @id @default(cuid())
+  pathId   String
+  moduleId String
+  order    Int
+
+  path   LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  module Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([pathId, moduleId])
+  @@unique([pathId, order])
+  @@map("path_module")
+}
+
+// moduleId requires requiredModuleId before moduleId becomes
+// Available. Self-referencing through the Module model via two
+// named relations.
+model ModulePrerequisite {
+  id                String @id @default(cuid())
+  moduleId          String
+  requiredModuleId  String
+
+  module         Module @relation("DependentModule", fields: [moduleId], references: [id], onDelete: Cascade)
+  requiredModule Module @relation("RequiredModule", fields: [requiredModuleId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, requiredModuleId])
+  @@map("module_prerequisite")
+}
+
+// --- Phase 3: lesson content & progress ---
+
+// A single unit of content inside a Module. `required` distinguishes
+// content that counts toward module completion from optional
+// supplementary material (get-roadmap.ts only counts required
+// lessons when deciding whether a module is Completed).
+model Lesson {
+  id        String   @id @default(cuid())
+  moduleId  String
+  slug      String
+  title     String
+  order     Int
+  required  Boolean  @default(true)
+  content   String   // markdown
+  videoUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  module    Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  resources LessonResource[]
+  progress  LessonProgress[]
+
+  @@unique([moduleId, slug])
+  @@unique([moduleId, order])
+  @@map("lesson")
+}
+
+// Supplementary links/downloads attached to a lesson — separate from
+// the lesson's own videoUrl so a lesson can point to several
+// references without overloading one field.
+model LessonResource {
+  id       String @id @default(cuid())
+  lessonId String
+  label    String
+  url      String
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("lesson_resource")
+}
+
+// One row per learner per lesson. Absence of a row means "not
+// started" — there's no separate boolean for that, keeping the
+// states to what get-roadmap.ts actually needs: completed or not.
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
+}
+
+// --- Phase 4: assignments, submissions, mentor review ---
+
+// Not every module has an assignment (e.g. a pure-reading module
+// might not). Module completion in the derive-module-state helper
+// only requires assignment approval when one exists.
+model Assignment {
+  id          String   @id @default(cuid())
+  moduleId    String
+  slug        String
+  title       String
+  order       Int
+  instructions String  // markdown — the acceptance checklist lives in here
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  module      Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@unique([moduleId, slug])
+  @@unique([moduleId, order])
+  @@map("assignment")
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  APPROVED
+  CHANGES_REQUESTED
+}
+
+// A learner can resubmit after Changes Requested — each attempt is
+// its own row (not overwritten in place) so the full history stays
+// visible to both learner and mentor, per the BRD's review workflow.
+model Submission {
+  id           String           @id @default(cuid())
+  assignmentId String
+  userId       String
+  content      String?          // written explanation of the approach
+  githubUrl    String?
+  deployedUrl  String?
+  attachmentUrl String?
+  status       SubmissionStatus @default(SUBMITTED)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  assignment Assignment         @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews    SubmissionReview[]
+
+  @@map("submission")
+}
+
+enum ReviewDecision {
+  APPROVED
+  CHANGES_REQUESTED
+}
+
+model SubmissionReview {
+  id           String         @id @default(cuid())
+  submissionId String
+  reviewerId   String
+  decision     ReviewDecision
+  feedback     String
+  createdAt    DateTime       @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer   User       @relation("Reviewer", fields: [reviewerId], references: [id])
+
+  @@map("submission_review")
+}
+
+enum ModuleOverrideAction {
+  MARK_COMPLETE // module counts as Completed regardless of lessons/assignment state
+  UNLOCK        // bypasses prerequisite locking only; normal completion rules still apply
+}
+
+// A mentor manually unlocking or completing a module for a specific
+// learner, bypassing the normal prerequisite/lesson/assignment
+// checks. Kept as its own table (not a field on Enrollment) so the
+// reason and who granted it stay auditable.
+model ModuleOverride {
+  id        String                @id @default(cuid())
+  userId    String
+  moduleId  String
+  mentorId  String
+  action    ModuleOverrideAction
+  note      String?
+  createdAt DateTime              @default(now())
+
+  user   User   @relation("OverrideRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  mentor User   @relation("OverrideGrantedBy", fields: [mentorId], references: [id])
+
+  @@unique([userId, moduleId])
+  @@map("module_override")
+}
+
+enum MentorAssignmentStatus {
+  ASSIGNED
+  SUBMITTED
+  APPROVED
+  CHANGES_REQUESTED
+}
+
+// An extra exercise a mentor attaches to one learner, outside the
+// normal path — e.g. a supplementary drill for a weak spot. Kept
+// deliberately simpler than Assignment/Submission: one row per
+// exercise, overwritten in place on resubmit, no separate review
+// table. If mentor-assigned extra exercises need the same
+// resubmission history as core assignments later, this is the
+// model to split into its own Submission-style pair — not done now
+// since this is explicitly supplementary, not part of the graded
+// progression path.
+model MentorAssignment {
+  id                    String                 @id @default(cuid())
+  userId                String
+  mentorId              String
+  title                 String
+  instructions          String
+  status                MentorAssignmentStatus @default(ASSIGNED)
+  submissionContent     String?
+  submissionGithubUrl   String?
+  submissionDeployedUrl String?
+  feedback              String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  user   User @relation("MentorAssignmentRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  mentor User @relation("MentorAssignmentGrantedBy", fields: [mentorId], references: [id])
+
+  @@map("mentor_assignment")
+}
+
+enum NotificationType {
+  REVIEW_OUTCOME // a submission (core or extra exercise) was approved or sent back
+  NEW_ASSIGNMENT // a mentor assigned something new — an extra exercise, for now
+  NEW_SUBMISSION // a learner submitted something a mentor needs to review
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  link      String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+// Connects a learner to a path (and, at enrollment time, a mentor).
+// One learner can have multiple enrollments once a second path
+// exists — nothing here assumes a single hard-coded course.
+model Enrollment {
+  id        String           @id @default(cuid())
+  userId    String
+  pathId    String
+  mentorId  String?
+  status    EnrollmentStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  path LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathId])
+  @@map("enrollment")
+}
+
+// --- Better Auth required tables ---
+// Do not rename these models/fields — Better Auth's Prisma adapter
+// expects this exact shape. See lib/auth.ts.
+
+model Session {
+  id              String   @id @default(cuid())
+  userId          String
+  token           String   @unique
+  expiresAt       DateTime
+  ipAddress       String?
+  userAgent       String?
+  impersonatedBy  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
