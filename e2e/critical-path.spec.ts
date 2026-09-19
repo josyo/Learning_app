@@ -20,7 +20,7 @@ import { test, expect, type Page } from "@playwright/test";
  * point DATABASE_URL at a separate throwaway database for this run.
  */
 
-const seedPassword = process.env.SEED_PASSWORD ?? "set-a-strong-seed-password";
+const seedPassword = process.env.SEED_USER_PASSWORD ?? process.env.SEED_PASSWORD ?? "set-a-strong-seed-password";
 
 const CREDENTIALS = {
   trainee: { email: "trainee@example.com", password: seedPassword },

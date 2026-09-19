@@ -170,21 +170,30 @@ async function getOrCreateSeedUser(name: string, email: string, password: string
  * password has not been provided.
  */
 async function main() {
-  const seedPassword = process.env.SEED_PASSWORD ?? process.env.SEED_ADMIN_PASSWORD;
-  if (!seedPassword || seedPassword.length < 8) {
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "true") {
     throw new Error(
-      "Missing SEED_PASSWORD / SEED_ADMIN_PASSWORD. Set a unique, non-public password before running prisma/seed.ts."
+      "Seed script is disabled in production. Set ALLOW_SEED=true only for an explicitly non-production database."
     );
   }
 
-  const admin = await getOrCreateSeedUser("Admin", "admin@example.com", seedPassword);
+  const sharedSeedPassword =
+    process.env.SEED_USER_PASSWORD ?? process.env.SEED_PASSWORD ?? process.env.SEED_ADMIN_PASSWORD;
+
+  if (!sharedSeedPassword || sharedSeedPassword.length < 8) {
+    throw new Error(
+      "Missing SEED_USER_PASSWORD. Set a strong, non-public password before running prisma/seed.ts."
+    );
+  }
+
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? sharedSeedPassword;
+  const admin = await getOrCreateSeedUser("Admin", "admin@example.com", adminPassword);
   await db.user.update({ where: { id: admin.id }, data: { role: "ADMIN" } });
 
-  const mentorPassword = process.env.SEED_MENTOR_PASSWORD ?? seedPassword;
+  const mentorPassword = process.env.SEED_MENTOR_PASSWORD ?? sharedSeedPassword;
   const mentor = await getOrCreateSeedUser("Mentor", "mentor@example.com", mentorPassword);
   await db.user.update({ where: { id: mentor.id }, data: { role: "MENTOR" } });
 
-  const traineePassword = process.env.SEED_TRAINEE_PASSWORD ?? seedPassword;
+  const traineePassword = process.env.SEED_TRAINEE_PASSWORD ?? sharedSeedPassword;
   const trainee = await getOrCreateSeedUser("Trainee", "trainee@example.com", traineePassword);
   await db.user.update({
     where: { id: trainee.id },
