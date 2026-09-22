@@ -51,7 +51,9 @@ function parseModuleFile(raw: string): {
   for (const block of blocks) {
     const lessonMatch = block.match(/### Lesson \d+ — (.+)/);
     if (lessonMatch) {
-      const title = lessonMatch[1].trim();
+      const title = lessonMatch[1]?.trim();
+      if (!title) continue;
+
       const content = block.slice(block.indexOf(lessonMatch[0]) + lessonMatch[0].length).trim();
       lessons.push({ title, content });
       continue;
@@ -59,7 +61,9 @@ function parseModuleFile(raw: string): {
 
     const assignmentMatch = block.match(/## Assignment: (.+)/);
     if (assignmentMatch) {
-      const title = assignmentMatch[1].trim();
+      const title = assignmentMatch[1]?.trim();
+      if (!title) continue;
+
       const instructions = block
         .slice(block.indexOf(assignmentMatch[0]) + assignmentMatch[0].length)
         .trim();
