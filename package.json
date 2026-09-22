@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -12,6 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "import:content": "tsx prisma/import-content.ts",
+    "cleanup:orientation": "tsx prisma/cleanup-orientation-lessons.ts",
     "db:studio": "prisma studio",
     "test": "vitest run",
     "test:e2e": "playwright test",

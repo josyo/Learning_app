@@ -3,7 +3,9 @@ export default function LearnerSettingsPage() {
     <div className="mx-auto max-w-5xl">
       <header className="mb-8">
         <p className="eyebrow">Settings</p>
-        <h1 className="mt-3 text-4xl tracking-tight text-ink">Learning preferences</h1>
+        <h1 className="mt-3 text-4xl tracking-tight text-ink">
+          Learning preferences
+        </h1>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2">

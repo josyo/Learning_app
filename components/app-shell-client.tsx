@@ -75,15 +75,23 @@ export function AppShellClient({
   }
 
   return (
-    <div className={isLearner ? "learner-theme min-h-screen" : "min-h-screen bg-background"}>
+    <div
+      className={
+        isLearner ? "learner-theme min-h-screen" : "min-h-screen bg-background"
+      }
+    >
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
         {isLearner ? (
           <aside className="hidden w-[260px] shrink-0 border-r border-[rgba(24,29,26,0.08)] bg-[rgba(255,255,255,0.42)] px-5 py-6 md:flex md:flex-col">
             <div className="flex items-center gap-3 px-2">
               <span className="brand-mark">DP</span>
               <div>
-                <p className="text-sm font-semibold tracking-tight text-ink">DevPath</p>
-                <p className="text-[10px] uppercase tracking-[0.15em] text-[rgba(24,29,26,0.52)]">Academy</p>
+                <p className="text-sm font-semibold tracking-tight text-ink">
+                  DevPath
+                </p>
+                <p className="text-[10px] uppercase tracking-[0.15em] text-[rgba(24,29,26,0.52)]">
+                  Academy
+                </p>
               </div>
             </div>
 
@@ -94,7 +102,8 @@ export function AppShellClient({
                 </p>
                 <nav className="space-y-1.5">
                   {navItems.map((item) => {
-                    const Icon = LEARNER_NAV_ICONS[item.href] ?? LayoutDashboard;
+                    const Icon =
+                      LEARNER_NAV_ICONS[item.href] ?? LayoutDashboard;
                     return (
                       <Link
                         key={item.href}
@@ -150,7 +159,9 @@ export function AppShellClient({
             </div>
 
             <div className="mt-auto rounded-2xl border border-[rgba(24,29,26,0.08)] bg-[rgba(255,255,255,0.54)] p-3">
-              <p className="text-xs font-medium uppercase tracking-[0.15em] text-[rgba(24,29,26,0.5)]">Profile</p>
+              <p className="text-xs font-medium uppercase tracking-[0.15em] text-[rgba(24,29,26,0.5)]">
+                Profile
+              </p>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(33,79,70,0.12)] text-sm font-semibold text-[var(--primary)]">
@@ -163,16 +174,23 @@ export function AppShellClient({
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-ink">{userName}</p>
-                    <p className="text-[11px] text-[rgba(24,29,26,0.56)]">Learner</p>
+                    <p className="text-[11px] text-[rgba(24,29,26,0.56)]">
+                      Learner
+                    </p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-[rgba(24,29,26,0.5)]" aria-hidden="true" />
+                <ChevronRight
+                  className="h-4 w-4 text-[rgba(24,29,26,0.5)]"
+                  aria-hidden="true"
+                />
               </div>
             </div>
           </aside>
         ) : (
           <aside className="hidden w-56 shrink-0 border-r border-border bg-background px-4 py-6 md:flex md:flex-col">
-            <div className="text-sm font-semibold tracking-tight text-foreground">{role === "mentor" ? "Mentor" : "Admin"}</div>
+            <div className="text-sm font-semibold tracking-tight text-foreground">
+              {role === "mentor" ? "Mentor" : "Admin"}
+            </div>
             <nav className="mt-6 flex flex-col gap-1.5">
               {navItems.map((item) => (
                 <Link
@@ -204,7 +222,10 @@ export function AppShellClient({
                 </div>
 
                 <label className="search-input relative hidden flex-1 items-center gap-2 rounded-full px-3 py-2 md:flex">
-                  <Search className="h-4 w-4 text-[rgba(24,29,26,0.55)]" aria-hidden="true" />
+                  <Search
+                    className="h-4 w-4 text-[rgba(24,29,26,0.55)]"
+                    aria-hidden="true"
+                  />
                   <input
                     type="text"
                     readOnly
@@ -236,18 +257,29 @@ export function AppShellClient({
                         .join("")
                         .toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-ink">{userName}</span>
+                    <span className="text-sm font-medium text-ink">
+                      {userName}
+                    </span>
                   </div>
                 </div>
               </div>
             </header>
           ) : (
             <header className="flex items-center justify-end border-b border-border bg-background px-8 py-3">
-              <NotificationBell items={notifications} unreadCount={unreadCount} />
+              <NotificationBell
+                items={notifications}
+                unreadCount={unreadCount}
+              />
             </header>
           )}
 
-          <main className={isLearner ? "flex-1 px-4 py-6 md:px-8 md:py-8" : "flex-1 px-4 py-6 md:px-8 md:py-8"}>
+          <main
+            className={
+              isLearner
+                ? "flex-1 px-4 py-6 md:px-8 md:py-8"
+                : "flex-1 px-4 py-6 md:px-8 md:py-8"
+            }
+          >
             {children}
           </main>
 
@@ -281,18 +313,32 @@ export function AppShellClient({
       </div>
 
       {isLearner && drawerOpen && (
-        <div className="fixed inset-0 z-30 bg-black/35 md:hidden" onClick={() => setDrawerOpen(false)}>
-          <div className="absolute left-0 top-0 flex h-full w-[280px] flex-col justify-between bg-[var(--bg)] p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-30 bg-black/35 md:hidden"
+          onClick={() => setDrawerOpen(false)}
+        >
+          <div
+            className="absolute left-0 top-0 flex h-full w-[280px] flex-col justify-between bg-[var(--bg)] p-5 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="brand-mark">DP</span>
                   <div>
-                    <p className="text-sm font-semibold tracking-tight text-ink">DevPath</p>
-                    <p className="text-[10px] uppercase tracking-[0.15em] text-[rgba(24,29,26,0.52)]">Academy</p>
+                    <p className="text-sm font-semibold tracking-tight text-ink">
+                      DevPath
+                    </p>
+                    <p className="text-[10px] uppercase tracking-[0.15em] text-[rgba(24,29,26,0.52)]">
+                      Academy
+                    </p>
                   </div>
                 </div>
-                <button onClick={() => setDrawerOpen(false)} aria-label="Close navigation" className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(24,29,26,0.08)] bg-white/60 text-ink">
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label="Close navigation"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(24,29,26,0.08)] bg-white/60 text-ink"
+                >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>

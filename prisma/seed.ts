@@ -170,6 +170,7 @@ async function getOrCreateSeedUser(name: string, email: string, password: string
  * password has not been provided.
  */
 async function main() {
+  console.log("Connecting to:", process.env.DATABASE_URL);
   if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "true") {
     throw new Error(
       "Seed script is disabled in production. Set ALLOW_SEED=true only for an explicitly non-production database."

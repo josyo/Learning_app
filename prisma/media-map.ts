@@ -34,17 +34,21 @@ const CODESANDBOX_TS = "https://codesandbox.io/examples/package/typescript";
 const CODESANDBOX_HOME = "https://codesandbox.io/"; // generic fallback — no verified specific template for these stacks
 
 export const MEDIA_MAP: Record<string, MediaEntry> = {
-  // Developer Orientation — only one lesson has a video that's a genuinely
-  // specific match (verified via freecodecamp.org/news, not guessed); the
-  // rest are tool/workflow lessons better served by the lesson text itself.
-  "the-terminal": { videoUrl: YT("mABpAI-pCw0") }, // freeCodeCamp — Command Line Basics for Beginners
-  // your-editor-and-tools, browser-devtools, package-managers-and-project-structure,
-  // how-assignments-and-reviews-work: no video — none found specific enough to include.
-
-  // HTML Foundations — no video added yet; the searches that came back for
-  // "HTML full course" mixed too many unverified/scraper results to confirm
-  // a specific link with the same confidence as the rest of this file. Add
-  // one here once verified rather than guessing.
+  // Developer Orientation (rewritten for genuinely zero prior experience)
+  "what-is-a-code-editor-and-installing-vs-code": {
+    videoUrl: YT("6tQ6MS8cHMk"), // "How to Use VS Code: The Ultimate Beginner's Guide" — explicitly for "even if you've never opened it before"
+    resources: [{ label: "Official VS Code getting started docs", url: "https://code.visualstudio.com/docs/introvideos/basics" }],
+  },
+  "what-is-a-terminal-and-how-do-you-use-one": {
+    videoUrl: YT("mABpAI-pCw0"), // "Command Line Basics for Beginners - Full Course"
+    resources: [{ label: "Command Line for Beginners (freeCodeCamp)", url: "https://www.freecodecamp.org/news/command-line-for-beginners/" }],
+  },
+  "installing-node-js-and-running-your-first-command": {
+    videoUrl: YT("ddD7JkzKWus"), // "How to Install Node.js (2026 Tutorial) - Setup for Beginners" — covers Windows and Mac
+  },
+  // welcome-what-you-re-actually-going-to-be-doing, finding-your-way-around-vs-code,
+  // how-assignments-and-reviews-work, a-tour-of-a-real-project-s-folders: no video —
+  // these are conceptual/tour lessons with nothing to install or watch happen on screen.
 
   // CSS & Responsive UI
   "the-box-model-selectors": { videoUrl: CSS_VIDEO, resources: [{ label: "Live CSS playground", url: CODESANDBOX_HOME }] },

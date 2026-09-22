@@ -31,8 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${plexSans.variable} ${plexSerif.variable} ${plexMono.variable}`}>
-      <body className="min-h-screen bg-bone text-ink antialiased">{children}</body>
+    <html
+      lang="en"
+      className={`${plexSans.variable} ${plexSerif.variable} ${plexMono.variable}`}
+    >
+      <body className="min-h-screen bg-bone text-ink antialiased">
+        {children}
+      </body>
     </html>
   );
 }

@@ -14,9 +14,16 @@ export default async function LearnerDashboardPage() {
   const target = result?.target;
 
   const totalModules = result?.overallProgress.totalRequiredModules ?? 0;
-  const completedModules = result?.overallProgress.completedRequiredModules ?? 0;
-  const progressPct = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
-  const activeModules = state?.modules.filter((module) => module.status !== "LOCKED" && module.status !== "COMPLETED").slice(0, 3) ?? [];
+  const completedModules =
+    result?.overallProgress.completedRequiredModules ?? 0;
+  const progressPct =
+    totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
+  const activeModules =
+    state?.modules
+      .filter(
+        (module) => module.status !== "LOCKED" && module.status !== "COMPLETED",
+      )
+      .slice(0, 3) ?? [];
 
   const firstName = session.user.name.split(" ")[0] ?? "Learner";
   const greeting = getGreeting();
@@ -49,7 +56,8 @@ export default async function LearnerDashboardPage() {
             {greeting}, {firstName}.
           </h1>
           <p className="mt-3 max-w-2xl text-base text-[rgba(24,29,26,0.7)]">
-            You&apos;re {progressPct}% through your current learning path. Keep building momentum.
+            You&apos;re {progressPct}% through your current learning path. Keep
+            building momentum.
           </p>
         </div>
 
@@ -72,7 +80,9 @@ export default async function LearnerDashboardPage() {
         <section className="surface-panel p-6 md:p-8">
           <div className="flex items-center justify-between gap-3">
             <span className="eyebrow">Continue learning</span>
-            {target?.type === "lesson" && <span className="pill">{target.moduleTitle}</span>}
+            {target?.type === "lesson" && (
+              <span className="pill">{target.moduleTitle}</span>
+            )}
           </div>
 
           {target?.type === "lesson" && (
@@ -81,7 +91,9 @@ export default async function LearnerDashboardPage() {
                 {target.lessonTitle}
               </h2>
               <p className="mt-3 text-base text-[rgba(24,29,26,0.72)]">
-                Module {target.moduleTitle} is the next precise step in your path. Keep going and you&apos;ll build real, usable frontend skills.
+                Module {target.moduleTitle} is the next precise step in your
+                path. Keep going and you&apos;ll build real, usable frontend
+                skills.
               </p>
 
               <div className="mt-6">
@@ -90,7 +102,10 @@ export default async function LearnerDashboardPage() {
                   <span>{progressPct}%</span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-[rgba(24,29,26,0.08)]">
-                  <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${Math.min(progressPct + 12, 100)}%` }} />
+                  <div
+                    className="h-full rounded-full bg-[var(--primary)]"
+                    style={{ width: `${Math.min(progressPct + 12, 100)}%` }}
+                  />
                 </div>
               </div>
 
@@ -115,7 +130,8 @@ export default async function LearnerDashboardPage() {
                 {target.assignmentTitle}
               </h2>
               <p className="mt-3 text-base text-[rgba(24,29,26,0.72)]">
-                You have a practical assignment ready in {target.moduleTitle}. Complete it to move your learning from theory to proof.
+                You have a practical assignment ready in {target.moduleTitle}.
+                Complete it to move your learning from theory to proof.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
@@ -135,7 +151,8 @@ export default async function LearnerDashboardPage() {
                 Your work is with a mentor.
               </h2>
               <p className="mt-3 text-base text-[rgba(24,29,26,0.72)]">
-                Your latest submission is under review. This is a great place to pause, reflect, and keep preparing for the next milestone.
+                Your latest submission is under review. This is a great place to
+                pause, reflect, and keep preparing for the next milestone.
               </p>
               <div className="mt-6 flex items-center gap-3 text-sm text-[rgba(24,29,26,0.7)]">
                 <Clock3 className="h-4 w-4" aria-hidden="true" />
@@ -150,7 +167,8 @@ export default async function LearnerDashboardPage() {
                 Start your learning journey.
               </h2>
               <p className="mt-3 text-base text-[rgba(24,29,26,0.72)]">
-                Your roadmap is ready. Pick a starting module and begin the first structured lesson.
+                Your roadmap is ready. Pick a starting module and begin the
+                first structured lesson.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link href="/learner/roadmap" className="primary-button">
@@ -174,15 +192,20 @@ export default async function LearnerDashboardPage() {
                 <span className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(33,79,70,0.08)] text-xs font-semibold text-[var(--primary)]">
                   {index + 1}
                 </span>
-                <span className="text-sm leading-6 text-[rgba(24,29,26,0.78)]">{item}</span>
+                <span className="text-sm leading-6 text-[rgba(24,29,26,0.78)]">
+                  {item}
+                </span>
               </li>
             ))}
           </ul>
 
           <div className="mt-6 rounded-2xl border border-[rgba(24,29,26,0.08)] bg-[rgba(33,79,70,0.04)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[rgba(24,29,26,0.52)]">Focus</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[rgba(24,29,26,0.52)]">
+              Focus
+            </p>
             <p className="mt-2 text-sm text-[rgba(24,29,26,0.8)]">
-              Keep the next step small and deliberate. One lesson, one assignment, one meaningful improvement.
+              Keep the next step small and deliberate. One lesson, one
+              assignment, one meaningful improvement.
             </p>
           </div>
         </aside>
@@ -197,14 +220,21 @@ export default async function LearnerDashboardPage() {
 
           {state ? (
             <>
-              <h3 className="mt-4 text-2xl tracking-tight text-ink">{state.pathName}</h3>
+              <h3 className="mt-4 text-2xl tracking-tight text-ink">
+                {state.pathName}
+              </h3>
               <div className="mt-5">
                 <div className="mb-2 flex items-center justify-between text-sm text-[rgba(24,29,26,0.68)]">
                   <span>Module progress</span>
-                  <span>{completedModules}/{totalModules}</span>
+                  <span>
+                    {completedModules}/{totalModules}
+                  </span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-[rgba(24,29,26,0.08)]">
-                  <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${progressPct}%` }} />
+                  <div
+                    className="h-full rounded-full bg-[var(--primary)]"
+                    style={{ width: `${progressPct}%` }}
+                  />
                 </div>
               </div>
 
@@ -227,7 +257,8 @@ export default async function LearnerDashboardPage() {
             </>
           ) : (
             <p className="mt-4 text-sm text-[rgba(24,29,26,0.68)]">
-              You&apos;re not enrolled in a path yet. Ask an admin to assign one and the learning path will appear here.
+              You&apos;re not enrolled in a path yet. Ask an admin to assign one
+              and the learning path will appear here.
             </p>
           )}
         </section>
@@ -239,17 +270,26 @@ export default async function LearnerDashboardPage() {
               <div>
                 <p className="text-sm font-medium text-ink">Next milestone</p>
                 <p className="text-xs text-[rgba(24,29,26,0.62)]">
-                  {target?.type === "lesson" ? target.moduleTitle : "Keep the path moving"}
+                  {target?.type === "lesson"
+                    ? target.moduleTitle
+                    : "Keep the path moving"}
                 </p>
               </div>
-              <Sparkles className="h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
+              <Sparkles
+                className="h-4 w-4 text-[var(--primary)]"
+                aria-hidden="true"
+              />
             </li>
             <li className="flex items-start justify-between gap-3 rounded-2xl border border-[rgba(24,29,26,0.08)] bg-[rgba(255,255,255,0.4)] p-3">
               <div>
                 <p className="text-sm font-medium text-ink">Current streak</p>
-                <p className="text-xs text-[rgba(24,29,26,0.62)]">3 learning days</p>
+                <p className="text-xs text-[rgba(24,29,26,0.62)]">
+                  3 learning days
+                </p>
               </div>
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--primary)]">Active</span>
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--primary)]">
+                Active
+              </span>
             </li>
           </ul>
         </section>
@@ -258,7 +298,10 @@ export default async function LearnerDashboardPage() {
       <section className="mt-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <p className="eyebrow">Current modules</p>
-          <Link href="/learner/roadmap" className="text-sm font-medium text-[var(--primary)] hover:underline">
+          <Link
+            href="/learner/roadmap"
+            className="text-sm font-medium text-[var(--primary)] hover:underline"
+          >
             View all
           </Link>
         </div>
@@ -266,22 +309,36 @@ export default async function LearnerDashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {activeModules.length > 0 ? (
             activeModules.map((module) => (
-              <Link key={module.id} href={`/learner/roadmap/${module.slug}`} className="surface-panel block p-5 transition-transform hover:-translate-y-0.5">
+              <Link
+                key={module.id}
+                href={`/learner/roadmap/${module.slug}`}
+                className="surface-panel block p-5 transition-transform hover:-translate-y-0.5"
+              >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="pill bg-[rgba(33,79,70,0.06)] text-[var(--primary)]">{module.status}</span>
-                  <ChevronRight className="h-4 w-4 text-[rgba(24,29,26,0.52)]" aria-hidden="true" />
+                  <span className="pill bg-[rgba(33,79,70,0.06)] text-[var(--primary)]">
+                    {module.status}
+                  </span>
+                  <ChevronRight
+                    className="h-4 w-4 text-[rgba(24,29,26,0.52)]"
+                    aria-hidden="true"
+                  />
                 </div>
                 <h3 className="mt-4 text-xl text-ink">{module.title}</h3>
                 {module.description && (
-                  <p className="mt-2 text-sm leading-6 text-[rgba(24,29,26,0.7)]">{module.description}</p>
+                  <p className="mt-2 text-sm leading-6 text-[rgba(24,29,26,0.7)]">
+                    {module.description}
+                  </p>
                 )}
-                <div className="mt-4 text-sm font-medium text-[var(--primary)]">Open module</div>
+                <div className="mt-4 text-sm font-medium text-[var(--primary)]">
+                  Open module
+                </div>
               </Link>
             ))
           ) : (
             <div className="surface-panel p-5 md:col-span-2 xl:col-span-3">
               <p className="text-sm text-[rgba(24,29,26,0.7)]">
-                You&apos;re caught up for now. Pick a new roadmap module when you&apos;re ready to continue.
+                You&apos;re caught up for now. Pick a new roadmap module when
+                you&apos;re ready to continue.
               </p>
             </div>
           )}

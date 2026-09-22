@@ -1,10 +1,24 @@
 import Link from "next/link";
 
 const pathCards = [
-  { title: "Frontend Foundations", description: "HTML, CSS, responsiveness, accessibility, and UI craft." },
-  { title: "JavaScript Core", description: "Logic, functions, data flow, async thinking, and debugging." },
-  { title: "React + Next.js", description: "Components, routing, state, performance, and product architecture." },
-  { title: "Professional Practice", description: "Testing, production quality, deployment, and delivery discipline." },
+  {
+    title: "Frontend Foundations",
+    description: "HTML, CSS, responsiveness, accessibility, and UI craft.",
+  },
+  {
+    title: "JavaScript Core",
+    description: "Logic, functions, data flow, async thinking, and debugging.",
+  },
+  {
+    title: "React + Next.js",
+    description:
+      "Components, routing, state, performance, and product architecture.",
+  },
+  {
+    title: "Professional Practice",
+    description:
+      "Testing, production quality, deployment, and delivery discipline.",
+  },
 ];
 
 export default function LandingPage() {
@@ -15,8 +29,12 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <span className="brand-mark">DP</span>
             <div>
-              <p className="text-sm font-semibold tracking-tight text-ink">DevPath</p>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-[rgba(24,29,26,0.52)]">Academy</p>
+              <p className="text-sm font-semibold tracking-tight text-ink">
+                DevPath
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[rgba(24,29,26,0.52)]">
+                Academy
+              </p>
             </div>
           </div>
 
@@ -40,7 +58,9 @@ export default function LandingPage() {
             Become a stronger developer by building real skills in sequence.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-8 text-[rgba(24,29,26,0.72)]">
-            Learn web development through a structured path of lessons, practical assignments, and milestone projects designed to build professional momentum.
+            Learn web development through a structured path of lessons,
+            practical assignments, and milestone projects designed to build
+            professional momentum.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -61,10 +81,14 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-6">
-              <p className="text-xs uppercase tracking-[0.14em] text-[rgba(24,29,26,0.5)]">Module 4</p>
+              <p className="text-xs uppercase tracking-[0.14em] text-[rgba(24,29,26,0.5)]">
+                Module 4
+              </p>
               <h2 className="mt-2 text-3xl text-ink">Functions and scope</h2>
               <p className="mt-2 text-sm leading-6 text-[rgba(24,29,26,0.7)]">
-                Understand how logic becomes reusable, maintainable code, and how professional developer thinking starts with small, intentional concepts.
+                Understand how logic becomes reusable, maintainable code, and
+                how professional developer thinking starts with small,
+                intentional concepts.
               </p>
             </div>
 
@@ -91,8 +115,12 @@ export default function LandingPage() {
             "Review progress and keep momentum with direction.",
           ].map((item) => (
             <div key={item} className="surface-panel p-5">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(33,79,70,0.08)] text-[var(--primary)]">✓</div>
-              <p className="text-base leading-7 text-[rgba(24,29,26,0.76)]">{item}</p>
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(33,79,70,0.08)] text-[var(--primary)]">
+                ✓
+              </div>
+              <p className="text-base leading-7 text-[rgba(24,29,26,0.76)]">
+                {item}
+              </p>
             </div>
           ))}
         </div>
@@ -104,7 +132,9 @@ export default function LandingPage() {
           {pathCards.map((card) => (
             <article key={card.title} className="surface-panel p-5">
               <h3 className="text-2xl text-ink">{card.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[rgba(24,29,26,0.7)]">{card.description}</p>
+              <p className="mt-3 text-sm leading-6 text-[rgba(24,29,26,0.7)]">
+                {card.description}
+              </p>
             </article>
           ))}
         </div>

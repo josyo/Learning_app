@@ -16,7 +16,6 @@ const db = new PrismaClient();
  */
 const MODULE_SLUGS = [
   "developer-orientation",
-  "html-foundations",
   "css-responsive-ui",
   "javascript-fundamentals",
   "git-github",
@@ -51,7 +50,7 @@ function parseModuleFile(raw: string): {
 
   for (const block of blocks) {
     const lessonMatch = block.match(/### Lesson \d+ — (.+)/);
-    if (lessonMatch?.[1]) {
+    if (lessonMatch) {
       const title = lessonMatch[1].trim();
       const content = block.slice(block.indexOf(lessonMatch[0]) + lessonMatch[0].length).trim();
       lessons.push({ title, content });
@@ -59,7 +58,7 @@ function parseModuleFile(raw: string): {
     }
 
     const assignmentMatch = block.match(/## Assignment: (.+)/);
-    if (assignmentMatch?.[1]) {
+    if (assignmentMatch) {
       const title = assignmentMatch[1].trim();
       const instructions = block
         .slice(block.indexOf(assignmentMatch[0]) + assignmentMatch[0].length)
@@ -102,36 +101,17 @@ async function main() {
       console.warn(`${moduleSlug}: found 0 lessons — check the file's formatting matches the expected shape.`);
     }
 
-    const incomingSlugs = lessons.map((lesson) => slugify(lesson.title));
-    const duplicateSlugs = incomingSlugs.filter((slug, index) => incomingSlugs.indexOf(slug) !== index);
-    if (duplicateSlugs.length > 0) {
-      console.warn(
-        `${moduleSlug}: duplicate lesson slugs detected in this file (${[...new Set(duplicateSlugs)].join(", ")}); later rows may overwrite earlier ones.`
-      );
-    }
-
-    // This script is intentionally idempotent, but a module can have stale
-    // rows created by prisma/seed.ts with the same slug as one of the imported
-    // lessons while still carrying older order values. In that case a
-    // partial "delete stale rows" sweep isn't enough: we must fully resync the
-    // module's lesson list before recreating it from the current content file.
-    const existingLessons = await db.lesson.findMany({
-      where: { moduleId: moduleRow.id },
-      select: { id: true, slug: true, order: true },
-    });
-    const hasOverlappingSlug = existingLessons.some((row) => incomingSlugs.includes(row.slug));
-    const hasOutdatedOrder = existingLessons.some((row) => row.order >= lessons.length);
-    if (existingLessons.length > 0 && (hasOverlappingSlug || hasOutdatedOrder)) {
-      await db.lesson.deleteMany({ where: { moduleId: moduleRow.id } });
-    } else {
-      await db.lesson.deleteMany({
-        where: {
-          moduleId: moduleRow.id,
-          NOT: {
-            slug: { in: incomingSlugs },
-          },
-        },
-      });
+    // Lesson has a unique constraint on (moduleId, order). The loop
+    // below assigns new 0-based orders by position in the file, but
+    // this script has no way to know in advance whether some
+    // existing lesson in this module — under any slug, from any
+    // prior content version — already occupies one of those exact
+    // order numbers. Bump every existing lesson in this module to a
+    // clearly out-of-range order first, so the upserts below can
+    // never collide no matter what state the database is actually in.
+    const existingLessons = await db.lesson.findMany({ where: { moduleId: moduleRow.id } });
+    for (const [i, existing] of existingLessons.entries()) {
+      await db.lesson.update({ where: { id: existing.id }, data: { order: 10_000 + i } });
     }
 
     for (const [index, lesson] of lessons.entries()) {

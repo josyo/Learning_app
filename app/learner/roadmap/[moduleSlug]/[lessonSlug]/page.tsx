@@ -30,16 +30,25 @@ const markdownComponents = {
     </p>
   ),
   ul: ({ children, ...props }: ComponentPropsWithoutRef<"ul">) => (
-    <ul {...props} className="mt-4 list-disc space-y-2 pl-6 text-[15px] leading-7 text-slate-700">
+    <ul
+      {...props}
+      className="mt-4 list-disc space-y-2 pl-6 text-[15px] leading-7 text-slate-700"
+    >
       {children}
     </ul>
   ),
   ol: ({ children, ...props }: ComponentPropsWithoutRef<"ol">) => (
-    <ol {...props} className="mt-4 list-decimal space-y-2 pl-6 text-[15px] leading-7 text-slate-700">
+    <ol
+      {...props}
+      className="mt-4 list-decimal space-y-2 pl-6 text-[15px] leading-7 text-slate-700"
+    >
       {children}
     </ol>
   ),
-  blockquote: ({ children, ...props }: ComponentPropsWithoutRef<"blockquote">) => (
+  blockquote: ({
+    children,
+    ...props
+  }: ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
       {...props}
       className="mt-5 border-l-4 border-amber-300 bg-amber-50 px-4 py-3 text-[15px] leading-7 text-amber-900"
@@ -47,7 +56,11 @@ const markdownComponents = {
       {children}
     </blockquote>
   ),
-  code: ({ children, className, ...props }: ComponentPropsWithoutRef<"code">) => {
+  code: ({
+    children,
+    className,
+    ...props
+  }: ComponentPropsWithoutRef<"code">) => {
     const isInline = !className;
     return isInline ? (
       <code
@@ -94,7 +107,10 @@ export default async function LessonPage({
 
   // Reuses the module unlock check so a learner can't reach a
   // lesson's content by guessing its URL if the module is Locked.
-  const moduleDetail = await getModuleDetailForUser(session.user.id, moduleSlug);
+  const moduleDetail = await getModuleDetailForUser(
+    session.user.id,
+    moduleSlug,
+  );
   if (!moduleDetail || !moduleDetail.unlocked) notFound();
 
   const lessonSummary = moduleDetail.lessons.find((l) => l.slug === lessonSlug);
@@ -106,7 +122,9 @@ export default async function LessonPage({
   });
   if (!lesson) notFound();
 
-  const currentIndex = moduleDetail.lessons.findIndex((l) => l.slug === lessonSlug);
+  const currentIndex = moduleDetail.lessons.findIndex(
+    (l) => l.slug === lessonSlug,
+  );
   const nextLesson = moduleDetail.lessons[currentIndex + 1];
 
   return (
@@ -133,7 +151,9 @@ export default async function LessonPage({
       )}
 
       <article className="w-full max-w-none">
-        <ReactMarkdown components={markdownComponents}>{lesson.content}</ReactMarkdown>
+        <ReactMarkdown components={markdownComponents}>
+          {lesson.content}
+        </ReactMarkdown>
       </article>
 
       {lesson.resources.length > 0 && (
@@ -157,7 +177,10 @@ export default async function LessonPage({
       )}
 
       <div className="flex items-center justify-between border-t border-border pt-4">
-        <MarkCompleteButton lessonId={lesson.id} completed={lessonSummary.completed} />
+        <MarkCompleteButton
+          lessonId={lesson.id}
+          completed={lessonSummary.completed}
+        />
         {nextLesson && (
           <Link
             href={`/learner/roadmap/${moduleSlug}/${nextLesson.slug}`}
