@@ -80,9 +80,15 @@ test.describe("Learner critical path", () => {
     await page.getByPlaceholder(/Anything you want your mentor/).fill("Ready for review.");
     await page.getByRole("button", { name: /^Submit$/ }).click();
     // The server action (insert, notification, revalidations) round-trips to a
-    // remote database, so allow well over the default 5s. `.first()`: the status
-    // appears in both the badge and the attempt row.
-    await expect(page.getByText("Awaiting review").first()).toBeVisible({ timeout: 30_000 });
+    // remote database, so allow well over the default 5s.
+    //
+    // Assert on the "Submission history" section, NOT on the text "Awaiting
+    // review": the assignment instructions themselves mention that phrase, so
+    // a text match passes before anything was submitted (this test was a false
+    // pass once the instructions were rewritten). That heading is rendered only
+    // when at least one submission exists.
+    await expect(page.getByRole("heading", { name: "Submission history" })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("Attempt 1")).toBeVisible();
   });
 });
 

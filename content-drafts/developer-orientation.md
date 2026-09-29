@@ -169,15 +169,19 @@ A couple of commands to try right now, typing each one and pressing Enter:
 ```
 pwd
 ```
-(On Windows, use `cd` instead of `pwd`.) This prints the folder you're
+This prints the folder you're
 currently "in" — the terminal always has a current location, same as a file
 explorer window does.
 
 ```
 ls
 ```
-(On Windows, use `dir` instead.) This lists the files and folders in your
+This lists the files and folders in your
 current location.
+
+Both commands work the same way in the terminal inside VS Code on Windows
+(where it runs **PowerShell**, the program that reads your commands) and on
+macOS, so you don't need a different command for your computer.
 
 **Try it yourself**
 
@@ -190,7 +194,7 @@ most terminal commands are this undramatic.
 Being afraid to type anything at all in case it breaks something. The
 commands in this lesson are read-only — they only *look* at your computer,
 they don't change anything. You genuinely cannot break anything by running
-`pwd`, `cd`, `ls`, or `dir`.
+`pwd` or `ls`.
 
 ---
 
@@ -225,6 +229,8 @@ node -v
 ```
 
 If Node installed correctly, this prints a version number, like `v22.11.0`.
+The number after the `v` should be 22 or higher; if it is lower, download the
+LTS version again from nodejs.org and install it.
 Then try:
 
 ```
@@ -234,12 +240,44 @@ npm -v
 This should also print a version number — npm came bundled with Node
 automatically.
 
+**If you see a red error on Windows.** When you run `npm -v` in the VS Code
+terminal on Windows, you may see this instead of a version number. It is
+common on the first day and it does not mean your computer is broken:
+
+```
+npm : File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ npm -v
++ ~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+```
+
+Windows has a safety setting called the **execution policy**. It decides
+which script files are allowed to run, and the default blocks the script file
+that `npm` uses in PowerShell. Pick one fix:
+
+- **Fix A, changes no settings:** type `npm.cmd -v`. It runs the same program
+  by a different file name.
+- **Fix B, once and for good:** type the line below exactly, and press Enter.
+
+```
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+If PowerShell asks whether you want to change the policy, type `Y` and press
+Enter. This changes the setting for your Windows user only. Close the
+terminal, open a new one, and run `npm -v` again. If you see
+`Access to the registry key ... is denied`, the part that says
+`-Scope CurrentUser` was missing, so type the whole line again.
+
 **Try it yourself**
 
 Run both `node -v` and `npm -v` in a terminal and confirm you get real
 version numbers back, not an error. If you get an error, close and reopen
 your terminal first (Node sometimes needs a fresh terminal window to be
-recognized) before assuming something's wrong.
+recognized) before assuming something's wrong. If the error is the red one
+about running scripts being disabled, use one of the two fixes above.
 
 **A mistake beginners actually make**
 
@@ -331,24 +369,184 @@ be read by you directly — it's there for the computer, not for you.
 ---
 
 ## Assignment: Environment Check
+<!-- slug: environment-check -->
 
-**Instructions:**
+**Time:** about 40 minutes
+**Scaffold:** Level 3. Every step is written out, and you fill in a template at the end.
+**Builds on → feeds into:** Lessons 2–7 of this module → HTML Foundations, where you will make web pages inside the `my-site` folder you create here.
+**Last verified:** 2026-09-29 on Windows 10 with VS Code and PowerShell 5.1, using Node.js 25 and npm 11.9.0 (learners install the LTS release, whose output looks the same apart from the numbers). The macOS lines were not re-run.
 
-Confirm your development environment is fully set up and working, using
-everything from this module.
+You will set up the folder you will use in the next module, prove that each tool works by copying its output, and write four short answers in your own words. Do the steps on your computer. You can read this page on your phone, but the terminal output has to come from your computer, and pasting is easiest when you submit from it too.
 
-**Requirements:**
-- VS Code is installed and you can open it.
-- Running `node -v` in a terminal shows a real version number.
-- Running `npm -v` in a terminal shows a real version number.
-- You've successfully opened a terminal *inside* VS Code at least once
-  (not a separate terminal app).
+## Outcomes assessed
 
-**What to submit:**
-- In the notes field: paste the exact output you got from running `node -v`
-  and `npm -v`. That's your proof everything's actually installed and
-  working — there's no repo or deployed link needed for this one, since
-  there's no code to write yet.
-- If anything from this module didn't make sense, or a step didn't work the
-  way it was described, say so here directly. This is exactly the kind of
-  thing your mentor wants to know before you move further.
+By the end of this module you can:
+
+- **O1** Open VS Code.
+- **O2** Open a folder in VS Code and point to the Explorer, the editor and the terminal.
+- **O3** Open a terminal inside VS Code and run commands in it.
+- **O4** Run `node -v` and `npm -v` and read the results.
+- **O5** Describe what happens after you submit an assignment.
+- **O6** Say what `package.json` is for.
+
+## The task
+
+### Part 1: Make a folder and open it in VS Code (assesses O1, O2)
+
+1. Create a folder named `my-site` inside your Documents folder.
+   - **Windows:** open File Explorer, open Documents, right-click an empty space, choose New, then Folder. Type `my-site` and press Enter.
+   - **macOS:** open Finder, open Documents, choose File, then New Folder. Type `my-site` and press Return.
+
+   You should see: a folder called `my-site` in Documents.
+   If you see something else: if it is called "New folder", right-click it, choose Rename, and type `my-site`. Use lowercase letters and a hyphen, with no spaces.
+
+2. Open VS Code. Choose File, then Open Folder. Select `my-site` (click **Select Folder** on Windows or **Open** on macOS).
+
+   You should see: a question, "Do you trust the authors of the files in this folder?" Click **Yes, I trust the authors**. The **Explorer** (the file list on the left) then shows the name MY-SITE with nothing under it, because the folder is empty.
+   If you see something else: if the Explorer says "You have not yet opened a folder", the folder did not open, so repeat step 2. If a pop-up offers to install extensions, close it. You do not need any.
+
+### Part 2: Open the terminal and prove it is inside VS Code (assesses O2, O3)
+
+3. In the menu, choose Terminal, then New Terminal. The **terminal** is the text window where you type commands.
+
+   You should see: a panel at the bottom with a line that ends in `my-site>`. On Windows the line starts with `PS`. That means the terminal is running **PowerShell**, the program that reads your commands on Windows.
+   If you see something else: if no panel appears, choose Terminal, then New Terminal again.
+
+4. Type `pwd` and press Enter. The command prints the folder the terminal is in.
+
+   You should see: on Windows, a small table with the heading `Path` and a path that ends in `\my-site`. On macOS, a path that ends in `/my-site`. The path may include the word OneDrive, which is fine.
+   If you see something else: if the path ends anywhere else, close the terminal with the bin icon on its panel, check that the Explorer shows MY-SITE, and open a new terminal.
+
+5. Type `ls` and press Enter. The command lists the files in the folder.
+
+   You should see: nothing at all, because `my-site` is empty.
+   If you see something else: if files appear, you are in a different folder. Follow the fix in step 4.
+
+6. Type the command that names the program your terminal is running inside.
+   - **Windows (PowerShell):** `echo $env:TERM_PROGRAM`
+   - **macOS:** `echo $TERM_PROGRAM`
+
+   You should see: `vscode`
+   If you see something else: if the line is empty, you are using a terminal that is not inside VS Code, for example one opened from the Start menu. Close it and use Terminal, then New Terminal inside VS Code.
+
+### Part 3: Check Node.js and npm (assesses O4)
+
+7. Type `node -v` and press Enter.
+
+   You should see: a version that starts with `v`, then a number that is 22 or higher, such as `v22.11.0` or `v24.0.0`.
+   If you see something else:
+   - On Windows you may see `node : The term 'node' is not recognized as the name of a cmdlet, function, script file, or operable program.` On macOS the message is `zsh: command not found: node`. Either way, the terminal cannot find Node.js. Close **every** VS Code window, open VS Code again, open the `my-site` folder, open a new terminal and try again. If it still fails, restart your computer once and try again.
+   - If the number after `v` is lower than 22, install the **LTS** version (Long Term Support, the stable one) from nodejs.org again, as in Lesson 5, then open a new terminal.
+
+8. Type `npm -v` and press Enter.
+
+   You should see: a version number such as `10.9.2` or `11.9.0`.
+   If you see something else: on Windows you may see this red error. It is common on the first day and it does not mean your computer is broken.
+
+   ```
+   npm : File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+   At line:1 char:1
+   + npm -v
+   + ~~~
+       + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+       + FullyQualifiedErrorId : UnauthorizedAccess
+   ```
+
+   Windows has a safety setting called the **execution policy**. It decides which script files are allowed to run, and the default blocks the script file that `npm` uses in PowerShell. Pick one fix:
+
+   - **Fix A, changes no settings:** type `npm.cmd -v`. It runs the same program by a different file name. If it prints a version number, paste that as your answer for step 8.
+   - **Fix B, once and for good:** type the line below exactly, and press Enter.
+
+     ```
+     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+     ```
+
+     If PowerShell asks whether you want to change the policy, type `Y` and press Enter. This changes the setting for your Windows user only. Close the terminal, open a new one with Terminal, then New Terminal, and run `npm -v` again. If you see `Access to the registry key ... is denied`, the part that says `-Scope CurrentUser` was missing, so type the whole line again.
+
+### Part 4: Reflect (assesses O5, O6)
+
+Write one or two sentences for each prompt, in your own words. You will paste them into Notes in the next section.
+
+1. In Lesson 1 you wrote down one question. What was it, and can you answer it now? If you didn't write one down, write a question you have now and answer it.
+2. Which step took you longest? What did you do about it?
+3. After you press Submit, what happens next? Explain it as if you were telling a friend.
+4. What is `package.json` for?
+
+## Acceptance checklist
+
+Check each item yourself before you submit.
+
+- [ ] Notes has the `pwd` output, and the path ends in `my-site` (O2, O3)
+- [ ] Notes has the `TERM_PROGRAM` output, and it says `vscode` (O1, O3)
+- [ ] Notes has the `node -v` output, and the number after `v` is 22 or higher (O4)
+- [ ] Notes has the `npm -v` output, and it is a version number, not an error (O4)
+- [ ] Reflection 1 and 2 are answered with something only you could write: your real question and a named step (personal)
+- [ ] Reflection 3 describes what happens after Submit, and reflection 4 says what `package.json` is for, both in your own words (O5, O6)
+
+## Submit
+
+Scroll down to the submit form on this page.
+
+- **Notes:** paste the template below and fill it in. Notes is plain text, so no formatting is needed. To copy from the terminal, select the text with your mouse and press Ctrl+C on Windows or Cmd+C on macOS. Then paste it into Notes with Ctrl+V or Cmd+V.
+- **GitHub URL and Deployed URL:** leave both empty. This assignment needs no repository and no website.
+- **Attachment URL:** leave it empty. It is only for a link to a screenshot, and you do not need one here.
+- The form needs at least one field filled in. Notes is enough.
+- After you press Submit, your mentor reads it. If the answer is **Changes requested**, read the note, fix what it names, and press **Resubmit**. Your earlier attempts stay visible, and that is normal. You cannot submit again while the status says **Awaiting review**.
+
+```
+Windows or macOS:
+pwd:
+echo TERM_PROGRAM:
+node -v:
+npm -v:
+
+Reflection
+1.
+2.
+3.
+4.
+```
+
+## If you get stuck
+
+- **When to ask:** ask after 20 minutes on one step, or when the same error is still there after two fixes. Being stuck early is useful information for your mentor, not a failure.
+- **What to send, wherever you ask:**
+  - the step number you are on
+  - what you tried
+  - the exact error text, copied from the terminal (do not retype it)
+  - whether you are on Windows 10, Windows 11 or macOS
+  - your `node -v` and `npm -v` output, if they worked
+  - a screenshot, if you can make one (a photo of the screen taken with your phone is fine)
+- **Where to ask:**
+  1. **First choice:** message your mentor in the chat you two already use, and send the details above.
+  2. **If you cannot reach your mentor, or you want it on record here:** submit anyway. Write the word `STUCK` on the first line of Notes, add the same details, and put a link to the screenshot in the Attachment URL box only if you know how to make one.
+- Your mentor replies with help. If you asked in the review, the reply arrives as **Changes requested**. Follow it, then press **Resubmit**.
+
+## How this is reviewed
+
+Your mentor checks each item below. You can use the same list to check yourself.
+
+- **`pwd` output**
+  - Approve if: it shows a path whose last part is `my-site`.
+  - Request changes if: it is missing, or the path ends somewhere else.
+- **`TERM_PROGRAM` output**
+  - Approve if: it says `vscode`.
+  - Request changes if: it is empty, it is an error, or it says anything else.
+- **`node -v` output**
+  - Approve if: it starts with `v` and the number is 22 or higher.
+  - Request changes if: it is missing, it is lower than 22, or it is an error message.
+- **`npm -v` output**
+  - Approve if: it is a version number. Output from `npm.cmd -v` counts.
+  - Request changes if: it is missing, or it is the red execution policy error.
+- **Reflection 1 and 2**
+  - Approve if: both are answered specifically, in your own words.
+  - Request changes if: either is empty or copies the prompt.
+- **Reflection 3 and 4**
+  - Approve if: 3 mentions your mentor reviewing it and then approval or changes requested, and 4 says that `package.json` lists what the project depends on and the commands you can run.
+  - Request changes if: an answer describes something else.
+
+How the decision is made: if every item is met, you are approved. If there is a small gap, such as a thin answer, you are approved with a note. If any of the four outputs is missing or wrong, your mentor requests changes and names the items. A `STUCK` submission gets help, not a mark against you.
+
+## Stretch (optional, not reviewed)
+
+Make your first file. In the Explorer, hover over MY-SITE and click the New File icon. Name the file `hello.txt`, type one sentence, and press Ctrl+S (Windows) or Cmd+S (macOS) to save. Run `ls` in the terminal and look at the result. You will do this again in HTML Foundations.
