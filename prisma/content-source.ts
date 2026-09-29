@@ -11,7 +11,10 @@ import { MEDIA_MAP, type MediaEntry } from "./media-map";
 /** One file per module in content-drafts/, named exactly like the module slug. */
 export const MODULE_SLUGS = [
   "developer-orientation",
-  "html-foundations",
+  // "html-foundations" is deliberately NOT imported yet: the seed content in the
+  // database is being kept until the module is rewritten (the current draft
+  // scored 8-9/28 in docs/audits/). It returns to this list with the rewrite.
+  // Its draft is still parsed and validated (see HELD_MODULE_SLUGS).
   "css-responsive-ui",
   "javascript-fundamentals",
   "git-github",
@@ -23,6 +26,13 @@ export const MODULE_SLUGS = [
   "deployment-delivery",
   "capstone",
 ] as const;
+
+/**
+ * Modules whose draft file exists and is validated on every run, but which the
+ * importer neither reads from nor writes to the database. Move a slug back to
+ * MODULE_SLUGS to import it.
+ */
+export const HELD_MODULE_SLUGS = ["html-foundations"] as const;
 
 export const CONTENT_DIR = path.join(__dirname, "..", "content-drafts");
 
@@ -66,7 +76,8 @@ export function validateMediaMap(media: Record<string, MediaEntry>, modules: Map
 export function loadAllModules(
   dir: string = CONTENT_DIR,
   media: Record<string, MediaEntry> = MEDIA_MAP,
-  moduleSlugs: readonly string[] = MODULE_SLUGS
+  moduleSlugs: readonly string[] = MODULE_SLUGS,
+  heldSlugs: readonly string[] = HELD_MODULE_SLUGS
 ): LoadedContent {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -75,8 +86,21 @@ export function loadAllModules(
   const onDisk = fs.readdirSync(dir).filter((f) => f.endsWith(".md"));
   for (const f of onDisk) {
     const slug = f.replace(/\.md$/, "");
-    if (!moduleSlugs.includes(slug)) {
-      errors.push(`content-drafts/${f} is not a known module slug. Known: ${moduleSlugs.join(", ")}. (A misspelt filename would otherwise be ignored.)`);
+    if (!moduleSlugs.includes(slug) && !heldSlugs.includes(slug)) {
+      errors.push(`content-drafts/${f} is not a known module slug. Known: ${[...moduleSlugs, ...heldSlugs].join(", ")}. (A misspelt filename would otherwise be ignored.)`);
+    }
+  }
+
+  // Held modules: validated (so the draft cannot rot) but never imported.
+  const held = new Map<string, ParsedModule>();
+  for (const slug of heldSlugs) {
+    const file = path.join(dir, `${slug}.md`);
+    if (!fs.existsSync(file)) continue; // a held module needs no file
+    try {
+      held.set(slug, parseModuleFile(fs.readFileSync(file, "utf-8"), `content-drafts/${slug}.md (held, not imported)`));
+    } catch (e) {
+      if (e instanceof ContentParseError) errors.push(e.message);
+      else throw e;
     }
   }
 
@@ -96,6 +120,7 @@ export function loadAllModules(
     }
   }
 
-  errors.push(...validateMediaMap(media, modules));
+  // Slug uniqueness and media-map keys are checked across importable AND held modules.
+  errors.push(...validateMediaMap(media, new Map([...modules, ...held])));
   return { modules, warnings, errors };
 }

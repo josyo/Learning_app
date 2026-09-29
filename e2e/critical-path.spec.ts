@@ -38,36 +38,51 @@ async function login(page: Page, role: keyof typeof CREDENTIALS) {
 
 test.describe("Learner critical path", () => {
   test("completes Developer Orientation's lessons and submits its assignment", async ({ page }) => {
+    // One page load per lesson (7 today) plus a cold dev-mode compile of the
+    // lesson route: the default 60s is too tight, and it grows with the module.
+    test.setTimeout(300_000);
     await login(page, "trainee");
 
     await page.goto("/learner/roadmap/developer-orientation");
     await expect(page.getByRole("heading", { name: "Developer Orientation" })).toBeVisible();
 
-    // Complete every lesson listed for this module — the fixture
-    // seeds exactly three (your-toolchain, how-assignments-and-reviews-work,
-    // project-structure-tour). If lesson content changes, this count
-    // needs to change with it.
-    const lessonLinks = page.locator('a[href*="/learner/roadmap/developer-orientation/"]');
-    const lessonCount = await lessonLinks.count();
+    // Complete every lesson the module lists. The count comes from the page
+    // (content comes from content-drafts via import:content), so adding or
+    // removing a lesson never needs a change here. The assignment link shares
+    // the URL prefix, so exclude it.
+    const lessonSelector = 'a[href*="/learner/roadmap/developer-orientation/"]:not([href$="/assignment"])';
+    const lessonCount = await page.locator(lessonSelector).count();
     expect(lessonCount).toBeGreaterThan(0);
 
     for (let i = 0; i < lessonCount; i++) {
       await page.goto("/learner/roadmap/developer-orientation");
-      await page.locator('a[href*="/learner/roadmap/developer-orientation/"]').nth(i).click();
+      await page.locator(lessonSelector).nth(i).click();
+      // Wait for the page to settle on one of the two states BEFORE branching.
+      // `isVisible()` does not wait: on a slow load it returned false, the
+      // click was skipped and no lesson was ever completed (this loop was a
+      // silent no-op until the test asserted on the outcome).
       const markButton = page.getByRole("button", { name: /Mark complete/ });
+      const markedButton = page.getByRole("button", { name: /Mark incomplete/ });
+      await expect(markButton.or(markedButton)).toBeVisible({ timeout: 30_000 });
       if (await markButton.isVisible()) {
         await markButton.click();
-        await expect(page.getByRole("button", { name: "Mark incomplete" })).toBeVisible();
+        await expect(markedButton).toBeVisible({ timeout: 30_000 });
       }
     }
 
     // Submit the assignment
     await page.goto("/learner/roadmap/developer-orientation");
-    await expect(page.getByText("Assignment: Environment setup")).toBeVisible();
+    await expect(page.getByText("Assignment: Environment Check")).toBeVisible();
+    // In the redesigned learner UI the submission form lives on its own page.
+    await page.getByRole("link", { name: "Open assignment" }).click();
+    await page.waitForURL(/\/learner\/roadmap\/developer-orientation\/assignment$/);
     await page.getByLabel("GitHub URL").fill("https://github.com/example/hello");
     await page.getByPlaceholder(/Anything you want your mentor/).fill("Ready for review.");
     await page.getByRole("button", { name: /^Submit$/ }).click();
-    await expect(page.getByText("Awaiting review")).toBeVisible();
+    // The server action (insert, notification, revalidations) round-trips to a
+    // remote database, so allow well over the default 5s. `.first()`: the status
+    // appears in both the badge and the attempt row.
+    await expect(page.getByText("Awaiting review").first()).toBeVisible({ timeout: 30_000 });
   });
 });
 
@@ -76,8 +91,8 @@ test.describe("Mentor critical path", () => {
     await login(page, "mentor");
 
     await page.goto("/mentor/dashboard");
-    await expect(page.getByText(/Environment setup/)).toBeVisible();
-    await page.getByText(/Environment setup/).first().click();
+    await expect(page.getByText(/Environment Check/)).toBeVisible();
+    await page.getByText(/Environment Check/).first().click();
 
     await page.waitForURL(/\/mentor\/submissions\//);
     await page.getByLabel("Feedback").fill("Nice work, welcome aboard.");

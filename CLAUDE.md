@@ -90,15 +90,17 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
   comfort with a computer, not zero. **A full audit of the whole path for
   the same beginner-friendliness bar was requested and not yet started**
   — this is likely the next real content task.
-- **Git repo may or may not be pushed yet** — as of this handoff, the
-  project had no `.git` folder; a first `git init` → commit → GitHub push
-  walkthrough was given but completion wasn't confirmed in this session.
-  Check `git log` / `git remote -v` first thing.
-- **Not yet deployed to production** — Vercel deployment steps were given
-  but not executed as of this handoff. `package.json`'s `build` script
-  already runs `prisma migrate deploy && next build`, and `postinstall`
-  runs `prisma generate` — both were missing originally and would have
-  broken the first Vercel build if not caught.
+- **Git and hosting (corrected 2026-09-29; the original handoff was wrong).**
+  The repo has history and a GitHub remote (`origin` = josyo/Learning_app).
+  The app **is deployed on Vercel Production at
+  https://learningapp-zeta.vercel.app**, and the real trainee uses it.
+  Pushing to `main` auto-deploys and runs `npm run build`, which runs
+  `prisma migrate deploy` **against the production database**. So a push is
+  a production release AND a production migration. **Do not push (or merge
+  to main) without explicit approval for a production release.** See
+  gotcha 12 for the pre-release checklist. As of this note local `main`
+  is ahead of `origin/main` by unpushed commits (guard work, importer
+  hardening); production still runs the older code.
 
 ## Hard-won gotchas (things that actually went wrong during this build)
 
@@ -205,6 +207,39 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     admin edits. `prisma/seed.ts` no longer seeds lessons or assignments
     (the old seed deleted them, cascading to progress/submissions, and
     re-created retired lessons: the cause of the stale Orientation/CSS rows).
+
+12. **A push to `main` is a production release plus a production migration.**
+    Production is Vercel (URL above), `DATABASE_URL`/`DIRECT_URL` there point
+    at the Neon `main` branch. The build now starts with `scripts/db-guard.ts
+    build`, which fails a Preview/local build that targets production, and
+    `lib/db.ts` refuses production outside a Vercel Production deployment.
+    Before the first release of the guard/importer work, in Vercel:
+    Production needs `DATABASE_URL` (main, pooled), `DIRECT_URL` (main, direct;
+    **the build fails without it**), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`;
+    Preview must point `DATABASE_URL`/`DIRECT_URL` at the **dev** branch (never
+    main) with its own `BETTER_AUTH_SECRET` and a valid `BETTER_AUTH_URL`;
+    remove `LEARNING_DB_DATABASE_URL` from every scope; never set
+    `ALLOW_PRODUCTION_DB_WRITE` or `ALLOW_SEED`. Take a fresh `pg_dump` of main
+    first. The release also applies migration `20260929200000_lesson_archived_at`
+    to production, and the content import to production is a **separate,
+    later, explicitly approved** step (dry-run against a fresh dev copy first).
+    The learner-facing app must keep working for the real trainee throughout.
+
+13. **Standing permission rule for database writes (set 2026-09-29 by the owner).**
+    - **TEST branch `ep-green-bread-aue0kwbf` ONLY:** the assistant may reset it
+      (`npm run test:e2e:setup`, which runs `prisma migrate reset --force`) and
+      run E2E against it without asking each time. It is disposable.
+    - **DEV branch `ep-silent-band-aup0hqps` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
+      every write (migration, import, reset, seed) needs the owner's explicit OK
+      **every time**. Always show a `--dry-run` first. Production also needs a
+      fresh `pg_dump`, and nothing is pushed to `main` without approval (gotcha 12).
+    - The permission is tied to the endpoint id, not the branch name: verify the
+      host (`scripts/db-guard.ts`, or the server-side `neon.endpoint_id`) before
+      relying on it, and never extend it to another host.
+    - **HTML Foundations is held out of the importer** (`HELD_MODULE_SLUGS` in
+      `prisma/content-source.ts`): its draft is validated on every run but not
+      imported, and the seed content in the database stays until the module is
+      rewritten. Move it back to `MODULE_SLUGS` with the rewrite.
 
 ## Suggested first steps in Claude Code
 

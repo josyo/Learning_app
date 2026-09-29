@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { FRONTEND_NEXTJS_MODULES } from "./curriculum-data";
-import { CONTENT_DIR, MODULE_SLUGS, loadAllModules, validateMediaMap } from "./content-source";
+import { CONTENT_DIR, HELD_MODULE_SLUGS, MODULE_SLUGS, loadAllModules, validateMediaMap } from "./content-source";
 import { MEDIA_MAP } from "./media-map";
 
 describe("the real content-drafts/ directory", () => {
@@ -13,10 +13,15 @@ describe("the real content-drafts/ directory", () => {
     expect(loaded.errors).toEqual([]);
   });
 
-  it("covers exactly the 12 curriculum modules, including html-foundations", () => {
-    expect([...MODULE_SLUGS].sort()).toEqual(FRONTEND_NEXTJS_MODULES.map((m) => m.slug).sort());
-    expect(MODULE_SLUGS).toContain("html-foundations");
+  it("importable + held modules cover exactly the 12 curriculum modules", () => {
+    expect([...MODULE_SLUGS, ...HELD_MODULE_SLUGS].sort()).toEqual(FRONTEND_NEXTJS_MODULES.map((m) => m.slug).sort());
     expect([...loaded.modules.keys()].sort()).toEqual([...MODULE_SLUGS].sort());
+  });
+
+  it("html-foundations is HELD: validated on every run but never imported until its rewrite", () => {
+    expect(HELD_MODULE_SLUGS).toContain("html-foundations");
+    expect(MODULE_SLUGS as readonly string[]).not.toContain("html-foundations");
+    expect(loaded.modules.has("html-foundations")).toBe(false);
   });
 
   it("every lesson declares a unique slug across the whole path", () => {
@@ -47,7 +52,7 @@ describe("the real content-drafts/ directory", () => {
   });
 
   it("content files are LF on disk (importer normalises anyway; .gitattributes enforces it)", () => {
-    for (const slug of MODULE_SLUGS) expect(fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8")).not.toContain("\r");
+    for (const slug of [...MODULE_SLUGS, ...HELD_MODULE_SLUGS]) expect(fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8")).not.toContain("\r");
   });
 });
 
@@ -58,9 +63,25 @@ describe("loadAllModules fails loudly", () => {
   it("aborts on an unknown module file (misspelt filename)", () => {
     const dir = tmp();
     fs.writeFileSync(path.join(dir, "html-foundation.md"), ok);
-    const r = loadAllModules(dir, {}, ["html-foundations"]);
+    const r = loadAllModules(dir, {}, ["html-foundations"], []);
     expect(r.errors.join("\n")).toMatch(/html-foundation\.md is not a known module slug/);
     expect(r.errors.join("\n")).toMatch(/Missing content-drafts\/html-foundations\.md/);
+  });
+
+  it("a held module is parsed (its errors surface) but never returned for import", () => {
+    const dir = tmp();
+    fs.writeFileSync(path.join(dir, "one.md"), ok);
+    fs.writeFileSync(path.join(dir, "held.md"), "### Lesson 1 — Broken\nno slug");
+    const r = loadAllModules(dir, {}, ["one"], ["held"]);
+    expect(r.modules.has("held")).toBe(false);
+    expect(r.errors.join()).toMatch(/held, not imported/);
+  });
+
+  it("a held module's lesson slugs still may not collide with an importable module's", () => {
+    const dir = tmp();
+    fs.writeFileSync(path.join(dir, "one.md"), ok);
+    fs.writeFileSync(path.join(dir, "held.md"), ok);
+    expect(loadAllModules(dir, {}, ["one"], ["held"]).errors.join()).toMatch(/used in both/);
   });
 
   it("collects errors from every file, not just the first", () => {
