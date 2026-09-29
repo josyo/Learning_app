@@ -52,5 +52,5 @@ This happens because a terminal only notices new tools when it starts. Close eve
 ## When a learner submits STUCK
 
 **S1. Reply to a STUCK submission (Request changes)**
-(Learners are told to message you in your usual chat first. Use this when the STUCK arrives through the review form instead.)
+(Learners are told to message you on WhatsApp first. Use this when the STUCK arrives through the review form instead.)
 Thank you for asking early, that is exactly right. From what you sent, I think <cause in one sentence>. Try this: <one exact step or command>. You should then see <expected result>. If not, copy the exact text and send it again with STUCK on the first line. Press Resubmit when you have the outputs.

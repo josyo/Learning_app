@@ -518,7 +518,7 @@ Reflection
   - your `node -v` and `npm -v` output, if they worked
   - a screenshot, if you can make one (a photo of the screen taken with your phone is fine)
 - **Where to ask:**
-  1. **First choice:** message your mentor in the chat you two already use, and send the details above.
+  1. **First choice:** message your mentor on WhatsApp and send the details above. You can send the screenshot or a photo of your screen straight in the chat.
   2. **If you cannot reach your mentor, or you want it on record here:** submit anyway. Write the word `STUCK` on the first line of Notes, add the same details, and put a link to the screenshot in the Attachment URL box only if you know how to make one.
 - Your mentor replies with help. If you asked in the review, the reply arrives as **Changes requested**. Follow it, then press **Resubmit**.
 
