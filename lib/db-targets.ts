@@ -1,0 +1,151 @@
+/**
+ * Database target safety. Pure functions (no I/O, no aliases) so they can be
+ * shared by Next.js runtime code, Playwright's config, CLI guards and tests.
+ *
+ * Branch layout on Neon: main = PRODUCTION (real trainee data), dev = copy of
+ * production for dry-runs/imports, test = wiped by test:e2e:setup. Every Neon
+ * branch has its own compute endpoint, so the *host* is what tells them apart:
+ * all three share the database name "neondb".
+ */
+
+/**
+ * Production host, host only, no credentials. Non-secret by design. Compared
+ * after stripping Neon's "-pooler" suffix so the pooled and direct URLs of
+ * the same endpoint both match.
+ */
+export const PRODUCTION_DB_HOST = "ep-red-mode-aur8z6oc.c-10.us-east-1.aws.neon.tech";
+
+/** Set to PRODUCTION_DB_HOST to deliberately allow a production write. */
+export const PRODUCTION_OVERRIDE_ENV = "ALLOW_PRODUCTION_DB_WRITE";
+
+/** The retired variable that made a stale client ignore DATABASE_URL. */
+export const LEGACY_URL_VARS = ["LEARNING_DB_DATABASE_URL"] as const;
+
+export interface DbTarget {
+  host: string; // lower-case, "-pooler" removed
+  database: string;
+}
+
+export interface DbEnv {
+  DATABASE_URL?: string;
+  DIRECT_URL?: string;
+  [key: string]: string | undefined;
+}
+
+export function normalizeHost(host: string): string {
+  return host.toLowerCase().replace(/-pooler(?=\.)/, "");
+}
+
+/** Returns null for a missing or unparseable URL. Never returns credentials. */
+export function parseDbTarget(url: string | undefined): DbTarget | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (!u.hostname) return null;
+    return { host: normalizeHost(u.hostname), database: decodeURIComponent(u.pathname.replace(/^\//, "")) };
+  } catch {
+    return null;
+  }
+}
+
+export function describeTarget(t: DbTarget | null): string {
+  return t ? `${t.host}/${t.database}` : "(missing or unparseable)";
+}
+
+export function isProductionTarget(t: DbTarget | null): boolean {
+  return !!t && t.host === normalizeHost(PRODUCTION_DB_HOST);
+}
+
+export function sameTarget(a: DbTarget | null, b: DbTarget | null): boolean {
+  return !!a && !!b && a.host === b.host && a.database === b.database;
+}
+
+export function productionOverrideActive(env: DbEnv): boolean {
+  return env[PRODUCTION_OVERRIDE_ENV] === PRODUCTION_DB_HOST;
+}
+
+export type GuardRole =
+  | "test" //           wipes/seeds: must not be prod, must not be .env's (dev) target
+  | "not-production" // dev tooling: must not be prod, no override
+  | "import" //         content import: prod only with the explicit override
+  | "build"; //         `npm run build`: on Vercel Preview/Development, must not be prod
+
+export interface GuardInput {
+  role: GuardRole;
+  /** The environment the script/server will actually run with. */
+  env: DbEnv;
+  /** Parsed contents of .env (not process.env), or null if the file is absent. */
+  dotEnv: DbEnv | null;
+  /** Vercel's VERCEL_ENV: "production" | "preview" | "development" | undefined. */
+  vercelEnv?: string;
+}
+
+/** Returns human-readable violations; empty means the target is acceptable. */
+export function checkDbTarget({ role, env, dotEnv, vercelEnv }: GuardInput): string[] {
+  const problems: string[] = [];
+  const db = parseDbTarget(env.DATABASE_URL);
+  const direct = parseDbTarget(env.DIRECT_URL);
+
+  for (const name of LEGACY_URL_VARS) {
+    if (env[name] || dotEnv?.[name]) {
+      problems.push(`${name} is set. It is retired: remove it. Only DATABASE_URL and DIRECT_URL are used.`);
+    }
+  }
+
+  if (!db) problems.push("DATABASE_URL is missing or not a valid URL.");
+  if (!direct) problems.push("DIRECT_URL is missing or not a valid URL (Prisma migrations need it).");
+  if (db && direct && db.host !== direct.host) {
+    problems.push(
+      `DATABASE_URL (${describeTarget(db)}) and DIRECT_URL (${describeTarget(direct)}) point at different servers.`
+    );
+  }
+
+  const targets = [db, direct].filter((t): t is DbTarget => !!t);
+  const touchesProd = targets.some(isProductionTarget);
+
+  switch (role) {
+    case "not-production":
+      if (touchesProd) problems.push(`Target is PRODUCTION (${PRODUCTION_DB_HOST}); this command never runs there.`);
+      break;
+    case "import":
+      if (touchesProd && !productionOverrideActive(env)) {
+        problems.push(
+          `Target is PRODUCTION (${PRODUCTION_DB_HOST}). Refusing. To write deliberately, set ${PRODUCTION_OVERRIDE_ENV}=${PRODUCTION_DB_HOST} for that one run, after a fresh pg_dump.`
+        );
+      }
+      break;
+    case "build":
+      // Vercel Production may migrate prod. Anything else must not touch it.
+      if (touchesProd && vercelEnv !== "production") {
+        problems.push(
+          `A ${vercelEnv ?? "local"} build points at PRODUCTION (${PRODUCTION_DB_HOST}). Preview/Development must use the dev branch.`
+        );
+      }
+      break;
+    case "test": {
+      if (touchesProd) problems.push(`Test target is PRODUCTION (${PRODUCTION_DB_HOST}). Refusing.`);
+      const devTargets = [parseDbTarget(dotEnv?.DATABASE_URL), parseDbTarget(dotEnv?.DIRECT_URL)];
+      for (const t of targets) {
+        if (devTargets.some((d) => sameTarget(t, d))) {
+          problems.push(`Test target ${describeTarget(t)} is the same as the one in .env (dev). It must be the separate test branch.`);
+        }
+      }
+      break;
+    }
+  }
+  return [...new Set(problems)];
+}
+
+/**
+ * Runtime tripwire for the app itself (lib/db.ts). Production is reachable
+ * only from a Vercel Production deployment, or with the explicit override.
+ * Preview deployments and local `next dev`/`next start` can never open it.
+ */
+export function checkRuntimeTarget(env: DbEnv, vercelEnv: string | undefined): string[] {
+  const db = parseDbTarget(env.DATABASE_URL);
+  if (!isProductionTarget(db)) return [];
+  if (vercelEnv === "production" || productionOverrideActive(env)) return [];
+  return [
+    `DATABASE_URL points at PRODUCTION (${PRODUCTION_DB_HOST}) but this is ${vercelEnv ? `a Vercel ${vercelEnv} deployment` : "not a Vercel Production deployment"}. Refusing to connect.`,
+  ];
+}

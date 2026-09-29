@@ -11,13 +11,12 @@ import { test, expect, type Page } from "@playwright/test";
  * form anymore) and some assertions will fail — that's expected,
  * not a bug in the test.
  *
- * Run these against a freshly seeded database:
- *   npx prisma migrate reset   (drops + re-migrates + reseeds)
- *   npm run dev                (separate terminal, or let Playwright start it)
- *   npx playwright test
+ * They run only against the Neon "test" branch (see env.test.example):
+ *   npm run test:e2e:setup   (guard, migrate, wipe/seed, import: test branch only)
+ *   npm run test:e2e         (Playwright starts its own server on .env.test)
  *
- * If you'd rather not reset your working dev database every time,
- * point DATABASE_URL at a separate throwaway database for this run.
+ * Never use `prisma migrate reset` for this: it drops whatever database the
+ * environment points at. The guards refuse production and the dev target.
  */
 
 const seedPassword = process.env.SEED_USER_PASSWORD ?? process.env.SEED_PASSWORD ?? "set-a-strong-seed-password";

@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "path";
 import { defineConfig, devices } from "@playwright/test";
-import { config as loadEnv } from "dotenv";
+import { config as loadEnv, parse as parseEnv } from "dotenv";
+import { checkDbTarget, describeTarget, parseDbTarget } from "./lib/db-targets";
 
 // Deliberately .env.test, not .env.local — E2E runs against a
 // separate, disposable database (see .env.test.example) so this
@@ -10,10 +11,26 @@ import { config as loadEnv } from "dotenv";
 const testEnvPath = path.resolve(__dirname, ".env.test");
 if (!fs.existsSync(testEnvPath)) {
   throw new Error(
-    "Missing .env.test for Playwright. Create it from env.test.example before running npm run test:e2e."
+    "Missing .env.test for Playwright. Create it from env.test.example (pointing at the Neon 'test' branch) before running npm run test:e2e."
   );
 }
 const testEnv = loadEnv({ path: testEnvPath }).parsed ?? {};
+
+// Refuse to run at all unless the test target is a separate database: not
+// production, and not the dev target in .env. Runs when the config loads, so
+// it also covers `npx playwright test` invoked directly. It checks testEnv
+// (what the webServer is given), not process.env.
+const dotEnvPath = path.resolve(__dirname, ".env");
+const dotEnv = fs.existsSync(dotEnvPath) ? parseEnv(fs.readFileSync(dotEnvPath)) : null;
+// Next.js loads .env under whatever the webServer is given, so a key missing
+// from .env.test would silently fall back to dev. Check that merged view.
+const effectiveTestEnv = { ...(dotEnv ?? {}), ...testEnv };
+const targetProblems = checkDbTarget({ role: "test", env: effectiveTestEnv, dotEnv });
+if (targetProblems.length > 0) {
+  throw new Error(
+    `Playwright refused to start. Unsafe database target (${describeTarget(parseDbTarget(effectiveTestEnv.DATABASE_URL))}):\n - ${targetProblems.join("\n - ")}`
+  );
+}
 
 export default defineConfig({
   testDir: "./e2e",

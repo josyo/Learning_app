@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { auth } from "../lib/auth";
+import { describeTarget, parseDbTarget } from "../lib/db-targets";
 import { FRONTEND_NEXTJS_MODULES } from "./curriculum-data";
 import { LESSON_CONTENT } from "./lesson-content-data";
 import { ASSIGNMENT_CONTENT } from "./assignment-content-data";
@@ -170,7 +171,8 @@ async function getOrCreateSeedUser(name: string, email: string, password: string
  * password has not been provided.
  */
 async function main() {
-  console.log("Connecting to:", process.env.DATABASE_URL);
+  // Host and database only: the URL itself contains the password.
+  console.log("Connecting to:", describeTarget(parseDbTarget(process.env.DATABASE_URL)));
   if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "true") {
     throw new Error(
       "Seed script is disabled in production. Set ALLOW_SEED=true only for an explicitly non-production database."

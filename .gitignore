@@ -35,3 +35,7 @@ prisma/*.db
 *.pem
 npm-debug.log*
 .vercel
+# Database dumps contain real user data (emails, password hashes): never commit.
+backups/
+*.dump
+*.pgdump

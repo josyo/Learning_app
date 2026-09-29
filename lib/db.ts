@@ -1,7 +1,13 @@
 import { PrismaClient } from "@prisma/client";
+import { checkRuntimeTarget } from "./db-targets";
 
-if (!process.env.DATABASE_URL && process.env.LEARNING_DB_DATABASE_URL) {
-  process.env.DATABASE_URL = process.env.LEARNING_DB_DATABASE_URL;
+// Tripwire: production data is reachable only from a Vercel Production
+// deployment. Preview deployments and local `next dev` / `next start` must
+// point at the dev branch, so a mis-set DATABASE_URL fails loudly here
+// instead of quietly reading or writing real trainee data.
+const targetProblems = checkRuntimeTarget(process.env, process.env.VERCEL_ENV);
+if (targetProblems.length > 0) {
+  throw new Error(`Database target refused: ${targetProblems.join(" ")}`);
 }
 
 // Standard Next.js dev-mode singleton — prevents exhausting the

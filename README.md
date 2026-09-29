@@ -22,7 +22,8 @@ The project does not require a custom `vercel.json` file for standard app-router
 
 Add the following environment variables in Vercel:
 
-- `DATABASE_URL`
+- `DATABASE_URL` (main branch, pooled URL)
+- `DIRECT_URL` (main branch, direct URL; used by `prisma migrate deploy` in the build)
 - `BETTER_AUTH_SECRET`
 - `BETTER_AUTH_URL`
 
@@ -84,7 +85,7 @@ npm run db:seed
 npm run dev
 ```
 
-For isolated E2E verification, use the test database with `.env.test` and the Playwright setup scripts.
+`.env` must point at the Neon **dev** branch, never `main` (production). For isolated E2E verification use the Neon **test** branch via `.env.test` and `npm run test:e2e:setup`. Scripts refuse to run against production or against each other's targets.
 
 ## Security rules
 

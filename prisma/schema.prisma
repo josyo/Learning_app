@@ -11,7 +11,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL") // pooled URL: what the running app uses
+  directUrl = env("DIRECT_URL")   // direct (non-pooler) URL: what Prisma Migrate uses
 }
 
 enum UserRole {
