@@ -224,6 +224,7 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     to production, and the content import to production is a **separate,
     later, explicitly approved** step (dry-run against a fresh dev copy first).
     The learner-facing app must keep working for the real trainee throughout.
+    **Follow `docs/release-checklist.md` step by step; do not improvise a release.**
 
 13. **Standing permission rule for database writes (set 2026-09-29 by the owner).**
     - **TEST branch `ep-green-bread-aue0kwbf` ONLY:** the assistant may reset it
