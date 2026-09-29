@@ -3,6 +3,7 @@
 *Authentication concepts, state choices, accessibility, performance, testing, environment variables, error handling. Builds on Data & Forms in Next.js.*
 
 ### Lesson 1 — Authentication Concepts
+<!-- slug: authentication-concepts -->
 
 **Why this matters**
 
@@ -29,6 +30,7 @@ Treating "the user is logged in" and "the user is allowed to do this specific th
 ---
 
 ### Lesson 2 — Choosing State Solutions
+<!-- slug: choosing-state-solutions -->
 
 **Why this matters**
 
@@ -54,6 +56,7 @@ Reaching for global state management (Context, or a full library) the moment two
 ---
 
 ### Lesson 3 — Accessibility in Practice
+<!-- slug: accessibility-in-practice -->
 
 **Why this matters**
 
@@ -78,6 +81,7 @@ Treating accessibility as a final pass done once a feature is "finished," instea
 ---
 
 ### Lesson 4 — Performance Basics
+<!-- slug: performance-basics -->
 
 **Why this matters**
 
@@ -101,6 +105,7 @@ Optimizing something that was never actually slow, based on a guess rather than 
 ---
 
 ### Lesson 5 — Testing Your Code
+<!-- slug: testing-your-code -->
 
 **Why this matters**
 
@@ -138,6 +143,7 @@ Only testing the "happy path" — the case where everything goes right — and s
 ---
 
 ### Lesson 6 — Environment Variables & Config
+<!-- slug: environment-variables-config -->
 
 **Why this matters**
 

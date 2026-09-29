@@ -5,6 +5,7 @@
 This module is different from the ones before it. There's no new syntax to learn — the goal is combining everything from Developer Orientation through Deployment & Delivery into one real, complete project. The two lessons here are about planning and scope, not new technical concepts; the actual learning happens in building the project itself.
 
 ### Lesson 1 — Planning Your Capstone
+<!-- slug: planning-your-capstone -->
 
 **Why this matters**
 
@@ -33,6 +34,7 @@ Picking a project scoped for a team of five, then trying to build all of it alon
 ---
 
 ### Lesson 2 — Requirements & Rubric
+<!-- slug: requirements-rubric -->
 
 **Why this matters**
 

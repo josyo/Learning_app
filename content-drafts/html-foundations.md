@@ -3,6 +3,7 @@
 *Semantic HTML, forms, accessibility basics, page structure. Builds on Developer Orientation.*
 
 ### Lesson 1 — Semantic HTML
+<!-- slug: semantic-html -->
 
 **Why this matters**
 
@@ -35,6 +36,7 @@ Reaching for `<div>` and `<span>` for everything ("divitis"), or skipping a head
 ---
 
 ### Lesson 2 — Forms
+<!-- slug: forms-and-labels -->
 
 **Why this matters**
 
@@ -67,6 +69,7 @@ Using `placeholder` text as a substitute for a real `<label>`. Placeholder text 
 ---
 
 ### Lesson 3 — Accessibility Basics
+<!-- slug: accessibility-basics -->
 
 **Why this matters**
 
@@ -90,6 +93,7 @@ Removing the focus outline for aesthetic reasons and not replacing it with anyth
 ---
 
 ### Lesson 4 — Structuring a Multi-Section Page
+<!-- slug: structuring-a-multi-section-page -->
 
 **Why this matters**
 

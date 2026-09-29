@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/markdown";
 import { auth } from "@/lib/auth";
 import { getModuleDetailForUser } from "@/modules/learning/get-module-detail";
 import { SubmissionForm } from "@/components/submission-form";
@@ -52,7 +52,7 @@ export default async function AssignmentPage({
       <div className="flex flex-col gap-2">
         <h2 className="text-sm font-semibold">Assignment instructions</h2>
         <article className="prose prose-sm max-w-none rounded-lg border border-border p-4">
-          <ReactMarkdown>{assignment.instructions}</ReactMarkdown>
+          <Markdown>{assignment.instructions}</Markdown>
         </article>
       </div>
 

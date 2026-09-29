@@ -8,13 +8,14 @@ Score each criterion **0** (missing), **1** (partial, or a fixable defect) or **
 
 ## What the platform does with your markdown
 
-- **Split:** a module file is split on any line that is exactly `---` (LF endings). A `---` inside a lesson, even in a code fence, silently truncates it. Blocks with neither heading below are dropped.
-- **Lesson:** `### Lesson N — Title` (em dash). `N` is ignored; order = position. Only `title` and `content` reach the database.
-- **Slug = slugified title.** Renaming creates a *new* lesson; the old row is never deleted, stays `required`, and blocks module completion. It also orphans the `media-map.ts` entry and in-body links. After a rename: update the map, grep the old slug, delete the old row in `/admin`.
-- **Assignment:** one `## Assignment: Title` block per module (a second silently overwrites the first). Its body becomes `Assignment.instructions`, shown to the **learner and the mentor**.
-- **Rendering:** `react-markdown`, no GFM, no raw HTML: no tables, no `<details>`; `- [ ]` shows literally as "[ ]" (fine). Images need external URLs.
+- **Split:** a module file is split on any line that is exactly `---`, but only outside code fences (``` or ~~~; a longer fence can contain a shorter one). CRLF is normalised. Anything malformed aborts the import with a list of problems instead of being dropped.
+- **Lesson:** `### Lesson N — Title` (em dash), then, as the very next line, **`<!-- slug: your-stable-slug -->`** (lowercase, digits, hyphens). `N` is informational; order = position. The slug is the lesson's identity: retitle freely, never change a slug that learners have progress on. Slugs are unique across the whole path (`media-map.ts` is keyed by slug).
+- **Removing a lesson archives it:** a lesson missing from the markdown is archived (hidden from learners, excluded from completion, progress kept), never deleted. Bringing the slug back un-archives it.
+- **Assignment:** exactly one `## Assignment: Title` block per module (a second aborts the import), optional slug directive. Its body becomes `Assignment.instructions`, shown to the **learner and the mentor**.
+- **The markdown is the source of truth:** an import overwrites title, content, order, video and `required` from the files and `media-map.ts`; edits made in `/admin` to imported lessons are lost. Preview any import with `npm run import:content -- --dry-run`.
+- **Rendering:** `react-markdown` with GitHub-flavoured markdown (tables, `- [ ]` task lists, strikethrough) and **raw HTML disabled** (no `<details>`, scripts or comments). Images need external URLs.
 - **Not stored anywhere:** module outcomes, time, rubrics, lesson prerequisites, verified dates.
-- **Video/links:** only `media-map.ts`, keyed by lesson slug: one `videoUrl` (an iframe *above* the body) plus `{label, url}` resources.
+- **Video/links:** only `media-map.ts`, keyed by lesson slug: one `videoUrl` (an iframe *above* the body) plus `{label, url}` resources. A key that matches no lesson aborts the import.
 - **Submission** stores `githubUrl`, `deployedUrl`, `attachmentUrl` (URLs only, no upload) and `content` ("Notes", plain text). The server requires at least one of the four. Resubmitting is possible only after `CHANGES_REQUESTED`; attempts are kept. A review is a decision plus one plain-text `feedback` string.
 
 | Concept | Lives in |
@@ -25,7 +26,7 @@ Score each criterion **0** (missing), **1** (partial, or a fixable defect) or **
 
 ## Lesson checklist (max 28)
 
-Body order: header lines → `## Why this matters` → sections → `## Check your understanding` → `## Answers` → `## Recap`. Use `##` headings, never `### Lesson`.
+Body order: `<!-- slug -->` line → header lines → `## Why this matters` → sections → `## Check your understanding` → `## Answers` → `## Recap`. Use `##` headings, never `### Lesson`.
 
 | # | Criterion | 2 when |
 |---|---|---|
@@ -64,7 +65,6 @@ Body order: `**Time**` / `**Scaffold**` / `**Builds on → feeds into**` → `##
 ## Proposed later (schema and importer unchanged)
 
 - Fields: `Lesson.estimatedMinutes`, `Module.outcomes`, `Assignment.estimatedMinutes` and mentor-only `mentorNotes`.
-- Importer: refuse `---` in code fences, a second assignment, or a rename that orphans a lesson; remove lessons absent from the file (when no progress); add `html-foundations` to `MODULE_SLUGS`.
-- Rendering: `remark-gfm`; a rubric panel beside the review form.
+- Rendering: a rubric panel beside the review form.
 - Help: an in-app "ask for help" capturing OS, step and error text.
 - Media map: `start`/`end` and multiple clips per lesson.

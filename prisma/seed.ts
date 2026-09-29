@@ -2,8 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import { auth } from "../lib/auth";
 import { describeTarget, parseDbTarget } from "../lib/db-targets";
 import { FRONTEND_NEXTJS_MODULES } from "./curriculum-data";
-import { LESSON_CONTENT } from "./lesson-content-data";
-import { ASSIGNMENT_CONTENT } from "./assignment-content-data";
 
 const db = new PrismaClient();
 
@@ -62,80 +60,12 @@ async function seedFrontendNextjsPath(traineeId: string, mentorId: string) {
     }
   }
 
-  // Phase 3: seed real lesson content where it's been authored.
-  // Modules with no entry in LESSON_CONTENT simply have zero lessons
-  // for now — that's expected, not an error, until they're authored.
-  let lessonCount = 0;
-  for (const [moduleSlug, lessons] of Object.entries(LESSON_CONTENT)) {
-    const moduleRow = moduleBySlug.get(moduleSlug);
-    if (!moduleRow) continue;
-
-    const existingLessons = await db.lesson.findMany({
-      where: { moduleId: moduleRow.id },
-      select: { id: true, slug: true, order: true },
-    });
-    const incomingSlugs = lessons.map((lesson) => lesson.slug);
-    const hasOverlappingSlug = existingLessons.some((row) => incomingSlugs.includes(row.slug));
-    const hasOutdatedOrder = existingLessons.some((row) => row.order >= lessons.length);
-
-    if (existingLessons.length > 0 && (hasOverlappingSlug || hasOutdatedOrder)) {
-      await db.lesson.deleteMany({ where: { moduleId: moduleRow.id } });
-    } else {
-      await db.lesson.deleteMany({
-        where: {
-          moduleId: moduleRow.id,
-          NOT: { slug: { in: incomingSlugs } },
-        },
-      });
-    }
-
-    for (const [index, lesson] of lessons.entries()) {
-      await db.lesson.upsert({
-        where: { moduleId_slug: { moduleId: moduleRow.id, slug: lesson.slug } },
-        update: {
-          title: lesson.title,
-          order: index,
-          required: lesson.required,
-          content: lesson.content,
-          videoUrl: lesson.videoUrl,
-        },
-        create: {
-          moduleId: moduleRow.id,
-          slug: lesson.slug,
-          title: lesson.title,
-          order: index,
-          required: lesson.required,
-          content: lesson.content,
-          videoUrl: lesson.videoUrl,
-        },
-      });
-      lessonCount++;
-    }
-  }
-
-  // Phase 4: seed one assignment per module that has one authored.
-  let assignmentCount = 0;
-  for (const [moduleSlug, assignment] of Object.entries(ASSIGNMENT_CONTENT)) {
-    const moduleRow = moduleBySlug.get(moduleSlug);
-    if (!moduleRow) continue;
-
-    await db.assignment.deleteMany({
-      where: { moduleId: moduleRow.id, slug: { not: assignment.slug } },
-    });
-
-    await db.assignment.upsert({
-      where: { moduleId_slug: { moduleId: moduleRow.id, slug: assignment.slug } },
-      update: { title: assignment.title, instructions: assignment.instructions, order: 0 },
-      create: {
-        moduleId: moduleRow.id,
-        slug: assignment.slug,
-        title: assignment.title,
-        instructions: assignment.instructions,
-        order: 0,
-      },
-    });
-    assignmentCount++;
-  }
+  // Lessons and assignments are deliberately NOT seeded. Content lives in
+  // content-drafts/*.md and is loaded only by `npm run import:content`, which
+  // matches lessons by declared slug and archives, never deletes, what is
+  // removed. The old seed deleted lessons and assignments (cascading to
+  // learner progress and submissions) and re-created retired content, which
+  // is how stale lessons ended up in front of learners.
 
   await db.enrollment.upsert({
     where: { userId_pathId: { userId: traineeId, pathId: path.id } },
@@ -144,7 +74,7 @@ async function seedFrontendNextjsPath(traineeId: string, mentorId: string) {
   });
 
   console.log(
-    `Seeded path "${path.name}" with ${FRONTEND_NEXTJS_MODULES.length} modules, ${lessonCount} lessons, and ${assignmentCount} assignments, and enrolled the trainee.`
+    `Seeded path "${path.name}" with ${FRONTEND_NEXTJS_MODULES.length} modules (no lessons: run npm run import:content) and enrolled the trainee.`
   );
 }
 

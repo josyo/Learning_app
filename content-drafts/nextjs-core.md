@@ -3,6 +3,7 @@
 *App Router, layouts, routing, Server/Client Components, navigation, loading/error states, metadata. Builds on React Foundations.*
 
 ### Lesson 1 — App Router & File-Based Routing
+<!-- slug: app-router-file-based-routing -->
 
 **Why this matters**
 
@@ -41,6 +42,7 @@ Naming the file wrong — it must be exactly `page.tsx` (or `page.js`), not `ind
 ---
 
 ### Lesson 2 — Layouts & Nested Routes
+<!-- slug: layouts-nested-routes -->
 
 **Why this matters**
 
@@ -76,6 +78,7 @@ Putting page-specific content in a layout, forgetting that a layout doesn't re-r
 ---
 
 ### Lesson 3 — Server vs Client Components
+<!-- slug: server-vs-client-components -->
 
 **Why this matters**
 
@@ -120,6 +123,7 @@ Adding `"use client"` to everything out of habit, which throws away the actual b
 ---
 
 ### Lesson 4 — Navigation with Link & useRouter
+<!-- slug: navigation-with-link-userouter -->
 
 **Why this matters**
 
@@ -160,6 +164,7 @@ Importing `useRouter` from `next/router` instead of `next/navigation` — that's
 ---
 
 ### Lesson 5 — Loading & Error States
+<!-- slug: loading-error-states -->
 
 **Why this matters**
 
@@ -202,6 +207,7 @@ Forgetting `"use client"` on `error.tsx` — error boundaries require it, since 
 ---
 
 ### Lesson 6 — Metadata
+<!-- slug: metadata -->
 
 **Why this matters**
 

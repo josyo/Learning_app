@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/markdown";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ReviewForm } from "@/components/review-form";
@@ -51,7 +51,7 @@ export default async function SubmissionReviewPage({
       <div className="flex flex-col gap-2">
         <h2 className="text-sm font-semibold">Assignment instructions</h2>
         <article className="prose prose-sm max-w-none rounded-lg border border-border p-4">
-          <ReactMarkdown>{submission.assignment.instructions}</ReactMarkdown>
+          <Markdown>{submission.assignment.instructions}</Markdown>
         </article>
       </div>
 

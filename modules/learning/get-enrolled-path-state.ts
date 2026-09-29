@@ -103,9 +103,11 @@ export async function getEnrolledPathState(userId: string): Promise<EnrolledPath
     return {
       moduleId: pm.module.id,
       requiredModuleIds: pm.module.requiresModules.map((r) => r.requiredModuleId),
-      requiredLessonCompletions: pm.module.lessons
-        .filter((l) => l.required)
-        .map((l) => l.progress.some((p) => p.completed)),
+      lessons: pm.module.lessons.map((l) => ({
+        required: l.required,
+        archived: l.archivedAt !== null,
+        completed: l.progress.some((p) => p.completed),
+      })),
       hasAssignment: Boolean(assignment),
       latestSubmissionStatus: latestSubmission?.status ?? null,
       override: pm.module.overrides[0]?.action ?? null,
@@ -138,7 +140,8 @@ export async function getEnrolledPathState(userId: string): Promise<EnrolledPath
       description: pm.module.description,
       order: pm.order,
       status: statuses.get(pm.module.id) ?? "LOCKED",
-      lessons: pm.module.lessons.map((l) => ({
+      // Archived lessons are hidden from every learner/mentor view.
+      lessons: pm.module.lessons.filter((l) => l.archivedAt === null).map((l) => ({
         id: l.id,
         slug: l.slug,
         title: l.title,

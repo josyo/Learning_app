@@ -10,7 +10,7 @@ export interface AdminLessonSummary {
 
 export async function getLessonsForModule(moduleId: string): Promise<AdminLessonSummary[]> {
   const lessons = await db.lesson.findMany({
-    where: { moduleId },
+    where: { moduleId, archivedAt: null }, // archived lessons are kept in the DB, not listed
     orderBy: { order: "asc" },
   });
 

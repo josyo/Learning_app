@@ -3,6 +3,7 @@
 *Build process, environment config, deployment, debugging production issues, PR review. Builds on Production Frontend Practices.*
 
 ### Lesson 1 — The Build Process
+<!-- slug: the-build-process -->
 
 **Why this matters**
 
@@ -28,6 +29,7 @@ Only ever testing with `npm run dev` and assuming a working dev server means a w
 ---
 
 ### Lesson 2 — Environment Config for Production
+<!-- slug: environment-config-for-production -->
 
 **Why this matters**
 
@@ -50,6 +52,7 @@ Deploying an app and being confused why it crashes immediately, without checking
 ---
 
 ### Lesson 3 — Deploying to Vercel
+<!-- slug: deploying-to-vercel -->
 
 **Why this matters**
 
@@ -70,6 +73,7 @@ Forgetting to add environment variables in Vercel's dashboard before the first d
 ---
 
 ### Lesson 4 — Debugging Production Issues
+<!-- slug: debugging-production-issues -->
 
 **Why this matters**
 

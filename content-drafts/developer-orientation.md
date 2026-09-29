@@ -6,6 +6,7 @@ using them. Videos are linked for anything much easier to watch than read —
 installing software and navigating an unfamiliar interface especially.
 
 ### Lesson 1 — Welcome: What You're Actually Going to Be Doing
+<!-- slug: welcome-what-you-re-actually-going-to-be-doing -->
 
 **Why this matters**
 
@@ -51,6 +52,7 @@ step, not a sign you picked the wrong path.
 ---
 
 ### Lesson 2 — What Is a Code Editor, and Installing VS Code
+<!-- slug: what-is-a-code-editor-and-installing-vs-code -->
 
 **Why this matters**
 
@@ -95,6 +97,7 @@ completely different pieces of software from the same company, and only Code
 ---
 
 ### Lesson 3 — Finding Your Way Around VS Code
+<!-- slug: finding-your-way-around-vs-code -->
 
 **Why this matters**
 
@@ -135,6 +138,7 @@ reopened safely — an unfamiliar panel is never something you've broken.
 ---
 
 ### Lesson 4 — What Is a Terminal, and How Do You Use One
+<!-- slug: what-is-a-terminal-and-how-do-you-use-one -->
 
 **Why this matters**
 
@@ -191,6 +195,7 @@ they don't change anything. You genuinely cannot break anything by running
 ---
 
 ### Lesson 5 — Installing Node.js and Running Your First Command
+<!-- slug: installing-node-js-and-running-your-first-command -->
 
 **Why this matters**
 
@@ -246,6 +251,7 @@ installing something.
 ---
 
 ### Lesson 6 — How Assignments and Reviews Work
+<!-- slug: how-assignments-and-reviews-work -->
 
 **Why this matters**
 
@@ -284,6 +290,7 @@ feedback, which is exactly what you want from them.
 ---
 
 ### Lesson 7 — A Tour of a Real Project's Folders
+<!-- slug: a-tour-of-a-real-project-s-folders -->
 
 **Why this matters**
 

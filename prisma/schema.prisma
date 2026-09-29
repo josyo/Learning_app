@@ -147,6 +147,10 @@ model Lesson {
   required  Boolean  @default(true)
   content   String   // markdown
   videoUrl  String?
+  // Set by the content importer when a lesson is no longer in its module's
+  // markdown. Archived lessons are hidden from learners and never count toward
+  // module completion, but their LessonProgress is kept. Never deleted.
+  archivedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -125,10 +125,9 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
    stage through a temporary out-of-range value first. The content
    *import* script hit the same class of bug for a different reason:
    re-importing into a module with unknown existing lesson state can
-   collide on `order`. Fixed by bumping all existing rows in that module
-   to a high out-of-range order before upserting the new set — robust
-   regardless of what's actually in the database, rather than trying to
-   guess/hardcode which old rows to clean up first.
+   collide on `order`. The importer now parks every row that moves on a
+   negative order inside a per-module transaction, then writes the final
+   orders (see gotcha 11).
 5. **Next.js dev-mode cold compilation breaks Playwright's default
    timeouts.** The first hit to any route in a freshly started `next dev`
    server compiles that route on demand, which can exceed Playwright's
@@ -187,6 +186,25 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     -> main URLs; Preview -> **dev** URLs, never main. Note `prisma/seed.ts`
     is destructive (it `deleteMany`s lessons and assignments, cascading to
     progress and submissions): never run it anywhere that holds real data.
+
+11. **Content importer contract (rewritten 2026-09).** `prisma/import-content.ts`
+    loads `content-drafts/<module-slug>.md` for the 12 modules in
+    `prisma/content-source.ts`. Every lesson declares its identity as
+    `<!-- slug: stable-slug -->` on the line after its heading; the importer
+    matches on slug, never title, so retitling is safe and renaming a slug
+    is a new lesson. A lesson absent from its markdown is **archived**
+    (`Lesson.archivedAt`; hidden, excluded from completion by
+    `derive-module-state.ts`, progress kept), never deleted. `---` inside a
+    code fence does not split; CRLF is normalised (`.gitattributes` forces LF
+    anyway); duplicate slugs, a second assignment, malformed headings, an
+    unknown module file/slug or a dangling `media-map.ts` key abort the whole
+    import before any write. **Always run `npm run import:content -- --dry-run`
+    first**: it writes nothing (its client throws on any write) and reports,
+    per module, create/update/archive/untouched and which learners' completion
+    would change. The markdown is the source of truth: imports overwrite
+    admin edits. `prisma/seed.ts` no longer seeds lessons or assignments
+    (the old seed deleted them, cascading to progress/submissions, and
+    re-created retired lessons: the cause of the stale Orientation/CSS rows).
 
 ## Suggested first steps in Claude Code
 

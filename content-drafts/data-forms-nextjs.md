@@ -3,6 +3,7 @@
 *Data fetching, mutations/server functions where appropriate, forms, validation, API consumption, route handlers. Builds on Next.js Core.*
 
 ### Lesson 1 — Data Fetching in Server Components
+<!-- slug: data-fetching-in-server-components -->
 
 **Why this matters**
 
@@ -47,6 +48,7 @@ Fetching sequentially with two separate `await` calls when the two requests don'
 ---
 
 ### Lesson 2 — Server Actions & Mutations
+<!-- slug: server-actions-mutations -->
 
 **Why this matters**
 
@@ -93,6 +95,7 @@ Forgetting `"use server"` at the top of the file (or function), and getting a co
 ---
 
 ### Lesson 3 — Forms & Validation
+<!-- slug: forms-validation -->
 
 **Why this matters**
 
@@ -135,6 +138,7 @@ Validating only in the browser (disabling a submit button until a field is fille
 ---
 
 ### Lesson 4 — Route Handlers (API Routes)
+<!-- slug: route-handlers-api-routes -->
 
 **Why this matters**
 

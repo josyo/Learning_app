@@ -1,0 +1,3 @@
+# Content drafts are parsed by prisma/import-content.ts, which must see LF.
+# Without this, core.autocrlf=true (Windows) checks them out as CRLF.
+content-drafts/*.md text eol=lf

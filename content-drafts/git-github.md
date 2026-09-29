@@ -3,6 +3,7 @@
 *Repositories, commits, branches, pull requests, conflicts, review workflow. Builds on JavaScript Fundamentals.*
 
 ### Lesson 1 — Repositories & Commits
+<!-- slug: repositories-commits -->
 
 **Why this matters**
 
@@ -33,6 +34,7 @@ Making one giant commit at the end of a work session covering five unrelated cha
 ---
 
 ### Lesson 2 — Branches & Merging
+<!-- slug: branches-merging -->
 
 **Why this matters**
 
@@ -60,6 +62,7 @@ Working directly on `main` out of habit, especially once a project feels "solo."
 ---
 
 ### Lesson 3 — Pull Requests & the Review Workflow
+<!-- slug: pull-requests-the-review-workflow -->
 
 **Why this matters**
 
@@ -80,6 +83,7 @@ Writing a PR description that just repeats the commit messages, or leaving it bl
 ---
 
 ### Lesson 4 — Resolving Merge Conflicts
+<!-- slug: resolving-merge-conflicts -->
 
 **Why this matters**
 

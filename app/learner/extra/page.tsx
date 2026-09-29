@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/markdown";
 import { auth } from "@/lib/auth";
 import { getMentorAssignmentsForUser } from "@/modules/learning/get-mentor-assignments";
 import { MentorAssignmentSubmissionForm } from "@/components/mentor-assignment-submission-form";
@@ -57,7 +57,7 @@ export default async function ExtraExercisesPage() {
                 </div>
                 <p className="text-xs text-muted-foreground">From {item.mentorName}</p>
                 <article className="prose prose-sm max-w-none">
-                  <ReactMarkdown>{item.instructions}</ReactMarkdown>
+                  <Markdown>{item.instructions}</Markdown>
                 </article>
                 {item.feedback && (
                   <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">

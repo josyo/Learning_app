@@ -3,6 +3,7 @@
 *Components, props, state, events, effects, forms, composition, reusable UI. Builds on TypeScript Foundations.*
 
 ### Lesson 1 — Components & JSX
+<!-- slug: components-jsx -->
 
 **Why this matters**
 
@@ -51,6 +52,7 @@ Forgetting that a component must return exactly one root element (or a Fragment 
 ---
 
 ### Lesson 2 — Props
+<!-- slug: props -->
 
 **Why this matters**
 
@@ -90,6 +92,7 @@ Trying to modify a prop directly inside the component that received it (`title =
 ---
 
 ### Lesson 3 — State & Events
+<!-- slug: state-events -->
 
 **Why this matters**
 
@@ -125,6 +128,7 @@ Updating state based on its own current value using the state variable directly 
 ---
 
 ### Lesson 4 — useEffect & Side Effects
+<!-- slug: useeffect-side-effects -->
 
 **Why this matters**
 
@@ -165,6 +169,7 @@ Leaving the dependency array off entirely, which makes the effect run after ever
 ---
 
 ### Lesson 5 — Forms in React
+<!-- slug: forms-in-react -->
 
 **Why this matters**
 
@@ -203,6 +208,7 @@ Forgetting `e.preventDefault()` in the submit handler, and watching the whole pa
 ---
 
 ### Lesson 6 — Composition & Reusable UI
+<!-- slug: composition-reusable-ui -->
 
 **Why this matters**
 

@@ -33,7 +33,8 @@ export async function createLesson(moduleId: string, title: string) {
   if (!title.trim()) throw new Error("Title is required");
 
   const slug = await uniqueLessonSlug(moduleId, title);
-  const last = await db.lesson.findFirst({ where: { moduleId }, orderBy: { order: "desc" } });
+  // Archived lessons sit at order 10000+; they must not set the next order.
+  const last = await db.lesson.findFirst({ where: { moduleId, archivedAt: null }, orderBy: { order: "desc" } });
   const order = (last?.order ?? -1) + 1;
 
   const lesson = await db.lesson.create({
@@ -100,7 +101,8 @@ export async function moveLessonInModule(
 ) {
   await requireAdmin();
 
-  const lessons = await db.lesson.findMany({ where: { moduleId }, orderBy: { order: "asc" } });
+  // Archived lessons are not reorderable and must never be a swap partner.
+  const lessons = await db.lesson.findMany({ where: { moduleId, archivedAt: null }, orderBy: { order: "asc" } });
   const index = lessons.findIndex((l) => l.id === lessonId);
   if (index === -1) throw new Error("Lesson not found in this module");
 

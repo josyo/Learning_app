@@ -2,7 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/markdown";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getModuleDetailForUser } from "@/modules/learning/get-module-detail";
@@ -83,6 +83,23 @@ const markdownComponents = {
       {children}
     </pre>
   ),
+  table: ({ children, ...props }: ComponentPropsWithoutRef<"table">) => (
+    <div className="mt-5 overflow-x-auto">
+      <table {...props} className="w-full border-collapse text-left text-sm text-slate-700">
+        {children}
+      </table>
+    </div>
+  ),
+  th: ({ children, ...props }: ComponentPropsWithoutRef<"th">) => (
+    <th {...props} className="border-b-2 border-slate-300 px-3 py-2 font-semibold text-ink">
+      {children}
+    </th>
+  ),
+  td: ({ children, ...props }: ComponentPropsWithoutRef<"td">) => (
+    <td {...props} className="border-b border-slate-200 px-3 py-2 align-top">
+      {children}
+    </td>
+  ),
   a: ({ href, children, ...props }: ComponentPropsWithoutRef<"a">) => (
     <a
       {...props}
@@ -151,9 +168,9 @@ export default async function LessonPage({
       )}
 
       <article className="w-full max-w-none">
-        <ReactMarkdown components={markdownComponents}>
+        <Markdown components={markdownComponents}>
           {lesson.content}
-        </ReactMarkdown>
+        </Markdown>
       </article>
 
       {lesson.resources.length > 0 && (

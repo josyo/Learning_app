@@ -3,6 +3,7 @@
 *Types, interfaces, unions, narrowing, generics basics, typing functions and objects. Builds on Git & GitHub.*
 
 ### Lesson 1 — Why TypeScript & Basic Types
+<!-- slug: why-typescript-basic-types -->
 
 **Why this matters**
 
@@ -32,6 +33,7 @@ Annotating everything explicitly out of habit, including things TypeScript alrea
 ---
 
 ### Lesson 2 — Interfaces & Typing Objects
+<!-- slug: interfaces-typing-objects -->
 
 **Why this matters**
 
@@ -66,6 +68,7 @@ Marking too many fields optional (`?`) just to make TypeScript stop complaining,
 ---
 
 ### Lesson 3 — Union Types & Narrowing
+<!-- slug: union-types-narrowing -->
 
 **Why this matters**
 
@@ -96,6 +99,7 @@ Reaching for `as` to force a type (`value as User`) to silence an error instead 
 ---
 
 ### Lesson 4 — Typing Functions & Basic Generics
+<!-- slug: typing-functions-basic-generics -->
 
 **Why this matters**
 

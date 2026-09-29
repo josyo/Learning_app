@@ -3,6 +3,7 @@
 *Variables, functions, arrays, objects, iteration, modules, DOM, async/await, fetch, error handling. Builds on CSS & Responsive UI.*
 
 ### Lesson 1 — Variables, Data Types & Functions
+<!-- slug: variables-data-types-functions -->
 
 **Why this matters**
 
@@ -49,6 +50,7 @@ Using `==` instead of `===`. `==` converts types before comparing (`"5" == 5` is
 ---
 
 ### Lesson 2 — Arrays & Objects
+<!-- slug: arrays-objects -->
 
 **Why this matters**
 
@@ -91,6 +93,7 @@ Confusing `.map()` (returns a new array, same length, transformed) with `.forEac
 ---
 
 ### Lesson 3 — Loops & Iteration
+<!-- slug: loops-iteration -->
 
 **Why this matters**
 
@@ -127,6 +130,7 @@ Reaching for a manual loop out of habit when `.filter()`/`.map()`/`.find()` woul
 ---
 
 ### Lesson 4 — The DOM: Reading and Changing a Page
+<!-- slug: the-dom-reading-and-changing-a-page -->
 
 **Why this matters**
 
@@ -159,6 +163,7 @@ Trying to select an element before the page has finished loading, getting `null`
 ---
 
 ### Lesson 5 — Async JavaScript: Promises, async/await & fetch
+<!-- slug: async-javascript-promises-async-await-fetch -->
 
 **Why this matters**
 
@@ -189,6 +194,7 @@ Forgetting `await` in front of `fetch` or `.json()`, and then trying to use the 
 ---
 
 ### Lesson 6 — Error Handling
+<!-- slug: error-handling -->
 
 **Why this matters**
 

@@ -18,6 +18,7 @@ Assignments are different on purpose: real, open-ended, closer to a ticket than 
 *Selectors, box model, Flexbox, Grid, responsive design, reusable styling habits. Builds on HTML Foundations.*
 
 ### Lesson 1 — The Box Model & Selectors
+<!-- slug: the-box-model-selectors -->
 
 **Why this matters**
 
@@ -64,6 +65,7 @@ Setting `margin` on both a parent and child element and being confused why the s
 ---
 
 ### Lesson 2 — Flexbox for One-Dimensional Layouts
+<!-- slug: flexbox-for-one-dimensional-layouts -->
 
 **Why this matters**
 
@@ -95,6 +97,7 @@ Reaching for Flexbox on things that aren't really one row or one column — like
 ---
 
 ### Lesson 3 — CSS Grid for Two-Dimensional Layouts
+<!-- slug: css-grid-for-two-dimensional-layouts -->
 
 **Why this matters**
 
@@ -139,6 +142,7 @@ Using Grid for everything, including things that are really just a single row �
 ---
 
 ### Lesson 4 — Responsive Design & Reusable Styling Habits
+<!-- slug: responsive-design-reusable-styling-habits -->
 
 **Why this matters**
 
