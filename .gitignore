@@ -39,3 +39,7 @@ npm-debug.log*
 backups/
 *.dump
 *.pgdump
+
+# Build artifacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
