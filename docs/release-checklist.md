@@ -44,7 +44,7 @@ Use the **main** branch's **direct** connection string (in Neon: your project, B
    npx tsx scripts/row-counts.ts --compare "C:\Users\USER\dev-learning-platform-backups\neondb-2026-09-29T16-29-43-594Z.dump"
    Remove-Item Env:COUNT_DB_URL
    ```
-   You should see: in (a) every table matches, or only `session`, `verification` and `lesson_progress` differ (people logging in and learning). In (b) the same, and nothing else.
+   You should see: the line `(4 statements sent to the database, including transaction begin/commit)`, then in (a) every table matching, or only `session`, `verification` and `lesson_progress` differing (people logging in and learning). In (b) the same, and nothing else. The tool counts every table in one query, so a slow connection only makes it wait longer. If it still times out, run it again: it only reads.
    **Stop if:** a table such as `lesson`, `assignment`, `submission` or `user` differs unexpectedly. Also note the `submission` count: if Praise has **already submitted** the Environment Check assignment, do not run step 4 until you and I have decided how to handle it (the import replaces the assignment text under an existing submission).
 
 ## 2. Set the Vercel environment variables (before pushing)
@@ -139,7 +139,7 @@ This archives 22 old seed lessons, updates two Orientation lessons (4 and 5) and
    Remove-Item Env:ALLOW_PRODUCTION_DB_WRITE, Env:DATABASE_URL, Env:DIRECT_URL
    ```
    You should see: `IN_PROGRESS`, **7** lessons (6 ticked, the last one, "A tour of a real project's folders", not), both `hidden check` lines saying `hidden (good)`, the assignment `Environment Check` with 7 `h2` sections and 6 checkboxes, and `RESULT: ok`.
-2. [ ] Re-run the row counts against the fresh dump from step 1 (the same command as 1.3a; if you opened a new window, set `$file` again to that dump's path first). The row counts should be **unchanged**, because archiving does not add or remove rows. Any change beyond normal activity means stop.
+2. [ ] Re-run the row counts against the fresh dump from step 1 (the same command as 1.3a; if you opened a new window, set `$file` again to that dump's path first). Archiving does not add or remove rows, so the only expected differences are `_prisma_migrations` at **+1** (the migration applied in step 3) and normal activity in `session`, `verification` and `lesson_progress`. `lesson`, `assignment`, `submission` and `user` must match. Any other change means stop.
 3. [ ] Ask Praise to refresh the page and confirm: the Node.js lesson shows the PowerShell error and its fix, the assignment shows the new steps and the "message your mentor" line, and there is no "Toolchain basics" or "Project loop". Do **not** log in as Praise or use admin impersonation.
 4. [ ] Update CLAUDE.md: remove the sentence saying production still runs older code.
 

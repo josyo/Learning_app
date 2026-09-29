@@ -15,13 +15,15 @@
  * explicitly allowed; set ALLOW_PRODUCTION_DB_WRITE=<production host> for that
  * one command (this script only reads).
  */
+import fs from "node:fs";
+import path from "node:path";
+import { parse as parseEnv } from "dotenv";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { db } from "@/lib/db";
 import { describeTarget, parseDbTarget } from "@/lib/db-targets";
-import { getEnrolledPathState } from "@/modules/learning/get-enrolled-path-state";
+import { withSlowLinkParams } from "@/lib/slow-link";
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -36,6 +38,19 @@ async function main() {
     console.error("usage: verify-learner-view.ts --user <name> --module <module-slug> [--hidden slug1,slug2]");
     process.exit(2);
   }
+
+  // Built for a slow link (see lib/slow-link.ts): raise Prisma's 5 s connect and
+  // 10 s pool timeouts on the URL, then load the app modules. They are imported
+  // AFTER this on purpose: lib/db creates its Prisma client when it loads and reads
+  // DATABASE_URL then. There is no transaction in this script, so the 5 s
+  // transaction default does not apply. The URL is the effective one (.env under
+  // the process environment), the same view db-guard and the importer use.
+  const dotEnvPath = path.resolve(__dirname, "..", ".env");
+  const dotEnv = fs.existsSync(dotEnvPath) ? parseEnv(fs.readFileSync(dotEnvPath)) : {};
+  const effectiveUrl = process.env.DATABASE_URL ?? dotEnv.DATABASE_URL;
+  if (effectiveUrl) process.env.DATABASE_URL = withSlowLinkParams(effectiveUrl);
+  const { db } = await import("@/lib/db");
+  const { getEnrolledPathState } = await import("@/modules/learning/get-enrolled-path-state");
 
   const rows = await db.$queryRawUnsafe<{ ep: string | null }[]>("select current_setting('neon.endpoint_id', true) as ep");
   console.log(`target: ${describeTarget(parseDbTarget(process.env.DATABASE_URL))} (server endpoint ${rows[0]?.ep ?? "unknown"})`);

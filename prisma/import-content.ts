@@ -21,6 +21,7 @@ import path from "node:path";
 import { parse as parseEnv } from "dotenv";
 import { PrismaClient, type Prisma } from "@prisma/client";
 import { checkDbTarget, describeTarget, parseDbTarget, type DbEnv } from "../lib/db-targets";
+import { SLOW_TX_OPTIONS, withSlowLinkParams } from "../lib/slow-link";
 import { MEDIA_MAP } from "./media-map";
 import { MODULE_SLUGS, loadAllModules, slugifyTitle } from "./content-source";
 import type { ParsedModule } from "./content-parser";
@@ -88,7 +89,9 @@ function assertTarget() {
     for (const p of problems) console.error(`  - ${p}`);
     process.exit(1);
   }
-  return describeTarget(parseDbTarget(env.DATABASE_URL));
+  // The URL the guard just validated is the URL the client will use (below),
+  // so the checked target and the connected target cannot differ.
+  return { label: describeTarget(parseDbTarget(env.DATABASE_URL)), databaseUrl: env.DATABASE_URL };
 }
 
 function desiredLessons(parsed: ParsedModule): DesiredLesson[] {
@@ -255,7 +258,9 @@ async function applyModule(db: PrismaClient, p: ModulePlan): Promise<void> {
         await tx.assignment.update({ where: { id: a.id }, data: { title: a.title, slug: a.slug, instructions: a.instructions } });
       }
     },
-    { timeout: 60_000, maxWait: 15_000 }
+    // Explicit limits for a slow link (lib/slow-link.ts): every statement here
+    // is a network round trip, and Prisma's default is 5 s for the whole thing.
+    SLOW_TX_OPTIONS
   );
 }
 
@@ -268,7 +273,7 @@ async function main() {
   }
   const dryRun = args.includes("--dry-run");
 
-  const target = assertTarget();
+  const { label: target, databaseUrl } = assertTarget();
   console.log(`${dryRun ? "DRY RUN (nothing will be written)" : "IMPORT"} -> ${target}`);
 
   // 1. Validate everything before any database access.
@@ -280,7 +285,8 @@ async function main() {
     process.exit(1);
   }
 
-  const base = new PrismaClient();
+  // datasourceUrl = the guard-checked URL, with connect/pool timeouts raised.
+  const base = new PrismaClient({ datasourceUrl: withSlowLinkParams(databaseUrl) });
   const db = dryRun ? readOnly(base) : base;
   try {
     // 2. Every module slug must exist in the database.
