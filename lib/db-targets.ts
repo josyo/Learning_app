@@ -15,6 +15,13 @@
  */
 export const PRODUCTION_DB_HOST = "ep-red-mode-aur8z6oc.c-10.us-east-1.aws.neon.tech";
 
+/**
+ * Neon endpoint id of the disposable TEST branch (see CLAUDE.md gotcha 13). Non-secret.
+ * The "test" guard role only accepts this endpoint, so a reset or reseed can never hit
+ * dev or production, even when there is no .env file to compare against (cloud sessions).
+ */
+export const TEST_ENDPOINT_ID = "ep-green-bread-aue0kwbf";
+
 /** Set to PRODUCTION_DB_HOST to deliberately allow a production write. */
 export const PRODUCTION_OVERRIDE_ENV = "ALLOW_PRODUCTION_DB_WRITE";
 
@@ -66,6 +73,10 @@ export function isProductionTarget(t: DbTarget | null): boolean {
   return !!t && t.host === normalizeHost(PRODUCTION_DB_HOST);
 }
 
+export function isTestTarget(t: DbTarget | null): boolean {
+  return !!t && t.host.startsWith(`${TEST_ENDPOINT_ID}.`);
+}
+
 export function sameTarget(a: DbTarget | null, b: DbTarget | null): boolean {
   return !!a && !!b && a.host === b.host && a.database === b.database;
 }
@@ -75,7 +86,7 @@ export function productionOverrideActive(env: DbEnv): boolean {
 }
 
 export type GuardRole =
-  | "test" //           wipes/seeds: must not be prod, must not be .env's (dev) target
+  | "test" //           wipes/seeds: must be the test endpoint (never prod, never .env's dev target)
   | "not-production" // dev tooling: must not be prod, no override
   | "import" //         content import: prod only with the explicit override
   | "build"; //         `npm run build`: on Vercel Preview/Development, must not be prod
@@ -156,6 +167,9 @@ export function checkDbTarget({ role, env, dotEnv, vercelEnv }: GuardInput): str
       break;
     case "test": {
       if (touchesProd) problems.push(`Test target is PRODUCTION (${PRODUCTION_DB_HOST}). Refusing.`);
+      for (const t of targets) {
+        if (!isTestTarget(t)) problems.push(`Test target ${describeTarget(t)} is not the test endpoint (${TEST_ENDPOINT_ID}). This command wipes data and only runs there.`);
+      }
       const devTargets = [parseDbTarget(dotEnv?.DATABASE_URL), parseDbTarget(dotEnv?.DIRECT_URL)];
       for (const t of targets) {
         if (devTargets.some((d) => sameTarget(t, d))) {

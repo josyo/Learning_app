@@ -6,9 +6,10 @@ Set up 2026-09-30 so the owner can work for weeks from a phone. Read this with `
 
 | What | Where it runs | Touches |
 |---|---|---|
-| Writing content and code | Claude Code on the web (cloud session, fresh clone, **branches only**) | dev branch at most |
+| Writing content and code | Claude Code on the web (cloud session, fresh clone, **branches only**) | the **test** branch only (`ep-green-bread-aue0kwbf`, disposable) |
 | Trying a branch's UI | Vercel **Preview** deployment of the branch | dev branch (`DATABASE_URL`/`DIRECT_URL` in Vercel Preview) |
-| Checking an import against dev | Cloud session, or the **"Import content to dev"** workflow | dev branch |
+| Trying an import on seeded data | Cloud session: `npm run test:e2e:setup` (resets and reseeds test, imports the content), then a dry-run | test branch |
+| Checking an import against dev | The **"Import content to dev"** workflow, started by the owner (dry run first) | dev branch |
 | Importing to production | **"Import content to production"** workflow, from `main`, after the owner approves | production (secrets live only in the GitHub `production` environment) |
 | Release (merge to `main`) | Owner merges on github.com | Vercel Production and `prisma migrate deploy` on production |
 
@@ -71,33 +72,36 @@ The GitHub button labels above follow GitHub's current documentation (fetched 20
 3. Open the new run. A yellow box says the run is waiting for review: open **Review deployments**, tick `production`, approve.
 4. When the run finishes, open it and read the **summary**. It must match what the release checklist expects. **Stop if not.**
 5. For a real import: before running, create a Neon branch from `main` (`pre-import-YYYY-MM-DD`) as the snapshot; then run again with **dry_run** unticked and **backup_confirmed** ticked, and approve again.
-6. Afterwards check Praise's view from a machine with credentials, or ask in a cloud session for dev only; `scripts/verify-learner-view.ts` needs the production override and so is **not** run in the cloud.
+6. Afterwards check Praise's view from a machine that has the credentials. `scripts/verify-learner-view.ts` needs real learner data, so it is **not** run in a cloud session.
 
 The workflows appear in the Actions tab only once they are on `main`.
 
-## 3. Claude Code cloud environment (dev only)
+## 3. Claude Code cloud environment (TEST branch only)
 
-Create the environment at claude.ai/code (environment settings). **No production value goes in it**: anyone who uses the environment, and Claude itself in the session, can read its variables.
+Create the environment at claude.ai/code (environment settings). **The cloud environment gets the test branch (`ep-green-bread-aue0kwbf`) and nothing else.** Not dev, because dev holds a copy of real user data, and not production. Anyone who uses the environment, and Claude itself in the session, can read its variables. The test branch is disposable and seeded with fake accounts, so exposing it costs nothing.
+
+There is **no `.env` or `.env.test` file** in a cloud session. The app, Prisma, `scripts/db-guard.ts`, the `*:test` npm scripts and `playwright.config.ts` all work from process environment variables alone. The `test` guard role accepts only the test endpoint, so a wrong URL in the environment makes `npm run test:e2e:setup` refuse instead of resetting the wrong database.
 
 ### Environment variables (names only)
 
-Required for importing and dry-runs against dev:
-- `DATABASE_URL`: dev branch, **pooled**
-- `DIRECT_URL`: dev branch, **direct**
-
-Only if you want the session to run the app (`next dev`) and log in:
-- `BETTER_AUTH_SECRET`: a dev-only random value, not the Production or Preview one
+- `DATABASE_URL`: **test** branch, **pooled** (host contains `-pooler`)
+- `DIRECT_URL`: **test** branch, **direct**
+- `BETTER_AUTH_SECRET`: a test-only random value (not the Production, Preview or dev one)
 - `BETTER_AUTH_URL`: `http://localhost:3000`
+- `SEED_USER_PASSWORD`: a password for the fake seeded accounts (test only; the E2E tests log in with it)
 
-Do **not** set: any `LEARNING_DB_*`, `ALLOW_PRODUCTION_DB_WRITE`, `ALLOW_SEED`, `SEED_*` passwords, `GH_TOKEN` (a token could let a session dispatch workflows), or anything that points at the `main` branch.
+Do **not** set: any `LEARNING_DB_*`, `ALLOW_PRODUCTION_DB_WRITE`, `ALLOW_SEED`, `GH_TOKEN` (a token could let a session start workflows), anything for the **dev** or **main** branches, or `SEED_ADMIN_PASSWORD` / `SEED_MENTOR_PASSWORD` / `SEED_TRAINEE_PASSWORD` unless you want them to differ.
 
-No `.env` file is needed: the app, Prisma and the scripts read the process environment. E2E tests need a `.env.test` with the **test** branch URLs and a Playwright browser, which the default cloud environment does not provide; run E2E from a machine that has them.
+What a session can then do: `npm run test:e2e:setup` (reset, migrate, seed, import content on the test branch), `npm run test:e2e`, `npm run import:content -- --dry-run` (this reads the test branch, so it shows the create/update/archive plan against seeded data, not against real learners), `npm test`, `npx tsc --noEmit`.
+
+What it cannot do, by design: dry-run against dev or production, or run `scripts/verify-learner-view.ts` on a real learner. Those need the workflows (section 2) and your review.
 
 ### Network access
 
 - Network access level: **Custom**, with **Also include default list of common package managers** ticked (npm, GitHub and Prisma's engine download host `binaries.prisma.sh` are in the default list).
 - Allowed domains, one per line: `*.neon.tech`
+- E2E also needs a Playwright browser: `npx playwright install chromium` downloads it. The download hosts are **not** in the documented default list and I have not verified which ones Playwright uses today; if the install fails with a network error, read the host from the error and add it, or check whether the cloud image already ships Chromium.
 
-Neon hosts look like `ep-silent-band-aup0hqps-pooler.<region>.aws.neon.tech`. The wildcard also allows the production host name from the network's point of view, which is why production credentials must not be in the environment at all.
+Neon hosts look like `ep-green-bread-aue0kwbf-pooler.<region>.aws.neon.tech`. `*.neon.tech` also matches the dev and production hosts at the network level, which is why neither may have credentials in the environment.
 
-**Unverified risk:** Anthropic's documentation describes network access as a domain allowlist and does not say whether raw database connections (Postgres on port 5432, which Prisma uses) pass through it. Test it once, first thing: in a cloud session run `npm run import:content -- --dry-run` (read-only). If it cannot connect (`P1001` or a timeout), use the **"Import content to dev"** workflow for dev dry-runs and imports instead, or set network access to **Full** (not recommended).
+**Unverified risk:** Anthropic's documentation describes network access as a domain allowlist and does not say whether raw database connections (Postgres on port 5432, which Prisma uses) pass through it. Test it once, first thing: in a cloud session run `npm run db:guard:test` (no connection) and then `npm run test:e2e:setup`. If the setup cannot connect (`P1001` or a timeout), tell the owner: the fallback is network access **Full** (not recommended) or doing database work only through the workflows.

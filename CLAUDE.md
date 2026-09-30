@@ -280,18 +280,30 @@ Setup details, GitHub secrets steps and the cloud environment list are in
 - **Merging to `main` is a production release** (auto-deploy plus
   `prisma migrate deploy`, gotcha 12). Only the owner merges, after
   `docs/release-checklist.md`. Open a pull request and stop.
-- **Production credentials never go into any cloud environment**, `.env` file,
-  commit, chat message or log. The cloud environment holds **dev branch** URLs
-  only (`DATABASE_URL`, `DIRECT_URL`); verify the host is `ep-silent-band-aup0hqps`
-  before any write. If a production URL ever appears in a session, stop and tell
-  the owner so it can be rotated.
-- **Production content import happens only through the GitHub Actions workflow
-  "Import content to production"**, run from `main`, dry run first, approved by
-  the owner in the `production` environment. Never run the importer against
-  production from a session, and never set `ALLOW_PRODUCTION_DB_WRITE` in one.
-  Dev dry-runs and imports may be run in the session or with "Import content to
-  dev"; gotcha 13 still applies (show the dry run, get the owner's OK before any
-  dev write).
+- **In a cloud session, `DATABASE_URL` and `DIRECT_URL` point at the TEST
+  branch** (`ep-green-bread-aue0kwbf`), nothing else. Not dev (it holds a copy of
+  real user data) and never production, because the variables of a cloud
+  environment are readable by anyone who uses it and by Claude. Production
+  credentials never go into any cloud environment, `.env` file, commit, chat
+  message or log; neither do dev credentials. If a dev or production URL ever
+  appears in a session, stop and tell the owner so it can be rotated.
+- **There is no `.env` or `.env.test` file in a cloud session.** Everything reads
+  the process environment. `scripts/db-guard.ts`, the `*:test` npm scripts
+  (`dotenv-cli` ignores a missing file) and `playwright.config.ts`
+  (`lib/test-env.ts`) work from `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`,
+  `BETTER_AUTH_URL` and `SEED_USER_PASSWORD` alone. The `test` guard role accepts
+  **only** the test endpoint (`TEST_ENDPOINT_ID` in `lib/db-targets.ts`), so
+  `npm run test:e2e:setup` (which resets the database) refuses anything else.
+  Under gotcha 13 you may reset the test branch and run E2E against it without
+  asking. Dry-runs and imports in a session therefore hit the test branch, which
+  is a disposable seeded copy, not a picture of production: a clean result there
+  is useful, but it is not the dev dry-run the owner reviews.
+- **Dev-branch and production imports happen only through the GitHub Actions
+  workflows**, dry run first: "Import content to dev" (any branch) and "Import
+  content to production" (`main` only, approved by the owner in the `production`
+  environment). Never run the importer against dev or production from a session,
+  and never set `ALLOW_PRODUCTION_DB_WRITE` in one. The owner reads the dry-run
+  summary and approves each run (gotcha 13).
 - **Keep every existing stop point.** Stop points in a plan or in a request
   (outline, first lesson, dry-run review) still mean stop and wait, even though
   the owner replies slowly. Do not "keep going" to save time.

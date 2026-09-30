@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   PRODUCTION_DB_HOST,
   PRODUCTION_OVERRIDE_ENV,
+  TEST_ENDPOINT_ID,
   checkDbTarget,
   checkRuntimeTarget,
   dbTargetWarnings,
@@ -11,7 +12,7 @@ import {
 
 const url = (host: string, db = "neondb") => `postgresql://u:secret@${host}/${db}?sslmode=require`;
 const DEV = "ep-dev-000000.c-10.us-east-1.aws.neon.tech";
-const TEST = "ep-test-111111.c-10.us-east-1.aws.neon.tech";
+const TEST = `${TEST_ENDPOINT_ID}.c-10.us-east-1.aws.neon.tech`;
 const withPooler = (h: string) => h.replace(/^(ep-[^.]+)/, "$1-pooler");
 
 const envFor = (host: string) => ({ DATABASE_URL: url(withPooler(host)), DIRECT_URL: url(host) });
@@ -32,6 +33,16 @@ describe("parseDbTarget", () => {
 describe("checkDbTarget", () => {
   it("test role: accepts a separate test branch", () => {
     expect(checkDbTarget({ role: "test", env: envFor(TEST), dotEnv: devDotEnv })).toEqual([]);
+  });
+  it("test role, no .env file (cloud session): accepts the test endpoint from process env alone", () => {
+    expect(checkDbTarget({ role: "test", env: envFor(TEST), dotEnv: null })).toEqual([]);
+  });
+  it("test role, no .env file: still refuses the dev endpoint, because it is not the test endpoint", () => {
+    const p = checkDbTarget({ role: "test", env: envFor(DEV), dotEnv: null });
+    expect(p.join()).toMatch(/not the test endpoint/);
+  });
+  it("test role, no .env file: refuses production", () => {
+    expect(checkDbTarget({ role: "test", env: envFor(PRODUCTION_DB_HOST), dotEnv: null }).join()).toMatch(/PRODUCTION/);
   });
   it("test role: refuses production (pooled or direct)", () => {
     const p = checkDbTarget({ role: "test", env: envFor(PRODUCTION_DB_HOST), dotEnv: devDotEnv });

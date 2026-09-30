@@ -3,18 +3,21 @@ import path from "path";
 import { defineConfig, devices } from "@playwright/test";
 import { config as loadEnv, parse as parseEnv } from "dotenv";
 import { checkDbTarget, describeTarget, parseDbTarget } from "./lib/db-targets";
+import { resolveTestEnv } from "./lib/test-env";
 
-// Deliberately .env.test, not .env.local — E2E runs against a
-// separate, disposable database (see .env.test.example) so this
-// suite can never touch real dev data. Missing .env.test is a
-// configuration error, not a fall-through to the real database.
+// Deliberately .env.test, not .env.local: E2E runs against a separate,
+// disposable database (see env.test.example) so this suite can never touch
+// real dev data. Cloud sessions have no env files, so there the same variables
+// come from the process environment (lib/test-env.ts). Either way the target
+// is checked below, and only the Neon test endpoint is accepted.
 const testEnvPath = path.resolve(__dirname, ".env.test");
-if (!fs.existsSync(testEnvPath)) {
+const fileEnv = fs.existsSync(testEnvPath) ? (loadEnv({ path: testEnvPath }).parsed ?? {}) : null;
+const { env: testEnv, source: testEnvSource } = resolveTestEnv(fileEnv, process.env);
+if (!fileEnv && !testEnv.DATABASE_URL) {
   throw new Error(
-    "Missing .env.test for Playwright. Create it from env.test.example (pointing at the Neon 'test' branch) before running npm run test:e2e."
+    "No test database configured for Playwright. Locally: create .env.test from env.test.example (Neon 'test' branch). In a cloud session: set DATABASE_URL and DIRECT_URL (test branch) in the environment."
   );
 }
-const testEnv = loadEnv({ path: testEnvPath }).parsed ?? {};
 
 // Refuse to run at all unless the test target is a separate database: not
 // production, and not the dev target in .env. Runs when the config loads, so
@@ -28,7 +31,7 @@ const effectiveTestEnv = { ...(dotEnv ?? {}), ...testEnv };
 const targetProblems = checkDbTarget({ role: "test", env: effectiveTestEnv, dotEnv });
 if (targetProblems.length > 0) {
   throw new Error(
-    `Playwright refused to start. Unsafe database target (${describeTarget(parseDbTarget(effectiveTestEnv.DATABASE_URL))}):\n - ${targetProblems.join("\n - ")}`
+    `Playwright refused to start. Unsafe database target (${describeTarget(parseDbTarget(effectiveTestEnv.DATABASE_URL))}, from ${testEnvSource}):\n - ${targetProblems.join("\n - ")}`
   );
 }
 
