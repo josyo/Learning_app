@@ -98,9 +98,16 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
   `prisma migrate deploy` **against the production database**. So a push is
   a production release AND a production migration. **Do not push (or merge
   to main) without explicit approval for a production release.** See
-  gotcha 12 for the pre-release checklist. As of this note local `main`
-  is ahead of `origin/main` by unpushed commits (guard work, importer
-  hardening); production still runs the older code.
+  gotcha 12 for the release checklist.
+  **Release status (2026-09-30): production runs the current code.** The
+  owner released it that day (confirmed by the owner, not re-verified by the
+  assistant): the guard/importer work and migration
+  `20260929200000_lesson_archived_at` went out with the push, the production
+  content import was run afterwards (it archived the 22 retired seed lessons
+  and updated the Orientation assignment and Lessons 4 and 5), and Praise's
+  view was checked. `origin/main` and local `main` were identical at
+  `e2722dd` when this was written. HTML Foundations was held out of that
+  import by design, so it is still the older seed content in production.
 
 ## Hard-won gotchas (things that actually went wrong during this build)
 
@@ -213,16 +220,17 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     at the Neon `main` branch. The build now starts with `scripts/db-guard.ts
     build`, which fails a Preview/local build that targets production, and
     `lib/db.ts` refuses production outside a Vercel Production deployment.
-    Before the first release of the guard/importer work, in Vercel:
+    Vercel settings (put in place for the 2026-09-30 release; keep them):
     Production needs `DATABASE_URL` (main, pooled), `DIRECT_URL` (main, direct;
     **the build fails without it**), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`;
     Preview must point `DATABASE_URL`/`DIRECT_URL` at the **dev** branch (never
     main) with its own `BETTER_AUTH_SECRET` and a valid `BETTER_AUTH_URL`;
     leave the integration-managed `LEARNING_DB_*` variables alone (gotcha 14); never set
     `ALLOW_PRODUCTION_DB_WRITE` or `ALLOW_SEED`. Take a fresh `pg_dump` of main
-    first. The release also applies migration `20260929200000_lesson_archived_at`
-    to production, and the content import to production is a **separate,
-    later, explicitly approved** step (dry-run against a fresh dev copy first).
+    first. The 2026-09-30 release applied migration
+    `20260929200000_lesson_archived_at` to production, and the content import
+    ran as a **separate, explicitly approved** step. Any future import to
+    production stays that way (dry-run first, against a fresh dev copy).
     The learner-facing app must keep working for the real trainee throughout.
     **Follow `docs/release-checklist.md` step by step; do not improvise a release.**
 

@@ -1,5 +1,7 @@
 # Production release checklist
 
+> **Status: COMPLETED on 2026-09-30.** The owner pushed, the build ran, the production content import was done and Praise's view was verified (confirmed by the owner). The boxes below are left unticked on purpose: this file is the template for the **next** release. Before reusing it, re-check every value (branch URLs, the commit list, the expected dry-run numbers), because they describe this release, not the next one.
+
 For releasing the guard, importer and content work to **https://learningapp-zeta.vercel.app**. Follow the steps in order and stop at the first thing that does not match. Nothing here runs by itself.
 
 **Why the order matters.** A push to `main` deploys to production **and** runs `prisma migrate deploy` against the production database. The new code is written to cope with archived lessons, but the *old* code is not. So the content import (which archives 22 old lessons) must happen only **after** the new code is live. If you import first, the old code will show those lessons to Praise and count them toward completion.
