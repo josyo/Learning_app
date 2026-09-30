@@ -1,0 +1,89 @@
+name: Import content to production
+
+# Runs the content importer against the PRODUCTION database.
+#
+# Safety, in layers:
+#  1. Only the "production" environment holds the production URLs, and that
+#     environment requires the owner's approval for every run and only accepts
+#     the main branch (set both on github.com, see docs/plans/remote-setup.md).
+#  2. The job itself refuses to run from any ref except main.
+#  3. dry_run defaults to true. A real import also needs backup_confirmed.
+#  4. The guard and a target assertion run first; the importer's own checks after.
+# This repository is public, so the logs are too: learner names are redacted.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: report what would change, write nothing"
+        type: boolean
+        default: true
+      backup_confirmed:
+        description: "Real import only: I created a Neon branch snapshot (or pg_dump) of main today"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-import-production
+  cancel-in-progress: false
+
+jobs:
+  import:
+    name: Import to production (${{ inputs.dry_run && 'dry run' || 'REAL' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    defaults:
+      run:
+        shell: bash
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      # Not a secret: the production host, the value db-guard requires for a deliberate write.
+      ALLOW_PRODUCTION_DB_WRITE: ep-red-mode-aur8z6oc.c-10.us-east-1.aws.neon.tech
+      REDACT_LEARNER_NAMES: "1"
+    steps:
+      - name: Refuse a real import without a backup
+        if: ${{ !inputs.dry_run && !inputs.backup_confirmed }}
+        run: |
+          echo "::error::A real import needs backup_confirmed = true. Create a Neon branch from main first, then run again."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Assert the secrets point at production
+        run: npx tsx scripts/assert-db-target.ts production
+
+      - name: Database guard
+        run: npx tsx scripts/db-guard.ts import
+
+      - name: Dry run
+        if: ${{ inputs.dry_run }}
+        run: npm run import:content -- --dry-run 2>&1 | tee import-output.txt
+
+      - name: Import
+        if: ${{ !inputs.dry_run }}
+        run: npm run import:content 2>&1 | tee import-output.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Import content to production (${{ inputs.dry_run && 'dry run' || 'REAL' }})"
+            echo "Ref: ${{ github.ref_name }} at ${{ github.sha }}"
+            echo '~~~'
+            cat import-output.txt 2>/dev/null || echo "(no importer output)"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

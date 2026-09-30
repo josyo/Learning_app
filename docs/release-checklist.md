@@ -69,7 +69,7 @@ Before you change a variable, copy its current value into your password manager,
 - [ ] **Do not point `DATABASE_URL` or `DIRECT_URL` at an integration value.** Type or paste the right branch's string yourself, so the environment you see in this table is the environment you get.
 - [ ] **Preview must never point at `main`.** The two variables that matter are `DATABASE_URL` and `DIRECT_URL`, and the build guard refuses a Preview build whose URLs are the production host. If you ever see an *unprefixed* `POSTGRES_*`, `PG*` or `DATABASE_URL_UNPOOLED` variable in Preview, tell me: the app does not read those either, but I would want to know where it came from.
 - [ ] Editing variables does **not** touch the running site. Vercel applies variable changes only to new deployments, and each old deployment keeps its own snapshot. That is also why changing a variable does not break an instant rollback.
-- Note on Preview `BETTER_AUTH_URL`: `lib/auth.ts` falls back to `http://localhost:3000` when it is unset, and also trusts `https://$VERCEL_URL`. I have not tested sign-in on a preview URL, so treat previews as untested until you try one.
+- Note on Preview `BETTER_AUTH_URL`: on a Preview deployment `lib/auth-origins.ts` ignores it and uses the deployment's own `VERCEL_BRANCH_URL` / `VERCEL_URL` (2026-09-30), so leave it unset for Preview. Preview does need its own `BETTER_AUTH_SECRET`. Production behaviour is unchanged. See `docs/plans/remote-setup.md`. Sign-in on a real preview is still untested.
 
 ## 3. Push, and confirm the site loads
 

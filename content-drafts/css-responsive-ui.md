@@ -56,7 +56,15 @@ For selecting things: use a class (`.card`) for anything you'll style more than 
 
 **Try it yourself**
 
-Open your semantic profile page from HTML Foundations. Add `box-sizing: border-box` globally, then pick one element and deliberately add padding and a border to it. Watch what happens to its size with and without the `box-sizing` rule — toggle it off and on in dev tools to see the difference.
+Open your `my-site` folder in VS Code and open the `styles.css` file from HTML Foundations (your pages already link to it, so anything you write there applies). Add `box-sizing: border-box` globally, then pick one element and deliberately add padding and a border to it. Then watch what happens to its size with and without the `box-sizing` rule, using Chrome's **DevTools** (a panel built into the browser that shows how a page is put together):
+
+1. Open your page in Chrome. Right-click the element you gave padding and a border, and choose **Inspect**.
+   You should see: a panel opens with the **Elements** tab selected, and the element's line highlighted.
+2. Find the **Styles** tab in that panel. It lists the CSS rules that apply to the selected element.
+   You should see: your `.card` (or similar) rule with its declarations, each on its own line.
+3. Hover over the `box-sizing: border-box` line in the rule that has it (the `*, *::before, *::after` one) and click the checkbox that appears next to it to switch it off. Click it again to switch it back on.
+   You should see: the element's size change on the page each time. This change is only in the browser, not in your file.
+   If you see something else: if you cannot find the line, click other lines in the Elements tab until the Styles tab shows the rule. Reloading the page undoes your DevTools changes, which is fine.
 
 **A mistake beginners actually make**
 
@@ -175,6 +183,15 @@ For reusable habits: keep a small set of spacing values (`0.5rem`, `1rem`, `1.5r
 
 Make your whole profile page responsive: pick one breakpoint (768px is a reasonable default), and make sure nothing overflows horizontally or looks cramped at a narrow width. Resize your browser window slowly from wide to narrow while watching what breaks — that's the fastest way to find the layout's actual weak points.
 
+Then check a phone-sized screen with DevTools' **device toolbar** (a mode that makes the page render at a phone's width):
+
+1. Open your page in Chrome, right-click an empty part of the page, and choose **Inspect**.
+2. Click the **Toggle device toolbar** icon at the top of the DevTools panel (it looks like a phone and a tablet).
+   You should see: the page shrinks into a narrower frame with a bar of size controls above it.
+3. In that bar, open the **Dimensions** dropdown. Choose **Responsive**, then type `375` in the first (width) box.
+   You should see: the page laid out at 375 pixels wide, roughly a phone. Scroll it to check that nothing runs off the right edge.
+   If you see something else: if the page looks tiny and zoomed out, your `<head>` is missing the `<meta name="viewport" content="width=device-width, initial-scale=1">` line from HTML Foundations. Add it and reload.
+
 **A mistake beginners actually make**
 
 Testing responsiveness only by resizing the browser window on a laptop, never an actual phone-sized viewport in dev tools. Browser window resizing and a real mobile viewport behave differently enough (address bars, safe areas, touch target sizing) that it's worth checking both.
@@ -195,6 +212,6 @@ Take the semantic profile page you built in HTML Foundations and rebuild its lay
 - Consistent spacing values reused throughout, not one-off pixel values scattered around.
 
 **What to submit:**
-- A GitHub repo link (can be the same repo as HTML Foundations, or a new commit history — your call).
-- A deployed URL.
+- A GitHub repo link: use the same repo as HTML Foundations and upload your changed files through the GitHub website again (Git comes later, in its own module).
+- A deployed URL, only if you turned on GitHub Pages for that repo. It is optional; leave it empty otherwise.
 - In your notes: which layout decision you're least sure about. (Not a trick question — this tells your mentor exactly where to focus feedback.)

@@ -2,17 +2,9 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, createAccessControl } from "better-auth/plugins";
 import { db } from "@/lib/db";
+import { resolveAuthOrigins } from "@/lib/auth-origins";
 
-const authBaseURL = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
-const authTrustedOrigins = Array.from(
-  new Set(
-    [
-      process.env.BETTER_AUTH_URL,
-      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
-      ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map((origin) => origin.trim()) ?? []),
-    ].filter(Boolean) as string[]
-  )
-);
+const { baseURL: authBaseURL, trustedOrigins: authTrustedOrigins } = resolveAuthOrigins(process.env);
 
 const appAccess = createAccessControl({
   user: [

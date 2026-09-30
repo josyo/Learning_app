@@ -267,6 +267,41 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     falls back to them) and when a Preview build targets the production host.
     Set `DATABASE_URL` and `DIRECT_URL` by hand for each environment.
 
+## Remote working (set 2026-09-30; the owner is away and works from a phone)
+
+Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`).
+Setup details, GitHub secrets steps and the cloud environment list are in
+`docs/plans/remote-setup.md`.
+
+- **Branches only, never `main`.** A cloud session creates a branch, commits and
+  pushes **that branch**. It never pushes to, merges into or force-pushes `main`.
+  (This supersedes older "commit, do not push" instructions: a cloud session must
+  push its branch to keep its work.)
+- **Merging to `main` is a production release** (auto-deploy plus
+  `prisma migrate deploy`, gotcha 12). Only the owner merges, after
+  `docs/release-checklist.md`. Open a pull request and stop.
+- **Production credentials never go into any cloud environment**, `.env` file,
+  commit, chat message or log. The cloud environment holds **dev branch** URLs
+  only (`DATABASE_URL`, `DIRECT_URL`); verify the host is `ep-silent-band-aup0hqps`
+  before any write. If a production URL ever appears in a session, stop and tell
+  the owner so it can be rotated.
+- **Production content import happens only through the GitHub Actions workflow
+  "Import content to production"**, run from `main`, dry run first, approved by
+  the owner in the `production` environment. Never run the importer against
+  production from a session, and never set `ALLOW_PRODUCTION_DB_WRITE` in one.
+  Dev dry-runs and imports may be run in the session or with "Import content to
+  dev"; gotcha 13 still applies (show the dry run, get the owner's OK before any
+  dev write).
+- **Keep every existing stop point.** Stop points in a plan or in a request
+  (outline, first lesson, dry-run review) still mean stop and wait, even though
+  the owner replies slowly. Do not "keep going" to save time.
+- **Plans live in the repo.** Continue multi-step work from `docs/plans/*.md`
+  (currently `docs/plans/html-foundations.md`) and update the plan file when the
+  state changes, because the session's conversation will not survive.
+- This repository is **public**: logs, commits and Actions output are public.
+  Never put learner names, emails or connection strings in them (the importer
+  redacts learner names when `REDACT_LEARNER_NAMES=1`).
+
 ## Suggested first steps in Claude Code
 
 1. Read this doc, then explore the actual repo state — don't assume

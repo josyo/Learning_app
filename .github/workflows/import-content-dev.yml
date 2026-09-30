@@ -1,0 +1,71 @@
+name: Import content to dev
+
+# Runs the content importer against the DEV Neon branch (a copy of production),
+# from any branch, so content work can be checked before it is merged.
+# Uses the secrets of the "dev" environment. It can never reach production:
+# the target assertion refuses the production endpoint. Learner names are
+# redacted because this repository is public.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: report what would change, write nothing"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-import-dev
+  cancel-in-progress: false
+
+jobs:
+  import:
+    name: Import to dev (${{ inputs.dry_run && 'dry run' || 'REAL' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: dev
+    defaults:
+      run:
+        shell: bash
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      REDACT_LEARNER_NAMES: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Assert the secrets point at dev
+        run: npx tsx scripts/assert-db-target.ts dev
+
+      - name: Database guard
+        run: npx tsx scripts/db-guard.ts import
+
+      - name: Dry run
+        if: ${{ inputs.dry_run }}
+        run: npm run import:content -- --dry-run 2>&1 | tee import-output.txt
+
+      - name: Import
+        if: ${{ !inputs.dry_run }}
+        run: npm run import:content 2>&1 | tee import-output.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Import content to dev (${{ inputs.dry_run && 'dry run' || 'REAL' }})"
+            echo "Ref: ${{ github.ref_name }} at ${{ github.sha }}"
+            echo '~~~'
+            cat import-output.txt 2>/dev/null || echo "(no importer output)"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

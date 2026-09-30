@@ -176,8 +176,13 @@ async function planModule(db: PrismaClient, moduleSlug: string, moduleId: string
 const list = (xs: string[]) => (xs.length ? xs.join(", ") : "(none)");
 const state = (s: { completed: boolean; started: boolean }) => (s.completed ? "complete" : s.started ? "in progress" : "not started");
 
+// The GitHub Actions workflows set REDACT_LEARNER_NAMES=1: this repository is public, so
+// its logs are too, and a learner's name must not appear in them.
+const redactNames = process.env.REDACT_LEARNER_NAMES === "1";
+
 function report(p: ModulePlan): string {
   const l = p.lessons;
+  const who = (i: (typeof p.impact)[number]) => (redactNames ? `learner ${p.impact.indexOf(i) + 1}` : i.name);
   const out: string[] = [];
   out.push(`\n== ${p.moduleSlug}   (${p.fileLessonCount} lessons in file, ${p.dbLessonCount} rows in database)`);
   out.push(`  create:    ${list(l.create.map((c) => c.slug))}`);
@@ -196,12 +201,12 @@ function report(p: ModulePlan): string {
   );
   const changed = p.impact.filter((i) => i.changes);
   if (p.impact.length === 0) out.push("  learners:  no active enrollments");
-  else if (changed.length === 0) out.push(`  learners:  no change for any of ${p.impact.length} enrolled learner(s) (${p.impact.map((i) => `${i.name}: ${state(i.after)}`).join("; ")})`);
+  else if (changed.length === 0) out.push(`  learners:  no change for any of ${p.impact.length} enrolled learner(s) (${p.impact.map((i) => `${who(i)}: ${state(i.after)}`).join("; ")})`);
   else {
     out.push(`  learners:  ${changed.length} of ${p.impact.length} would change:`);
-    for (const i of changed) out.push(`    - ${i.name}: ${state(i.before)} -> ${state(i.after)}`);
+    for (const i of changed) out.push(`    - ${who(i)}: ${state(i.before)} -> ${state(i.after)}`);
     const same = p.impact.filter((i) => !i.changes);
-    if (same.length) out.push(`    unchanged: ${same.map((i) => `${i.name} (${state(i.after)})`).join("; ")}`);
+    if (same.length) out.push(`    unchanged: ${same.map((i) => `${who(i)} (${state(i.after)})`).join("; ")}`);
   }
   return out.join("\n");
 }
