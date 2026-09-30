@@ -11,7 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parse } from "dotenv";
-import { checkDbTarget, describeTarget, parseDbTarget, type DbEnv, type GuardRole } from "../lib/db-targets";
+import { checkDbTarget, dbTargetWarnings, describeTarget, parseDbTarget, type DbEnv, type GuardRole } from "../lib/db-targets";
 
 const ROLES: GuardRole[] = ["test", "not-production", "import", "build"];
 const role = process.argv[2] as GuardRole;
@@ -39,6 +39,11 @@ const problems = checkDbTarget({
 });
 
 const target = describeTarget(parseDbTarget(effectiveEnv.DATABASE_URL));
+
+// Notices that never fail the guard (e.g. the variables Vercel's Neon integration
+// injects and cannot remove). Printed either way, names only, never values.
+for (const w of dbTargetWarnings(effectiveEnv, dotEnv)) console.warn(`db-guard [${role}] warning: ${w}`);
+
 if (problems.length > 0) {
   console.error(`\ndb-guard [${role}] REFUSED. Target: ${target}`);
   for (const p of problems) console.error(`  - ${p}`);

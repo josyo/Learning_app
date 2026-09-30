@@ -51,7 +51,7 @@ Use the **main** branch's **direct** connection string (in Neon: your project, B
 
 Vercel dashboard, your project, Settings, Environment Variables. Copy the connection strings from Neon (Branches, choose the branch, Connect). **Pooled** means the host contains `-pooler`; **direct** means it does not.
 
-Before you change anything, copy each current value into your password manager, so you can restore it.
+Before you change a variable, copy its current value into your password manager, so you can restore it. You set `DATABASE_URL` and `DIRECT_URL` **by hand**, for each environment.
 
 | Name | Production | Preview | Development |
 |---|---|---|---|
@@ -59,19 +59,21 @@ Before you change anything, copy each current value into your password manager, 
 | `DIRECT_URL` | **main**, direct | **dev**, direct | leave unset |
 | `BETTER_AUTH_SECRET` | keep the current value (changing it signs everyone out) | a different secret | leave unset |
 | `BETTER_AUTH_URL` | `https://learningapp-zeta.vercel.app` | decide when you use previews (see note) | leave unset |
-| `LEARNING_DB_DATABASE_URL` | **delete** | **delete** | **delete** |
+| `LEARNING_DB_*` (about 20, added by the Neon integration) | **leave alone** | **leave alone** | leave alone |
 | `ALLOW_PRODUCTION_DB_WRITE`, `ALLOW_SEED` | never set | never set | never set |
 
 - [ ] `DIRECT_URL` is **required** in Production. The build fails without it.
-- [ ] `LEARNING_DB_DATABASE_URL` **must** be removed from every scope. The build guard treats it as an error and refuses to build.
-- [ ] **Preview must never point at `main`.** Check the Preview scope for anything else that does: if the Neon integration is installed it may add `DATABASE_URL_UNPOOLED` or `POSTGRES_*` variables. Delete or override any that point at production.
-- [ ] Editing variables does **not** touch the running site. Vercel applies variable changes only to new deployments, and each old deployment keeps its own snapshot. That is also why deleting a variable does not break an instant rollback.
+- [ ] **Leave every `LEARNING_DB_*` variable alone** (for example `LEARNING_DB_DATABASE_URL`, `LEARNING_DB_POSTGRES_PRISMA_URL`, `LEARNING_DB_PGHOST`). The Neon integration manages them and they cannot be cleanly deleted. That is safe: no code reads them (a unit test, `lib/no-legacy-env.test.ts`, fails if any source file ever does), and the app and every script connect only through `DATABASE_URL` and `DIRECT_URL`. The build guard just prints a warning about them and carries on.
+- [ ] **Do not point `DATABASE_URL` or `DIRECT_URL` at an integration value.** Type or paste the right branch's string yourself, so the environment you see in this table is the environment you get.
+- [ ] **Preview must never point at `main`.** The two variables that matter are `DATABASE_URL` and `DIRECT_URL`, and the build guard refuses a Preview build whose URLs are the production host. If you ever see an *unprefixed* `POSTGRES_*`, `PG*` or `DATABASE_URL_UNPOOLED` variable in Preview, tell me: the app does not read those either, but I would want to know where it came from.
+- [ ] Editing variables does **not** touch the running site. Vercel applies variable changes only to new deployments, and each old deployment keeps its own snapshot. That is also why changing a variable does not break an instant rollback.
 - Note on Preview `BETTER_AUTH_URL`: `lib/auth.ts` falls back to `http://localhost:3000` when it is unset, and also trusts `https://$VERCEL_URL`. I have not tested sign-in on a preview URL, so treat previews as untested until you try one.
 
 ## 3. Push, and confirm the site loads
 
 1. [ ] Push: `git push origin main`. This is the point of no return for the code, so only do it after steps 1 and 2.
 2. [ ] Vercel dashboard, Deployments: open the new deployment and its **Build Logs**. You should see, in order:
+   - `db-guard [build] warning: ... LEARNING_DB_* variable(s) are set ...` (expected: the Neon integration's variables; it is only a warning)
    - `db-guard [build] ok. Target: ep-red-mode-aur8z6oc...`
    - `Applying migration `20260929200000_lesson_archived_at``
    - `All migrations have been successfully applied.`
@@ -81,8 +83,9 @@ Before you change anything, copy each current value into your password manager, 
    | Message contains | Meaning | Fix |
    |---|---|---|
    | `DIRECT_URL is missing` | variable not set in Production | set it, then Redeploy that deployment |
-   | `LEARNING_DB_DATABASE_URL is set` | retired variable still exists | delete it, then Redeploy |
-   | `build points at PRODUCTION` | a Preview build has main's URLs | fix the Preview variables |
+   | `warning: ... LEARNING_DB_* variable(s) are set` | the Neon integration's variables | nothing: it is a warning, not the cause of a failure |
+   | `DATABASE_URL is missing` | variable not set in that environment (a `LEARNING_DB_*` copy does not count) | set `DATABASE_URL` by hand, then Redeploy |
+   | `build points at PRODUCTION` | a Preview build has main's URLs | fix the Preview `DATABASE_URL` and `DIRECT_URL` |
    | `P1001` or connection errors | wrong `DIRECT_URL` (it must be the direct host) | correct it, then Redeploy |
    | `tsx: not found` | build tools missing | tell me; nothing else to change |
 

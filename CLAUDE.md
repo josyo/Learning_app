@@ -172,7 +172,7 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
    inet_server_addr()` through the same client the code uses; (b) after
    any `datasource` change run `npm run db:generate`; (c) there is one
    variable pair now, `DATABASE_URL` (pooled) + `DIRECT_URL` (direct), and
-   `LEARNING_DB_DATABASE_URL` is retired (guards refuse it).
+   nothing may read a `LEARNING_DB_*` variable any more (see gotcha 14).
 10. **Neon branch layout: main = production, dev, test.** `main` holds real
     trainee data and is written only by a deliberate, separately approved
     step with a fresh `pg_dump` first. `.env` -> **dev** (a copy of
@@ -218,7 +218,7 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     **the build fails without it**), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`;
     Preview must point `DATABASE_URL`/`DIRECT_URL` at the **dev** branch (never
     main) with its own `BETTER_AUTH_SECRET` and a valid `BETTER_AUTH_URL`;
-    remove `LEARNING_DB_DATABASE_URL` from every scope; never set
+    leave the integration-managed `LEARNING_DB_*` variables alone (gotcha 14); never set
     `ALLOW_PRODUCTION_DB_WRITE` or `ALLOW_SEED`. Take a fresh `pg_dump` of main
     first. The release also applies migration `20260929200000_lesson_archived_at`
     to production, and the content import to production is a **separate,
@@ -241,6 +241,23 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
       `prisma/content-source.ts`): its draft is validated on every run but not
       imported, and the seed content in the database stays until the module is
       rewritten. Move it back to `MODULE_SLUGS` with the rewrite.
+
+14. **The Vercel Neon integration injects ~20 `LEARNING_DB_*` variables, and we
+    leave them alone.** The Marketplace integration adds variables such as
+    `LEARNING_DB_DATABASE_URL`, `LEARNING_DB_POSTGRES_PRISMA_URL`,
+    `LEARNING_DB_PGHOST` and `LEARNING_DB_NEON_AUTH_BASE_URL` to Production and
+    Preview, and they cannot be cleanly deleted. So the build guard
+    (`scripts/db-guard.ts`) only **warns** when any exist (a count and a few
+    names, never values) and carries on. The protection is that **no code may
+    read one**: `lib/no-legacy-env.test.ts` fails if any source file (app, lib,
+    modules, prisma, scripts, components, e2e, root config, env templates)
+    mentions the prefix, if the Prisma schema reads anything but
+    `DATABASE_URL` and `DIRECT_URL`, or if the generated client does not read
+    `DATABASE_URL`. `lib/db-targets.ts` is the one allowed file (it only
+    receives an env object). The guard still **fails** when `DATABASE_URL` or
+    `DIRECT_URL` is missing (a `LEARNING_DB_*` copy does not count: nothing
+    falls back to them) and when a Preview build targets the production host.
+    Set `DATABASE_URL` and `DIRECT_URL` by hand for each environment.
 
 ## Suggested first steps in Claude Code
 

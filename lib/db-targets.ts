@@ -18,8 +18,18 @@ export const PRODUCTION_DB_HOST = "ep-red-mode-aur8z6oc.c-10.us-east-1.aws.neon.
 /** Set to PRODUCTION_DB_HOST to deliberately allow a production write. */
 export const PRODUCTION_OVERRIDE_ENV = "ALLOW_PRODUCTION_DB_WRITE";
 
-/** The retired variable that made a stale client ignore DATABASE_URL. */
-export const LEGACY_URL_VARS = ["LEARNING_DB_DATABASE_URL"] as const;
+/**
+ * Prefix of the variables the Vercel Neon Marketplace integration injects into
+ * Production and Preview (LEARNING_DB_DATABASE_URL, LEARNING_DB_PGHOST, ...).
+ * They cannot be cleanly removed, so their presence is only WARNED about. The
+ * protection is that no source file may read one: see lib/no-legacy-env.test.ts.
+ * (A generated client that read LEARNING_DB_DATABASE_URL instead of
+ * DATABASE_URL is what once pointed "dev" at production.)
+ *
+ * This file is the only source file allowed to contain the prefix, and it must
+ * read the process environment directly: it receives the environment as an argument.
+ */
+export const INTEGRATION_ENV_PREFIX = "LEARNING_DB_";
 
 export interface DbTarget {
   host: string; // lower-case, "-pooler" removed
@@ -74,10 +84,35 @@ export interface GuardInput {
   role: GuardRole;
   /** The environment the script/server will actually run with. */
   env: DbEnv;
-  /** Parsed contents of .env (not process.env), or null if the file is absent. */
+  /** Parsed contents of .env (not the process environment), or null if the file is absent. */
   dotEnv: DbEnv | null;
   /** Vercel's VERCEL_ENV: "production" | "preview" | "development" | undefined. */
   vercelEnv?: string;
+}
+
+/** Names (never values) of the integration-managed variables present, sorted. */
+export function integrationVarNames(env: DbEnv, dotEnv: DbEnv | null): string[] {
+  const names = new Set<string>();
+  for (const source of [env, dotEnv ?? {}]) {
+    for (const [name, value] of Object.entries(source)) {
+      if (name.startsWith(INTEGRATION_ENV_PREFIX) && value !== undefined) names.add(name);
+    }
+  }
+  return [...names].sort();
+}
+
+/**
+ * Non-fatal notices for the guard to print. Currently: LEARNING_DB_* variables
+ * are set. They are ignored, because nothing reads them and only DATABASE_URL
+ * and DIRECT_URL decide where the app and the scripts connect.
+ */
+export function dbTargetWarnings(env: DbEnv, dotEnv: DbEnv | null): string[] {
+  const names = integrationVarNames(env, dotEnv);
+  if (names.length === 0) return [];
+  const shown = names.slice(0, 3).join(", ") + (names.length > 3 ? ", ..." : "");
+  return [
+    `${names.length} ${INTEGRATION_ENV_PREFIX}* variable(s) are set (${shown}), managed by the Neon Marketplace integration. They are ignored: nothing reads them, and only DATABASE_URL and DIRECT_URL are used.`,
+  ];
 }
 
 /** Returns human-readable violations; empty means the target is acceptable. */
@@ -86,12 +121,9 @@ export function checkDbTarget({ role, env, dotEnv, vercelEnv }: GuardInput): str
   const db = parseDbTarget(env.DATABASE_URL);
   const direct = parseDbTarget(env.DIRECT_URL);
 
-  for (const name of LEGACY_URL_VARS) {
-    if (env[name] || dotEnv?.[name]) {
-      problems.push(`${name} is set. It is retired: remove it. Only DATABASE_URL and DIRECT_URL are used.`);
-    }
-  }
-
+  // Integration-managed LEARNING_DB_* variables are deliberately NOT a problem
+  // (see dbTargetWarnings). A missing DATABASE_URL or DIRECT_URL still is, even
+  // when a LEARNING_DB_* look-alike is present: nothing falls back to them.
   if (!db) problems.push("DATABASE_URL is missing or not a valid URL.");
   if (!direct) problems.push("DIRECT_URL is missing or not a valid URL (Prisma migrations need it).");
   if (db && direct && db.host !== direct.host) {
