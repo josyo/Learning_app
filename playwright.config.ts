@@ -2,19 +2,23 @@ import fs from "node:fs";
 import path from "path";
 import { defineConfig, devices } from "@playwright/test";
 import { config as loadEnv, parse as parseEnv } from "dotenv";
-import { checkDbTarget, describeTarget, parseDbTarget } from "./lib/db-targets";
+import { NO_DATABASE_MESSAGE, checkDbTarget, describeTarget, noDatabaseConfigured, parseDbTarget } from "./lib/db-targets";
 
-// Deliberately .env.test, not .env.local — E2E runs against a
-// separate, disposable database (see .env.test.example) so this
-// suite can never touch real dev data. Missing .env.test is a
-// configuration error, not a fall-through to the real database.
+// Deliberately .env.test, not .env.local — E2E runs against a separate,
+// disposable database (see env.test.example) so this suite can never touch
+// real dev data. Locally the values come from .env.test. In GitHub Actions
+// there is no file: the "E2E on test branch" workflow puts the test-branch
+// values in the process environment, and they are used as they are. With
+// neither, this is a configuration error, never a fall-through to a real
+// database (cloud sessions have no database at all).
 const testEnvPath = path.resolve(__dirname, ".env.test");
-if (!fs.existsSync(testEnvPath)) {
-  throw new Error(
-    "Missing .env.test for Playwright. Create it from env.test.example (pointing at the Neon 'test' branch) before running npm run test:e2e."
-  );
+const TEST_ENV_KEYS = ["DATABASE_URL", "DIRECT_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "SEED_USER_PASSWORD"];
+const testEnv: Record<string, string> = fs.existsSync(testEnvPath)
+  ? (loadEnv({ path: testEnvPath }).parsed ?? {})
+  : Object.fromEntries(TEST_ENV_KEYS.flatMap((k) => (process.env[k] ? [[k, process.env[k] as string]] : [])));
+if (noDatabaseConfigured(testEnv)) {
+  throw new Error(`Playwright refused to start: ${NO_DATABASE_MESSAGE}`);
 }
-const testEnv = loadEnv({ path: testEnvPath }).parsed ?? {};
 
 // Refuse to run at all unless the test target is a separate database: not
 // production, and not the dev target in .env. Runs when the config loads, so

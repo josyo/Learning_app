@@ -22,7 +22,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { describeTarget, parseDbTarget } from "@/lib/db-targets";
+import { NO_DATABASE_MESSAGE, describeTarget, parseDbTarget } from "@/lib/db-targets";
 import { withSlowLinkParams } from "@/lib/slow-link";
 
 function arg(name: string): string | undefined {
@@ -48,7 +48,11 @@ async function main() {
   const dotEnvPath = path.resolve(__dirname, "..", ".env");
   const dotEnv = fs.existsSync(dotEnvPath) ? parseEnv(fs.readFileSync(dotEnvPath)) : {};
   const effectiveUrl = process.env.DATABASE_URL ?? dotEnv.DATABASE_URL;
-  if (effectiveUrl) process.env.DATABASE_URL = withSlowLinkParams(effectiveUrl);
+  if (!effectiveUrl?.trim()) {
+    console.error(`verify-learner-view refused: ${NO_DATABASE_MESSAGE}`);
+    process.exit(1);
+  }
+  process.env.DATABASE_URL = withSlowLinkParams(effectiveUrl);
   const { db } = await import("@/lib/db");
   const { getEnrolledPathState } = await import("@/modules/learning/get-enrolled-path-state");
 

@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  NO_DATABASE_MESSAGE,
   PRODUCTION_DB_HOST,
   PRODUCTION_OVERRIDE_ENV,
   checkDbTarget,
   checkRuntimeTarget,
   dbTargetWarnings,
   integrationVarNames,
+  noDatabaseConfigured,
   parseDbTarget,
 } from "./db-targets";
 
@@ -26,6 +28,24 @@ describe("parseDbTarget", () => {
   it("returns null for missing or garbage input", () => {
     expect(parseDbTarget(undefined)).toBeNull();
     expect(parseDbTarget("not a url")).toBeNull();
+  });
+});
+
+describe("no database in the environment (cloud sessions)", () => {
+  it("every non-build role refuses with the one clear message, pointing at the Actions workflows", () => {
+    for (const role of ["test", "not-production", "import"] as const) {
+      for (const env of [{}, { DATABASE_URL: "" }, { DATABASE_URL: "  " }, { DIRECT_URL: url(DEV) }]) {
+        const p = checkDbTarget({ role, env, dotEnv: null });
+        expect(p).toEqual([NO_DATABASE_MESSAGE]);
+      }
+    }
+    expect(NO_DATABASE_MESSAGE).toMatch(/^no database in this environment/);
+    expect(NO_DATABASE_MESSAGE).toMatch(/GitHub Actions workflows/);
+    expect(NO_DATABASE_MESSAGE).toMatch(/validate:content/);
+  });
+  it("noDatabaseConfigured only looks at DATABASE_URL", () => {
+    expect(noDatabaseConfigured({})).toBe(true);
+    expect(noDatabaseConfigured({ DATABASE_URL: url(DEV) })).toBe(false);
   });
 });
 
@@ -93,7 +113,8 @@ describe("checkDbTarget", () => {
 
     it("still fails when DATABASE_URL is missing, even though LEARNING_DB_DATABASE_URL is present (nothing falls back to it)", () => {
       const env = { DIRECT_URL: url(DEV), ...integration, LEARNING_DB_DATABASE_URL: url(withPooler(DEV)) };
-      expect(checkDbTarget({ role: "not-production", env, dotEnv: null }).join()).toMatch(/DATABASE_URL is missing/);
+      expect(checkDbTarget({ role: "not-production", env, dotEnv: null }).join()).toMatch(/no database in this environment/);
+      expect(checkDbTarget({ role: "build", env, dotEnv: null }).join()).toMatch(/DATABASE_URL is missing/);
     });
 
     it("still fails when DIRECT_URL is missing", () => {
