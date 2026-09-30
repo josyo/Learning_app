@@ -238,6 +238,9 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     - **TEST branch `ep-green-bread-aue0kwbf` ONLY:** the assistant may reset it
       (`npm run test:e2e:setup`, which runs `prisma migrate reset --force`) and
       run E2E against it without asking each time. It is disposable.
+      (Applies to a session that has database access, i.e. a local one. Cloud
+      sessions have none: E2E runs through the "E2E on test branch" workflow,
+      see "Remote working".)
     - **DEV branch `ep-silent-band-aup0hqps` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
       every write (migration, import, reset, seed) needs the owner's explicit OK
       **every time**. Always show a `--dry-run` first. Production also needs a
@@ -267,34 +270,48 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     falls back to them) and when a Preview build targets the production host.
     Set `DATABASE_URL` and `DIRECT_URL` by hand for each environment.
 
-## Remote working (set 2026-09-30; the owner is away and works from a phone)
+## Remote working (rewritten 2026-09-30; the owner is away and works from a phone)
 
 Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`).
-Setup details, GitHub secrets steps and the cloud environment list are in
+Setup details, GitHub secrets steps and the cloud environment settings are in
 `docs/plans/remote-setup.md`.
 
+- **A cloud session has NO database and NO database credentials.** The
+  environment holds no `DATABASE_URL`, `DIRECT_URL` or any other connection
+  string, for any branch (production, dev or test). Anything that reads or
+  writes a database runs only in GitHub Actions. Do not try to connect, probe
+  the network, or work around the missing variables.
+- **What a cloud session does:** write and edit content (`content-drafts/*.md`,
+  `prisma/media-map.ts`) and code; check content with
+  `npm run validate:content` (= `import-content.ts --validate-only`: parses
+  every draft, slug and media-map entry, reads no credentials, loads no
+  database client); run `npm test` (unit tests, no database) and
+  `npm run typecheck`.
+- **What goes through GitHub Actions (run by the owner, `workflow_dispatch`):**
+  - **"Import content to dev"**: any branch, `dry_run` defaults to true.
+  - **"Import content to production"**: `main` only, `dry_run` defaults to true,
+    needs the owner's approval in the `production` environment, a real run also
+    needs `backup_confirmed`.
+  - **"E2E on test branch"**: resets and reseeds the disposable test branch,
+    then runs Playwright. Uses the `test` environment.
+  Dry-runs, imports, migrations, seeds and E2E never run in a session.
+- **Scripts refuse cleanly without a database.** `db-guard`, `import:content`,
+  the seed, the `*:test` scripts and Playwright stop with "no database in this
+  environment" when `DATABASE_URL` is unset. Scripts that need no database
+  (`validate:content`, `test`, `typecheck`) work without one. No `.env` or
+  `.env.test` is needed anywhere: the Actions workflows pass the secrets as
+  process environment variables.
 - **Branches only, never `main`.** A cloud session creates a branch, commits and
   pushes **that branch**. It never pushes to, merges into or force-pushes `main`.
-  (This supersedes older "commit, do not push" instructions: a cloud session must
-  push its branch to keep its work.)
 - **Merging to `main` is a production release** (auto-deploy plus
   `prisma migrate deploy`, gotcha 12). Only the owner merges, after
   `docs/release-checklist.md`. Open a pull request and stop.
 - **Production credentials never go into any cloud environment**, `.env` file,
-  commit, chat message or log. The cloud environment holds **dev branch** URLs
-  only (`DATABASE_URL`, `DIRECT_URL`); verify the host is `ep-silent-band-aup0hqps`
-  before any write. If a production URL ever appears in a session, stop and tell
-  the owner so it can be rotated.
-- **Production content import happens only through the GitHub Actions workflow
-  "Import content to production"**, run from `main`, dry run first, approved by
-  the owner in the `production` environment. Never run the importer against
-  production from a session, and never set `ALLOW_PRODUCTION_DB_WRITE` in one.
-  Dev dry-runs and imports may be run in the session or with "Import content to
-  dev"; gotcha 13 still applies (show the dry run, get the owner's OK before any
-  dev write).
+  commit, chat message or log. If a connection string of any branch ever appears
+  in a session, stop and tell the owner so it can be rotated.
 - **Keep every existing stop point.** Stop points in a plan or in a request
-  (outline, first lesson, dry-run review) still mean stop and wait, even though
-  the owner replies slowly. Do not "keep going" to save time.
+  (outline, first lesson, validation or dry-run review) still mean stop and
+  wait, even though the owner replies slowly. Do not "keep going" to save time.
 - **Plans live in the repo.** Continue multi-step work from `docs/plans/*.md`
   (currently `docs/plans/html-foundations.md`) and update the plan file when the
   state changes, because the session's conversation will not survive.

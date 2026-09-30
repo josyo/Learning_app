@@ -115,8 +115,26 @@ export function dbTargetWarnings(env: DbEnv, dotEnv: DbEnv | null): string[] {
   ];
 }
 
+/**
+ * Shown by every database-touching script when DATABASE_URL is not set. Cloud
+ * sessions deliberately have no database and no credentials: anything that
+ * reads or writes a database runs in GitHub Actions. Content needs no database
+ * to be checked (`npm run validate:content`).
+ */
+export const NO_DATABASE_MESSAGE =
+  "no database in this environment \u2014 use the GitHub Actions workflows (Import content to dev / production, E2E on test branch). To check content without a database run: npm run validate:content";
+
+/** True when DATABASE_URL is unset or blank (a missing DIRECT_URL is a separate problem). */
+export function noDatabaseConfigured(env: DbEnv): boolean {
+  return !env.DATABASE_URL || env.DATABASE_URL.trim() === "";
+}
+
 /** Returns human-readable violations; empty means the target is acceptable. */
 export function checkDbTarget({ role, env, dotEnv, vercelEnv }: GuardInput): string[] {
+  // No database at all: one clear refusal instead of a list of URL complaints.
+  // (The Vercel build keeps its detailed messages: it does have a database.)
+  if (role !== "build" && noDatabaseConfigured(env)) return [NO_DATABASE_MESSAGE];
+
   const problems: string[] = [];
   const db = parseDbTarget(env.DATABASE_URL);
   const direct = parseDbTarget(env.DIRECT_URL);

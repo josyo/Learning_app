@@ -1,0 +1,82 @@
+name: E2E on test branch
+
+# Runs the Playwright E2E suite against the TEST Neon branch (ep-green-bread-aue0kwbf).
+# That branch is disposable: test:e2e:setup wipes, migrates, seeds and imports content
+# into it first, which is what the E2E tests expect. It can run from any branch.
+# Uses the secrets of the "test" environment. A target assertion refuses anything
+# but the test endpoint, so a dev or production URL pasted there stops the run
+# before anything is written.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-test-branch
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: E2E (test branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: test
+    defaults:
+      run:
+        shell: bash
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      SEED_USER_PASSWORD: ${{ secrets.SEED_USER_PASSWORD }}
+      # Not secrets: the server Playwright starts listens here.
+      BETTER_AUTH_URL: http://localhost:3000
+      REDACT_LEARNER_NAMES: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Assert the secrets point at the test branch
+        run: npx tsx scripts/assert-db-target.ts test
+
+      - name: Database guard
+        run: npx tsx scripts/db-guard.ts test
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Reset, migrate, seed and import the test branch
+        run: npm run test:e2e:setup
+
+      - name: Run E2E
+        run: npm run test:e2e 2>&1 | tee e2e-output.txt
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### E2E on test branch"
+            echo "Ref: ${{ github.ref_name }} at ${{ github.sha }}"
+            echo '~~~'
+            tail -n 60 e2e-output.txt 2>/dev/null || echo "(no E2E output)"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
