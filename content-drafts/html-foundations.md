@@ -864,12 +864,17 @@ Here is a complete profile page with a title, a section with a paragraph, a bull
 </html>
 ```
 
-1. Open this lesson on your computer, select the page above and copy it. Then, in VS Code, open `index.html`, click inside the text, select everything with Ctrl+A (Cmd+A on macOS), and paste with Ctrl+V (Cmd+V). This replaces your earlier practice text.
+1. Open this lesson on your computer, select the page above and copy it with Ctrl+C (Cmd+C on macOS).
+
+   You should see: the code highlighted in colour.
+   If you see something else: if only part of the code is highlighted, click once elsewhere and select it again.
+
+2. In VS Code, open `index.html` and make sure its tab is the one you are looking at. Click inside the text, select everything with Ctrl+A (Cmd+A on macOS), and paste with Ctrl+V (Cmd+V). This replaces your earlier practice text.
 
    You should see: the new page in the editor, with a dot on the tab.
    If you see something else: if you see the old text mixed with the new, select all and paste again.
 
-2. Save: Ctrl+S on Windows or Cmd+S on macOS. Open it in Chrome, or refresh it if it is open. To open it, on Windows type `start chrome "$PWD\index.html"` in the terminal, on macOS type `open -a "Google Chrome" index.html`. If that fails, open the file from File Explorer or Finder as in Lesson 1, steps 11 and 12.
+3. Save: Ctrl+S on Windows or Cmd+S on macOS. Open it in Chrome, or refresh it if it is open. To open it, on Windows type `start chrome "$PWD\index.html"` in the terminal, on macOS type `open -a "Google Chrome" index.html`. If that fails, open the file from File Explorer or Finder as in Lesson 1, steps 11 and 12.
 
    You should see: a large heading `Ada Example`, a paragraph, a smaller heading `About me`, a paragraph with **Important:** in bold and *not* in italics, a smaller heading `My interests`, and three bullet points.
    If you see something else: if the page has no bullets, check that each `<li>` sits inside `<ul>` and `</ul>`. See Common mistakes, number 1.
@@ -1268,7 +1273,7 @@ Here is a page that shows it, so you can see where the `<img>` goes. You add onl
 
 ## Guided practice
 
-Now use a real photo. If you have no photo you want to use, skip to step 6 and use the line given there for `my-shape.svg`.
+Now use a real photo. If you have no photo you want to use, skip to step 8 and use the line given there for `my-shape.svg`.
 
 1. Get the photo to your computer. You have two ways, and you only need one.
    - **WhatsApp Web:** in Chrome on your computer, open WhatsApp Web (search for it) and follow the instructions on screen to link your phone, which usually means scanning a code with your phone. Then send the photo from your phone to yourself, open it on the computer, and use the download option. The email way is simpler and more reliable.
@@ -1285,18 +1290,28 @@ Now use a real photo. If you have no photo you want to use, skip to step 6 and u
 3. Check its size. On Windows, right-click the file, choose **Properties**, and read **Size**, not Size on disk. KB means kilobytes, and 1000 KB is about 1 MB. On macOS, click the file and press Cmd+I. A phone photo is often 2 to 6 MB. Aim for under about 500 KB.
 
    You should see: a size in KB or MB.
-   If you see something else: if the size is under 500 KB, skip step 4.
+   If you see something else: if the size is under 500 KB, skip to step 7.
 
-4. Shrink it. On Windows, right-click the file, choose **Open with**, then **Paint**. If Paint is not in the list, choose **Choose another app** and pick Paint. Choose **Resize**, pick **Pixels**, set the horizontal size to `1000`, keep **Maintain aspect ratio** ticked, and click **OK**. Then choose File, **Save as**, **JPEG picture**, and save it with the same name. Windows may ask whether to replace the file; choose to replace it. On macOS, open the photo in Preview, choose Tools, then **Adjust Size**, set the width to `1000` pixels, and save.
+4. Open the photo in a picture editor. On Windows, right-click the file, choose **Open with**, then **Paint**. If Paint is not in the list, choose **Choose another app** and pick Paint. On macOS, open the photo in Preview.
 
-   You should see: a smaller size in the file's properties.
-   If you see something else: if the Paint menus differ on your Windows, look for any option that sets the width in pixels, or use a smaller photo and skip this step.
+   You should see: the photo in a window.
+   If you see something else: if Paint does not open, open Paint from the Start menu, choose File, then Open, and pick the photo. If you cannot open it at all, use a smaller photo and skip to step 7.
 
-5. Move the photo into `my-site\images`. Put the File Explorer window and the VS Code window side by side, then drag the file onto the `images` folder in the VS Code Explorer. Dragging copies the file, so the original stays in Downloads.
+5. Make the photo smaller. On Windows in Paint, choose **Resize**, pick **Pixels**, set the horizontal size to `1000`, keep **Maintain aspect ratio** ticked, and click **OK**. On macOS in Preview, choose Tools, then **Adjust Size**, set the width to `1000` pixels, and click **OK**.
+
+   You should see: the photo looks the same, but its size in pixels is smaller.
+   If you see something else: if the menus differ on your computer, look for any option that sets the width in pixels.
+
+6. Save the smaller photo with the same name. On Windows in Paint, choose File, then **Save as**, then **JPEG picture**, and keep the same name. Windows may ask whether to replace the file; choose to replace it. On macOS, press Cmd+S.
+
+   You should see: a smaller size when you check the file's properties again, as in step 3.
+   If you see something else: if the size did not change, repeat step 5 and save again.
+
+7. Move the photo into `my-site\images`. Put the File Explorer window and the VS Code window side by side, then drag the file onto the `images` folder in the VS Code Explorer. Dragging copies the file, so the original stays in Downloads.
 
    You should see: `my-photo.jpg` inside `images` in the VS Code Explorer.
 
-6. In `index.html`, replace the image line with one for your own picture. Write a specific description in place of `TODO`. Save and refresh Chrome.
+8. In `index.html`, replace the image line with one for your own picture. Write a specific description in place of `TODO`. Save and refresh Chrome.
 
    ```html
    <img src="images/my-photo.jpg" alt="TODO" width="400">
@@ -1914,27 +1929,32 @@ Here is the complete `contact.html` with a form: a text box, an email box and a 
 </html>
 ```
 
-1. Open this lesson on your computer, copy the page above, and paste it over everything in `contact.html` in VS Code. Change `Ada Example` to your own name in the three places it appears: the `<title>`, the site name in the header and the footer. Ctrl+F finds them. Save.
+1. Open this lesson on your computer, copy the page above, and paste it over everything in `contact.html` in VS Code.
 
-   You should see: the new page in the editor, with no dot on the tab.
+   You should see: the new page in the editor, with a dot on the tab.
    If you see something else: if you see the old and new text mixed, select everything with Ctrl+A (Cmd+A on macOS) and paste again.
 
-2. Open `contact.html` in Chrome, or refresh it. On Windows type `start chrome "$PWD\contact.html"` in the terminal, on macOS type `open -a "Google Chrome" contact.html`. If that fails, open the file from File Explorer or Finder as in Lesson 1, steps 11 and 12.
+2. Change `Ada Example` to your own name in the three places it appears: the `<title>`, the site name in the header and the footer. Ctrl+F finds them. Then save.
+
+   You should see: your name in all three places, and no dot on the tab.
+   If you see something else: if you still find `Ada` in the file, change that one too.
+
+3. Open `contact.html` in Chrome, or refresh it. On Windows type `start chrome "$PWD\contact.html"` in the terminal, on macOS type `open -a "Google Chrome" contact.html`. If that fails, open the file from File Explorer or Finder as in Lesson 1, steps 11 and 12.
 
    You should see: the heading `Contact`, three labelled boxes and a `Send` button.
    If you see something else: if a label has no box next to it, check that the `<input>` is still inside its `<div>`.
 
-3. Click the words `Your email`.
+4. Click the words `Your email`.
 
    You should see: the cursor appears in the email box. That is the label working.
    If you see something else: if nothing happens, the `for` of that label and the `id` of the box do not match. See Common mistakes, number 1.
 
-4. Fill in all three boxes with test words, using a real-looking email address such as `test@example.com`. Then click **Send**.
+5. Fill in all three boxes with test words, using a real-looking email address such as `test@example.com`. Then click **Send**.
 
    You should see: the page reloads, the boxes are empty, and the address bar now ends with something like `contact.html?name=Ada&email=test%40example.com&message=Hello`. Nothing was sent to anyone. The address holds the values, each under the `name` you gave the box. If you typed several words, each space shows as a `+`, and `%40` stands for the `@` sign. That is normal.
    If you see something else: if one value is missing from the address, that box has no `name` attribute.
 
-5. Click on an empty part of the page, then press **Tab** repeatedly, watching the outline.
+6. Click on an empty part of the page, then press **Tab** repeatedly, watching the outline.
 
    You should see: the focus moves through `Home` and `Contact` in the header, then the name box, the email box, the message box and the Send button, in that order. After the Send button it moves to Chrome's own buttons.
    If you see something else: if the order looks wrong, check that the boxes appear in the file in the order you want.
@@ -2058,51 +2078,82 @@ GitHub checks that your email address is yours. It sends you a **verification co
 
 ## Worked example
 
-Do this on your computer. If you already have a GitHub account, sign in, then go to step 4 to create the repository.
+Do this on your computer. If you already have a GitHub account, sign in, then go to step 6 to create the repository.
 
-1. In Chrome, open `github.com` and click **Sign up**. Enter your email address, a password, and a username, and continue.
+1. In Chrome, open `github.com` and click **Sign up**.
+
+   You should see: a form asking for your email address.
+   If you see something else: if you see a sign-in form instead, look for the link to create an account.
+
+2. Enter your email address, a password and a username, and continue. Pick a username that is professional, because it is public.
 
    You should see: GitHub asks you to confirm that you are a person, often with a small puzzle.
-   If you see something else: if the username is taken, GitHub suggests another. Pick one that is lowercase and professional.
+   If you see something else: if the username is taken, GitHub suggests another one. Pick one you are happy to show to employers.
 
-2. Complete the puzzle, if there is one. GitHub then sends a verification code to your email. Open your email in a new tab, copy the code, and type it into GitHub.
+3. Complete the puzzle, if there is one.
+
+   You should see: GitHub says it is sending a verification code to your email.
+   If you see something else: if the puzzle does not work, try again, or use another browser tab and start from step 1.
+
+4. Open your email in a new tab, find the message from GitHub, and type its code into GitHub.
 
    You should see: GitHub accepts the code and takes you on.
    If you see something else: if no email arrives within a few minutes, look in your spam folder, then use the option on the page to send it again.
 
-3. GitHub may show a short survey. Skip it if there is a skip option. It may also ask you to set up two-factor authentication now or later. If you can choose later, you may; if it is required, follow the screens. Choose the authenticator app if you have one, or text messages if you do not. Download the recovery codes and also take a photo of them, and keep both somewhere only you can reach.
+5. GitHub may show a short survey. Skip it if there is a skip option. It may also ask you to set up two-factor authentication, now or later. If you can choose later, you may. If it is required, follow the screens. Choose the authenticator app if you have one, or text messages if you do not. Download the recovery codes and also take a photo of them, and keep both somewhere only you can reach.
 
    You should see: your GitHub home page, with your username near the top right.
    If you see something else: if you are stuck on a screen, take a photo of it and message your mentor on WhatsApp with the step number.
 
-4. Create the repository. Click the **+** at the top right, then **New repository**. For the name, type `my-site`. Choose **Public**. Leave the optional extras, such as adding a README file, unticked, and click **Create repository**.
+6. Click the **+** at the top right of GitHub, then **New repository**.
+
+   You should see: a form for a new repository.
+   If you see something else: if you cannot find the **+**, look for a green **New** button.
+
+7. In the form, type `my-site` as the name and choose **Public**.
+
+   You should see: the name `my-site` in the box, and **Public** selected.
+   If you see something else: if GitHub complains about the name, check that it has no spaces.
+
+8. Leave the optional extras, such as adding a README file, unticked. Click **Create repository**.
 
    You should see: an empty repository page with a short "quick setup" message and a link about uploading an existing file.
-   If you see something else: if you see a box asking for a name again, check that the name has no spaces.
+   If you see something else: if there is no such link, go on to step 9 and use **Add file**.
 
-5. Click the link that says **uploading an existing file**. If you cannot see it, click **Add file** and then **Upload files**.
+9. Click the link that says **uploading an existing file**. If you cannot see it, click **Add file** and then **Upload files**.
 
    You should see: a large area that says to drag files here.
    If you see something else: if you see a code editor, you opened the wrong option. Go back and look for **Upload files**.
 
-6. Open your `my-site` folder in File Explorer. In VS Code, right-click `index.html` and choose **Reveal in File Explorer** (**Reveal in Finder** on macOS). Select `index.html`, `contact.html`, `styles.css` and the `images` folder together, by holding Ctrl (Cmd on macOS) and clicking each one. Put the File Explorer window and the Chrome window side by side, then drag them all onto the GitHub page. If dragging does not work, click the link on the page for choosing your files and select them there, then ask your mentor on WhatsApp how to add the `images` folder.
+10. In VS Code, right-click `index.html` in the Explorer and choose **Reveal in File Explorer** (**Reveal in Finder** on macOS).
 
-   You should see: GitHub lists the files, including the files inside `images` with the folder name in front, for example `images/my-photo.jpg`.
-   If you see something else: if you do not see the contents of `images`, drag the `images` folder again.
+    You should see: a window that shows your `my-site` folder.
+    If you see something else: if the folder shows many extra files, that is fine. You will pick only four items.
 
-7. Scroll down to the box under the file list. Leave the commit message as it is, and leave the option to commit to the `main` branch as it is. A **branch** is a line of saved versions of your project, and `main` is the one every project starts with. Click **Commit changes**.
+11. In that window, select `index.html`, `contact.html`, `styles.css` and the `images` folder together, by holding Ctrl (Cmd on macOS) and clicking each one.
 
-   You should see: the repository page, listing `index.html`, `contact.html`, `styles.css` and `images`.
-   If you see something else: if the repository still looks empty, you did not click the button. Go back and click **Commit changes**.
+    You should see: all four items highlighted.
+    If you see something else: if one is missing from the selection, hold Ctrl (Cmd) and click it.
 
-8. Click the folder `images` on GitHub.
+12. Put the File Explorer window and the Chrome window side by side, then drag the four selected items onto the GitHub page. If dragging does not work, click the link on the page for choosing your files and select them there, then ask your mentor on WhatsApp how to add the `images` folder.
 
-   You should see: your picture, and every file name in lowercase.
-   If you see something else: if a file name has capital letters or spaces, rename it on your computer, as in Lesson 7, update the `src`, and upload both again.
+    You should see: GitHub lists the files, including the files inside `images` with the folder name in front, for example `images/my-photo.jpg`.
+    If you see something else: if you do not see the contents of `images`, drag the `images` folder again.
 
-9. Copy the link to your repository. It is in the address bar, and looks like `https://github.com/` followed by your username, a slash, and `my-site`. Select it and copy it with Ctrl+C (Cmd+C on macOS). Paste it into a note on your phone or computer to keep.
+13. Scroll down to the box under the file list. Leave the commit message as it is, and leave the option to commit to the `main` branch as it is. A **branch** is a line of saved versions of your project, and `main` is the one every project starts with. Click **Commit changes**.
 
-   You should see: the full address.
+    You should see: the repository page, listing `index.html`, `contact.html`, `styles.css` and `images`.
+    If you see something else: if the repository still looks empty, you did not click the button. Go back and click **Commit changes**.
+
+14. Click the folder `images` on GitHub.
+
+    You should see: your picture, and every file name in lowercase.
+    If you see something else: if a file name has capital letters or spaces, rename it on your computer, as in Lesson 7, update the `src`, and upload both again.
+
+15. Copy the link to your repository. It is in the address bar, and looks like `https://github.com/` followed by your username, a slash, and `my-site`. Select it and copy it with Ctrl+C (Cmd+C on macOS). Paste it into a note on your phone or computer to keep.
+
+    You should see: the full address.
+    If you see something else: if the address ends in something after `my-site`, remove it.
 
 ## Guided practice
 
@@ -2142,7 +2193,7 @@ Now change a file and upload it again. You will also write a short message that 
 
 **1. The verification email does not arrive.**
 
-- Symptom: you wait a few minutes after step 2 and nothing appears in your inbox.
+- Symptom: you wait a few minutes after step 4 and nothing appears in your inbox.
 - Cause: the email went to spam, you mistyped the address, or it is delayed.
 - Fix: look in your spam folder, check the address you typed, and use the option on the page to send the code again. This is normal and happens often.
 
