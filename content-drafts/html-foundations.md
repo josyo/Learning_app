@@ -10,7 +10,7 @@
 **By the end you can:**
 
 - Create a file named `index.html` in your `my-site` folder from VS Code, and save it.
-- Open that file in Chrome from the terminal and from File Explorer.
+- Open that file in Chrome from the terminal and from **File Explorer** (Windows) or **Finder** (macOS), the programs that show your folders.
 - Predict what Chrome will show after you edit the file, then change the text, save and refresh to check.
 
 **Before you start:** You finished the Developer Orientation module, including the Environment Check assignment. That means VS Code is installed, the empty `my-site` folder is in your Documents folder, and you can open a terminal inside VS Code. Google Chrome must also be installed. On Windows, check by opening the Start menu and typing `Chrome`. If it does not appear, install Chrome first.
@@ -25,7 +25,7 @@ By the end of this module you will have a small website of your own. Every page 
 
 ## Files, extensions and browsers
 
-A web page is a **file**: a named piece of saved text on your computer. The text is written in **HTML** (HyperText Markup Language), the language that tells a browser what is on a page. HTML is **plain text**: letters you type, with no hidden formatting. A **browser** such as Chrome is a program that reads an HTML file and draws the page you see. It reads the file from your disk each time you open or refresh the page.
+A web page is a **file**: a named piece of saved text on your computer. The text is written in **HTML** (HyperText Markup Language), the language that tells a browser what is on a page. HTML is **plain text**: letters you type, with no hidden formatting. A **browser** such as Chrome is a program that reads an HTML file and draws the page you see. It reads the file from your disk each time you open the page or **refresh** it, which means load it again.
 
 The part of a file name after the last dot is its **file extension**. The extension `.html` tells your computer that the file is a web page. Today's file is called `index.html`. That is the standard name for the front page of a site: when your site is online later, visitors reach it without typing the file name.
 
@@ -41,7 +41,7 @@ On most keyboards you type `<` with Shift and the comma key, `>` with Shift and 
 
 ## Worked example
 
-Here is the complete page you will create. Read it first. You will copy it into a file in steps 4 and 5.
+Here is the complete page you will create. Read it first. You will copy it into a file in steps 4 to 6.
 
 ```html
 <!DOCTYPE html>
@@ -79,48 +79,56 @@ Do these steps on your computer.
    You should see: `index.html` listed under MY-SITE, and an empty tab named `index.html` open in the **editor** (the large area in the middle of VS Code where the text of a file appears).
    If you see something else: if the name is wrong, right-click the file in the Explorer, choose **Rename**, type `index.html` and press Enter.
 
-4. Copy the code. Do this on your computer: open this lesson in a browser on it, in the same way as on your phone, so that you can copy. Do not retype the code. Point at the start of the code box above, hold the left mouse button down, drag to the end of the code, and release. Then press Ctrl+C on Windows or Cmd+C on macOS.
+4. Open this lesson in a browser on your computer, in the same way as on your phone, so that you can copy the code. Do not retype it.
+
+   You should see: this page, with the code box above.
+   If you see something else: if you are not signed in, sign in with the same details as on your phone.
+
+5. Point at the start of the code box above, hold the left mouse button down, drag to the end of the code, and release. Then press Ctrl+C on Windows or Cmd+C on macOS.
 
    You should see: the code highlighted in colour.
    If you see something else: if only part of the code is highlighted, click once anywhere else on the page and try again.
 
-5. Click inside the empty editor and paste. Press Ctrl+V on Windows or Cmd+V on macOS.
+6. Click inside the empty editor and paste. Press Ctrl+V on Windows or Cmd+V on macOS.
 
    You should see: 12 lines of text in several colours, and a small **dot** on the `index.html` tab where the × (the close button) was. The dot means "changed but not saved". It looks white in VS Code's dark theme and dark in its light theme. If you cannot see the ×, point at the tab.
    If you see something else: if all the text is one colour, the file name probably does not end in `.html`. Rename it as in step 3.
 
-6. Save the file. Press Ctrl+S on Windows or Cmd+S on macOS.
+7. Save the file. Press Ctrl+S on Windows or Cmd+S on macOS.
 
    You should see: the dot on the tab turns back into ×.
    If you see something else: if the dot stays, click inside the editor and press the keys again, or choose File, then Save.
 
-7. Open a terminal inside VS Code: choose Terminal, then New Terminal.
+8. Open a terminal inside VS Code: choose Terminal, then New Terminal.
 
    You should see: a panel at the bottom with a line that ends in `my-site>`. On Windows the line starts with `PS`, which means the terminal is PowerShell. On macOS the line ends in `my-site %`.
    If you see something else: if the line ends in a different folder name, close the panel with the bin icon (a trash can) and open a new terminal. A terminal opened this way starts in the folder VS Code has open.
 
-8. Type `ls` and press Enter. This is the command from Developer Orientation that lists the files in the folder.
+9. Type `ls` and press Enter. This is the command from Developer Orientation that lists the files in the folder.
 
    You should see: `index.html`. On Windows it appears in a small table with the columns Mode, LastWriteTime, Length and Name.
    If you see something else:
-   - If you see other files and no `index.html`, the terminal is in a different folder. Close the panel with the bin icon and repeat step 7.
+   - If you see other files and no `index.html`, the terminal is in a different folder. Close the panel with the bin icon and repeat step 8.
    - If nothing is listed, the file is not in `my-site`. Check that the Explorer shows `index.html` under MY-SITE. If it does not, repeat steps 2 and 3 with the mouse over the MY-SITE row.
 
-9. Open the page in Chrome from the terminal.
+10. Open the page in Chrome from the terminal.
    - **Windows (PowerShell):** type `start chrome index.html` and press Enter.
    - **macOS:** type `open -a "Google Chrome" index.html` and press Return.
 
    You should see: Chrome opens with a tab titled "My first page". In the window, a large bold "Hello, world" has the smaller line "This is my first web page." under it. The **address bar** (the box at the top of Chrome that shows where the page is) starts with `file:///`. That means the page is a file on your own computer, not on the internet.
    If you see something else:
    - If Chrome shows "Your file was not found", read Common mistakes, number 3. If it shows code instead of words, read number 2.
-   - If PowerShell prints a red error saying it cannot find `chrome`, that is normal on some computers. Skip to step 10, which does the same job another way.
+   - If PowerShell prints a red error saying it cannot find `chrome`, that is normal on some computers. Skip to step 11, which does the same job another way.
 
-10. Now open the same file a second way, without the terminal. Close the Chrome tab first. In VS Code, right-click `index.html` in the Explorer and choose **Reveal in File Explorer** on Windows, or **Reveal in Finder** on macOS. This opens the correct folder, wherever your Documents folder really is. Then right-click `index.html` in that window and choose **Open with** and then **Google Chrome** (on macOS: **Open With**, then **Google Chrome**).
+11. Now open the same file a second way, without the terminal. Close the Chrome tab first. In VS Code, right-click `index.html` in the Explorer and choose **Reveal in File Explorer** on Windows, or **Reveal in Finder** on macOS.
 
-    You should see: the same page as in step 9. **File Explorer** is the Windows program that shows your folders, and **Finder** is the macOS one.
-    If you see something else:
-    - If **Open with** does not list Chrome, choose **Choose another app** and pick Chrome from the list.
-    - On Windows the file may be listed as `index`, with no `.html`. Windows hides file extensions by default, which is normal. To see them: on Windows 10 click the **View** tab at the top of the window and tick **File name extensions**. On Windows 11 click **View**, then **Show**, then **File name extensions**. The name should now read `index.html`. If it reads `index.html.txt`, read Common mistakes, number 2.
+    You should see: a File Explorer or Finder window that shows the `my-site` folder with `index.html` in it. This is the correct folder, wherever your Documents folder really is.
+    If you see something else: on Windows the file may be listed as `index`, with no `.html`. Windows hides file extensions by default, which is normal. To see them: on Windows 10 click the **View** tab at the top of the window and tick **File name extensions**. On Windows 11 click **View**, then **Show**, then **File name extensions**. The name should now read `index.html`. If it reads `index.html.txt`, read Common mistakes, number 2.
+
+12. In that window, right-click `index.html` and choose **Open with**, then **Google Chrome**. On macOS choose **Open With**, then **Google Chrome**.
+
+    You should see: the same page as in step 10.
+    If you see something else: if **Open with** does not list Chrome, choose **Choose another app** and pick Chrome from the list.
 
 ## Guided practice
 
@@ -135,7 +143,7 @@ Now change the words. You will edit one line and decide what Chrome will show be
    You should see: the line shows your name, and the tab has a dot again.
    If you see something else: if you deleted part of a tag, press Ctrl+Z (Cmd+Z on macOS) to undo, and try again.
 
-2. Predict first: after you refresh Chrome now, will it show the old heading or your new one? Decide your answer before you go on. Then go back to Chrome, open `index.html` again if you closed it (use step 9 or 10 above), and **refresh** the page. Refreshing makes the browser read the file again. Press Ctrl+R on Windows or Cmd+R on macOS, or click the circular arrow to the left of the address bar. The F5 key works on Windows too; on some laptops you must hold the Fn key as well.
+2. Predict first: after you refresh Chrome now, will it show the old heading or your new one? Decide your answer before you go on. Then go back to Chrome, open `index.html` again if you closed it (use step 10 above, or steps 11 and 12), and **refresh** the page. Refreshing makes the browser read the file again. Press Ctrl+R on Windows or Cmd+R on macOS, or click the circular arrow to the left of the address bar. The F5 key works on Windows too; on some laptops you must hold the Fn key as well.
 
    You should see: the old heading, "Hello, world". VS Code has not written your change to the file yet, and Chrome reads the file.
    If you see something else: if you see your new name already, VS Code is set to save automatically. That is fine, and you can go on to step 3.
@@ -143,6 +151,7 @@ Now change the words. You will edit one line and decide what Chrome will show be
 3. Go back to VS Code and save: Ctrl+S on Windows or Cmd+S on macOS.
 
    You should see: the dot turns into ×.
+   If you see something else: if the dot stays, click inside the editor and press the keys again, or choose File, then Save.
 
 4. Go back to Chrome and refresh again.
 
@@ -186,7 +195,7 @@ If the second paragraph does not appear, check that it sits between `<body>` and
   ```
 
 - Cause: the file's extension is not `.html`. Most often the file is really named `index.html.txt`. Windows hides extensions, so the name looks right. This happens if the file was made as a text document in File Explorer or in Notepad.
-- Fix: in VS Code, check the Explorer for the exact file name. Show extensions in File Explorer as in step 10. Rename the file to exactly `index.html`. Windows warns that changing the extension may make the file unusable; click **Yes**. Run `ls` in the terminal to check the name.
+- Fix: in VS Code, check the Explorer for the exact file name. Show extensions in File Explorer as in step 11. Rename the file to exactly `index.html`. Windows warns that changing the extension may make the file unusable; click **Yes**. Run `ls` in the terminal to check the name.
 
 **3. Chrome says the file was not found.**
 
@@ -198,8 +207,8 @@ If the second paragraph does not appear, check that it sits between `<body>` and
   ERR_FILE_NOT_FOUND
   ```
 
-- Cause: the address Chrome was given does not match a real file. Usually the file name has a typo (for example `index.htm`), the terminal was in a different folder (the line in step 7 should end in `my-site`), or the file was moved or renamed after you opened it.
-- Fix: close the terminal panel with the bin icon, open a new one with Terminal, then New Terminal, and run `ls` to see the exact file name. Then run the command in step 9 again with that name. This message is normal after a typo: it tells you exactly what is wrong.
+- Cause: the address Chrome was given does not match a real file. Usually the file name has a typo (for example `index.htm`), the terminal was in a different folder (the line in step 8 should end in `my-site`), or the file was moved or renamed after you opened it.
+- Fix: close the terminal panel with the bin icon, open a new one with Terminal, then New Terminal, and run `ls` to see the exact file name. Then run the command in step 10 again with that name. This message is normal after a typo: it tells you exactly what is wrong.
 
 **4. There is an empty gap after my new paragraph.**
 
@@ -216,7 +225,7 @@ If the second paragraph does not appear, check that it sits between `<body>` and
 
 1. **(Predict)** You change `Hello, world` to `Hello, Ada` in VS Code and press Ctrl+R in Chrome without saving. What does Chrome show, and why?
 2. **(Spot the bug)** Ada opens her page and Chrome shows `<!DOCTYPE html>` and the other tags as plain text. In File Explorer her file is listed as `index`, with no `.html`. What is the most likely cause, and how would she check?
-3. **(Recall — What Is a Terminal, and How Do You Use One)** Which command lists the files in the folder your terminal is in? What should it list for `my-site` once you have finished steps 1 to 6 of the worked example?
+3. **(Recall — What Is a Terminal, and How Do You Use One)** Which command lists the files in the folder your terminal is in? What should it list for `my-site` once you have finished steps 1 to 7 of the worked example?
 4. **(Predict)** The address bar shows an address starting with `file:///`. A friend types that same address into Chrome on their own computer. Will they see your page? Why or why not?
 5. **(Spot the bug)** Sam's second paragraph looks fine in the editor, but Chrome shows extra blank space after it. The line reads `<p>I like maps.</p></p>`. What is wrong?
 
