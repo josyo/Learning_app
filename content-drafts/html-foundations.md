@@ -112,13 +112,13 @@ Do these steps on your computer.
    - If nothing is listed, the file is not in `my-site`. Check that the Explorer shows `index.html` under MY-SITE. If it does not, repeat steps 2 and 3 with the mouse over the MY-SITE row.
 
 10. Open the page in Chrome from the terminal.
-   - **Windows (PowerShell):** type `start chrome index.html` and press Enter.
-   - **macOS:** type `open -a "Google Chrome" index.html` and press Return.
+    - **Windows (PowerShell):** type `start chrome index.html` and press Enter.
+    - **macOS:** type `open -a "Google Chrome" index.html` and press Return.
 
-   You should see: Chrome opens with a tab titled "My first page". In the window, a large bold "Hello, world" has the smaller line "This is my first web page." under it. The **address bar** (the box at the top of Chrome that shows where the page is) starts with `file:///`. That means the page is a file on your own computer, not on the internet.
-   If you see something else:
-   - If Chrome shows "Your file was not found", read Common mistakes, number 3. If it shows code instead of words, read number 2.
-   - If PowerShell prints a red error saying it cannot find `chrome`, that is normal on some computers. Skip to step 11, which does the same job another way.
+    You should see: Chrome opens with a tab titled "My first page". In the window, a large bold "Hello, world" has the smaller line "This is my first web page." under it. The **address bar** (the box at the top of Chrome that shows where the page is) starts with `file:///`. That means the page is a file on your own computer, not on the internet.
+    If you see something else:
+    - If Chrome shows "Your file was not found", read Common mistakes, number 3. If it shows code instead of words, read number 2.
+    - If PowerShell prints a red error saying it cannot find `chrome`, that is normal on some computers. Skip to step 11, which does the same job another way.
 
 11. Now open the same file a second way, without the terminal. Close the Chrome tab first. In VS Code, right-click `index.html` in the Explorer and choose **Reveal in File Explorer** on Windows, or **Reveal in Finder** on macOS.
 
