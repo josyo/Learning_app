@@ -112,7 +112,7 @@ Do these steps on your computer.
    - If nothing is listed, the file is not in `my-site`. Check that the Explorer shows `index.html` under MY-SITE. If it does not, repeat steps 2 and 3 with the mouse over the MY-SITE row.
 
 10. Open the page in Chrome from the terminal.
-    - **Windows (PowerShell):** type `start chrome index.html` and press Enter.
+    - **Windows (PowerShell):** type `start chrome "$PWD\index.html"` and press Enter. The `$PWD\index.html` part is the full path of the file, so Chrome opens it as a file on your computer.
     - **macOS:** type `open -a "Google Chrome" index.html` and press Return.
 
     You should see: Chrome opens with a tab titled "My first page". In the window, a large bold "Hello, world" has the smaller line "This is my first web page." under it. The **address bar** (the box at the top of Chrome that shows where the page is) starts with `file:///`. That means the page is a file on your own computer, not on the internet.
@@ -234,7 +234,7 @@ If the second paragraph does not appear, check that it sits between `<body>` and
 1. Chrome shows `Hello, world`, the old text. Chrome reads the file on disk, and without saving VS Code has not written your change there. The dot on the tab tells you the change is unsaved.
 2. The file is most likely named `index.html.txt`: Windows hides the `.txt` ending, and a `.txt` file is shown as plain text. She can check by showing file name extensions in File Explorer (the View tab on Windows 10, or View then Show on Windows 11) or by looking at the exact name in the VS Code Explorer. The fix is to rename the file to `index.html`.
 3. The command is `ls`. It should list `index.html`, because that is the only file you created in `my-site` and the terminal is in `my-site`.
-4. No. An address that starts with `file:///` points to a file on your own computer. Your friend's computer has no such file, so Chrome would show "Your file was not found". Putting a page on the internet comes at the end of this module.
+4. No. An address that starts with `file:///` points to a file on your own computer. Your friend's computer has no such file, so Chrome would show "Your file was not found". Uploading your files comes at the end of this module; turning them into a live page is an optional extra.
 5. There are two closing `</p>` tags and only one opening `<p>`. The editor probably added the first `</p>` automatically and Sam typed the second. The extra `</p>` has nothing to close, so the browser makes an empty paragraph, which is the blank space. The fix is to delete one `</p>`.
 
 ## Recap

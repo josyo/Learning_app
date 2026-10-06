@@ -276,6 +276,20 @@ Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`)
 Setup details, GitHub secrets steps and the cloud environment settings are in
 `docs/plans/remote-setup.md`.
 
+- **KNOWN OUTAGE (2026-10-06): the Neon `dev` and `test` branches were deleted
+  (they expired).** Until the owner recreates them: Vercel **Preview** builds
+  fail, the "Import content to dev" and "E2E on test branch" workflows cannot
+  work, and the endpoint ids written in gotcha 13, `scripts/assert-db-target.ts`
+  (`DEV_ENDPOINT_ID`, `TEST_ENDPOINT_ID`), `.github/workflows/e2e-test-branch.yml`
+  and `docs/plans/remote-setup.md` point at branches that no longer exist.
+  **Do not try to fix this from a session.** The only pre-release check is the
+  **production dry-run** ("Import content to production" with `dry_run` on, from
+  `main`), plus `npm run validate:content` and the unit tests. Owner's recovery
+  list, after the trip: (1) recreate the `dev` and `test` branches in Neon **with
+  no expiry**; (2) put the new endpoint ids into `scripts/assert-db-target.ts`,
+  the workflows, gotcha 13 and `docs/plans/remote-setup.md`; (3) update the Vercel
+  **Preview** `DATABASE_URL` / `DIRECT_URL` to the new dev branch; (4) update the
+  GitHub `dev` and `test` environment secrets (`DATABASE_URL`, `DIRECT_URL`).
 - **A cloud session has NO database and NO database credentials.** The
   environment holds no `DATABASE_URL`, `DIRECT_URL` or any other connection
   string, for any branch (production, dev or test). Anything that reads or
