@@ -84,8 +84,13 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
 - **The Phase 5 "second-path smoke test" status is unknown** — was
   supposed to validate that adding a second LearningPath through the CRUD
   UI works without schema changes. Worth confirming it was actually run.
-- **Only Developer Orientation has been rewritten for a true beginner.**
-  The other 11 modules (HTML Foundations through Capstone) still have
+- **Only Developer Orientation and HTML Foundations have been rewritten for
+  a true beginner.** HTML Foundations (11 lessons plus the assignment) was
+  rewritten 2026-10-06 on a branch: it is in `MODULE_SLUGS` but **not yet
+  imported anywhere**, and no step has been run on Windows or macOS (lesson
+  criterion L14 is deliberately 1 until the trainee tests it on Windows).
+  Import it **together with** the CSS module (the CSS edits refer to files the
+  new HTML module creates). The other 10 modules (CSS through Capstone) still have
   their original content, which was written assuming *some* baseline
   comfort with a computer, not zero. **A full audit of the whole path for
   the same beginner-friendliness bar was requested and not yet started**
@@ -107,7 +112,8 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
   and updated the Orientation assignment and Lessons 4 and 5), and Praise's
   view was checked. `origin/main` and local `main` were identical at
   `e2722dd` when this was written. HTML Foundations was held out of that
-  import by design, so it is still the older seed content in production.
+  import by design, so it is still the older seed content in production (the
+  rewrite is in the repo, see above).
 
 ## Hard-won gotchas (things that actually went wrong during this build)
 
@@ -248,10 +254,11 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     - The permission is tied to the endpoint id, not the branch name: verify the
       host (`scripts/db-guard.ts`, or the server-side `neon.endpoint_id`) before
       relying on it, and never extend it to another host.
-    - **HTML Foundations is held out of the importer** (`HELD_MODULE_SLUGS` in
-      `prisma/content-source.ts`): its draft is validated on every run but not
-      imported, and the seed content in the database stays until the module is
-      rewritten. Move it back to `MODULE_SLUGS` with the rewrite.
+    - **Nothing is held out of the importer any more** (`HELD_MODULE_SLUGS` in
+      `prisma/content-source.ts` is empty; HTML Foundations moved into
+      `MODULE_SLUGS` with its rewrite, 2026-10-06). The held mechanism stays
+      for the future. The first import of the rewrite will archive the old seed
+      lessons of that module that are absent from the new draft.
 
 14. **The Vercel Neon integration injects ~20 `LEARNING_DB_*` variables, and we
     leave them alone.** The Marketplace integration adds variables such as
@@ -276,6 +283,20 @@ Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`)
 Setup details, GitHub secrets steps and the cloud environment settings are in
 `docs/plans/remote-setup.md`.
 
+- **KNOWN OUTAGE (2026-10-06): the Neon `dev` and `test` branches were deleted
+  (they expired).** Until the owner recreates them: Vercel **Preview** builds
+  fail, the "Import content to dev" and "E2E on test branch" workflows cannot
+  work, and the endpoint ids written in gotcha 13, `scripts/assert-db-target.ts`
+  (`DEV_ENDPOINT_ID`, `TEST_ENDPOINT_ID`), `.github/workflows/e2e-test-branch.yml`
+  and `docs/plans/remote-setup.md` point at branches that no longer exist.
+  **Do not try to fix this from a session.** The only pre-release check is the
+  **production dry-run** ("Import content to production" with `dry_run` on, from
+  `main`), plus `npm run validate:content` and the unit tests. Owner's recovery
+  list, after the trip: (1) recreate the `dev` and `test` branches in Neon **with
+  no expiry**; (2) put the new endpoint ids into `scripts/assert-db-target.ts`,
+  the workflows, gotcha 13 and `docs/plans/remote-setup.md`; (3) update the Vercel
+  **Preview** `DATABASE_URL` / `DIRECT_URL` to the new dev branch; (4) update the
+  GitHub `dev` and `test` environment secrets (`DATABASE_URL`, `DIRECT_URL`).
 - **A cloud session has NO database and NO database credentials.** The
   environment holds no `DATABASE_URL`, `DIRECT_URL` or any other connection
   string, for any branch (production, dev or test). Anything that reads or

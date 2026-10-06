@@ -1,6 +1,6 @@
 # Plan: rewrite the HTML Foundations module
 
-**Status (2026-09-30):** outline **APPROVED with changes** (below). No lesson is written yet. The next step is **Stop point 2: write lesson 1 only**, review it with a subagent, score it, show it to the owner, and stop.
+**Status (2026-10-06):** lessons 1-11, the assignment and the mentor notes are WRITTEN (lesson 1 approved by the owner; the rest reviewed by simulated learners and fixed, not yet by the owner). `html-foundations` is in `MODULE_SLUGS`. Still to do: owner review of lessons 2-11 and the assignment; a Windows test by the trainee (lesson criterion L14 stays 1 until then); GitHub and validator website wording, Chrome DevTools wording and the phone-to-PC and photo-resize steps are unverified; no MDN links or videos (the authoring environment could not reach them); import together with the CSS module (production dry-run first, see CLAUDE.md for the dev/test branch outage).
 
 This file exists so a cloud session (fresh clone, no chat history) can continue. Read it fully, then read `CLAUDE.md` (especially "Remote working"), `docs/content-standard.md` and `docs/audits/orientation-assignment-and-html-foundations.md`.
 
