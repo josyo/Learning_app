@@ -36,15 +36,31 @@ if (targetProblems.length > 0) {
   );
 }
 
+// Every run writes to its own folder, so a rerun never overwrites the evidence
+// of the run before it (Playwright wipes its default test-results/ and
+// playwright-report/ at the start of each run). The id is set once, in the main
+// process, and inherited by the workers that load this file again. Folders are
+// git-ignored; delete old ones by hand when they pile up.
+process.env.E2E_RUN_ID ??= new Date().toISOString().replace(/[:.]/g, "-");
+const runDir = path.resolve(__dirname, "e2e-runs", process.env.E2E_RUN_ID);
+
 export default defineConfig({
   testDir: "./e2e",
+  globalSetup: "./e2e/global-setup.ts",
+  outputDir: path.join(runDir, "artifacts"),
   fullyParallel: false, // these tests share seeded accounts and mutate real data — run sequentially
   retries: 0,
   timeout: 60_000, // default is 30s — too tight for a cold Next.js dev-mode compile on a slower machine
-  reporter: "list",
+  reporter: [
+    ["list"],
+    ["html", { outputFolder: path.join(runDir, "report"), open: "never" }],
+    ["json", { outputFile: path.join(runDir, "results.json") }],
+  ],
   use: {
     baseURL: "http://localhost:3000",
-    trace: "on-first-retry",
+    // retries are 0 (the specs mutate data), so "on-first-retry" never fired.
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
     navigationTimeout: 45_000, // specifically covers the page.goto that hit the cold-compile wall
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
@@ -58,7 +74,7 @@ export default defineConfig({
     // everything above. Playwright always launches its own server
     // for this project, with testEnv layered on top to redirect it.
     reuseExistingServer: false,
-    timeout: 60_000,
+    timeout: 180_000, // a cold `next dev` start on a slow machine
     env: testEnv,
   },
 });

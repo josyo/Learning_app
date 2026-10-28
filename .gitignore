@@ -43,3 +43,6 @@ backups/
 # Build artifacts
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+
+# Playwright runs (one folder per run, see playwright.config.ts)
+/e2e-runs/
