@@ -235,10 +235,10 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     **Follow `docs/release-checklist.md` step by step; do not improvise a release.**
 
 13. **Standing permission rule for database writes (set 2026-09-29 by the owner).**
-    - **TEST branch `ep-green-bread-aue0kwbf` ONLY:** the assistant may reset it
+    - **TEST branch `ep-holy-dream-auynvhak` ONLY:** the assistant may reset it
       (`npm run test:e2e:setup`, which runs `prisma migrate reset --force`) and
       run E2E against it without asking each time. It is disposable.
-    - **DEV branch `ep-silent-band-aup0hqps` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
+    - **DEV branch `ep-noisy-pond-auxnlxg5` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
       every write (migration, import, reset, seed) needs the owner's explicit OK
       **every time**. Always show a `--dry-run` first. Production also needs a
       fresh `pg_dump`, and nothing is pushed to `main` without approval (gotcha 12).
@@ -273,6 +273,13 @@ Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`)
 Setup details, GitHub secrets steps and the cloud environment list are in
 `docs/plans/remote-setup.md`.
 
+- **Neon dev and test branches were restored (2026-10-28).** The originals expired
+  while the owner was away and were recreated with new endpoints (dev
+  `ep-noisy-pond-auxnlxg5`, test `ep-holy-dream-auynvhak`); the guards, workflows
+  and secrets use these. **Any new Neon branch must be created with expiry off**,
+  otherwise it is deleted on schedule and everything above breaks silently. If an
+  endpoint changes again, update `TEST_ENDPOINT_ID` in `lib/db-targets.ts`,
+  `DEV_ENDPOINT_ID` in `scripts/assert-db-target.ts`, gotcha 13 and this section.
 - **Branches only, never `main`.** A cloud session creates a branch, commits and
   pushes **that branch**. It never pushes to, merges into or force-pushes `main`.
   (This supersedes older "commit, do not push" instructions: a cloud session must
@@ -281,7 +288,7 @@ Setup details, GitHub secrets steps and the cloud environment list are in
   `prisma migrate deploy`, gotcha 12). Only the owner merges, after
   `docs/release-checklist.md`. Open a pull request and stop.
 - **In a cloud session, `DATABASE_URL` and `DIRECT_URL` point at the TEST
-  branch** (`ep-green-bread-aue0kwbf`), nothing else. Not dev (it holds a copy of
+  branch** (`ep-holy-dream-auynvhak`), nothing else. Not dev (it holds a copy of
   real user data) and never production, because the variables of a cloud
   environment are readable by anyone who uses it and by Claude. Production
   credentials never go into any cloud environment, `.env` file, commit, chat

@@ -20,7 +20,7 @@ export const PRODUCTION_DB_HOST = "ep-red-mode-aur8z6oc.c-10.us-east-1.aws.neon.
  * The "test" guard role only accepts this endpoint, so a reset or reseed can never hit
  * dev or production, even when there is no .env file to compare against (cloud sessions).
  */
-export const TEST_ENDPOINT_ID = "ep-green-bread-aue0kwbf";
+export const TEST_ENDPOINT_ID = "ep-holy-dream-auynvhak";
 
 /** Set to PRODUCTION_DB_HOST to deliberately allow a production write. */
 export const PRODUCTION_OVERRIDE_ENV = "ALLOW_PRODUCTION_DB_WRITE";

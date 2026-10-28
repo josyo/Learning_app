@@ -6,7 +6,7 @@ Set up 2026-09-30 so the owner can work for weeks from a phone. Read this with `
 
 | What | Where it runs | Touches |
 |---|---|---|
-| Writing content and code | Claude Code on the web (cloud session, fresh clone, **branches only**) | the **test** branch only (`ep-green-bread-aue0kwbf`, disposable) |
+| Writing content and code | Claude Code on the web (cloud session, fresh clone, **branches only**) | the **test** branch only (`ep-holy-dream-auynvhak`, disposable) |
 | Trying a branch's UI | Vercel **Preview** deployment of the branch | dev branch (`DATABASE_URL`/`DIRECT_URL` in Vercel Preview) |
 | Trying an import on seeded data | Cloud session: `npm run test:e2e:setup` (resets and reseeds test, imports the content), then a dry-run | test branch |
 | Checking an import against dev | The **"Import content to dev"** workflow, started by the owner (dry run first) | dev branch |
@@ -62,7 +62,7 @@ Environments with required reviewers work in a public repository on the free pla
 **B. The `dev` environment**
 1. **New environment**, name exactly `dev`, **Configure environment**.
 2. Recommended: tick **Required reviewers** and add yourself (unticked "Prevent self-review"), so every dev write needs one tap from you. This keeps `CLAUDE.md` gotcha 13 ("every dev write needs the owner's OK every time") true even if someone else could start a run. Do not restrict branches: dev imports must run from content branches.
-3. **Environment secrets**: `DATABASE_URL` (dev branch, **pooled**) and `DIRECT_URL` (dev branch, **direct**). The dev host starts with `ep-silent-band-aup0hqps`. The workflow refuses to run if either secret is the production endpoint or not the dev endpoint.
+3. **Environment secrets**: `DATABASE_URL` (dev branch, **pooled**) and `DIRECT_URL` (dev branch, **direct**). The dev host starts with `ep-noisy-pond-auxnlxg5`. The workflow refuses to run if either secret is the production endpoint or not the dev endpoint.
 
 The GitHub button labels above follow GitHub's current documentation (fetched 2026-09-30); the label of the add-secret button was documented as "Add Secret" / "Add secret" and may differ in capitalisation on your screen.
 
@@ -78,7 +78,7 @@ The workflows appear in the Actions tab only once they are on `main`.
 
 ## 3. Claude Code cloud environment (TEST branch only)
 
-Create the environment at claude.ai/code (environment settings). **The cloud environment gets the test branch (`ep-green-bread-aue0kwbf`) and nothing else.** Not dev, because dev holds a copy of real user data, and not production. Anyone who uses the environment, and Claude itself in the session, can read its variables. The test branch is disposable and seeded with fake accounts, so exposing it costs nothing.
+Create the environment at claude.ai/code (environment settings). **The cloud environment gets the test branch (`ep-holy-dream-auynvhak`) and nothing else.** Not dev, because dev holds a copy of real user data, and not production. Anyone who uses the environment, and Claude itself in the session, can read its variables. The test branch is disposable and seeded with fake accounts, so exposing it costs nothing.
 
 There is **no `.env` or `.env.test` file** in a cloud session. The app, Prisma, `scripts/db-guard.ts`, the `*:test` npm scripts and `playwright.config.ts` all work from process environment variables alone. The `test` guard role accepts only the test endpoint, so a wrong URL in the environment makes `npm run test:e2e:setup` refuse instead of resetting the wrong database.
 
@@ -102,6 +102,6 @@ What it cannot do, by design: dry-run against dev or production, or run `scripts
 - Allowed domains, one per line: `*.neon.tech`
 - E2E also needs a Playwright browser: `npx playwright install chromium` downloads it. The download hosts are **not** in the documented default list and I have not verified which ones Playwright uses today; if the install fails with a network error, read the host from the error and add it, or check whether the cloud image already ships Chromium.
 
-Neon hosts look like `ep-green-bread-aue0kwbf-pooler.<region>.aws.neon.tech`. `*.neon.tech` also matches the dev and production hosts at the network level, which is why neither may have credentials in the environment.
+Neon hosts look like `ep-holy-dream-auynvhak-pooler.<region>.aws.neon.tech`. `*.neon.tech` also matches the dev and production hosts at the network level, which is why neither may have credentials in the environment.
 
 **Unverified risk:** Anthropic's documentation describes network access as a domain allowlist and does not say whether raw database connections (Postgres on port 5432, which Prisma uses) pass through it. Test it once, first thing: in a cloud session run `npm run db:guard:test` (no connection) and then `npm run test:e2e:setup`. If the setup cannot connect (`P1001` or a timeout), tell the owner: the fallback is network access **Full** (not recommended) or doing database work only through the workflows.

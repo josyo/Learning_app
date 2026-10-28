@@ -10,7 +10,7 @@
 import { describeTarget, isProductionTarget, parseDbTarget } from "../lib/db-targets";
 
 /** Neon endpoint id of the dev branch (see CLAUDE.md, gotcha 13). Non-secret. */
-const DEV_ENDPOINT_ID = "ep-silent-band-aup0hqps";
+const DEV_ENDPOINT_ID = "ep-noisy-pond-auxnlxg5";
 
 const expected = process.argv[2];
 if (expected !== "production" && expected !== "dev") {
