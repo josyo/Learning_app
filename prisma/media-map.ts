@@ -50,13 +50,53 @@ export const MEDIA_MAP: Record<string, MediaEntry> = {
   // these are conceptual/tour lessons with nothing to install or watch happen on screen.
 
   // CSS & Responsive UI: no video. The old entries pointed every lesson at one uncut full-course video
-  // (breaks content-standard L12). When lessons 5, 6 and 8 reuse their old slugs, add `resources: []`
-  // for them so the importer clears the old CodeSandbox link from the existing rows.
-
+  // (breaks content-standard L12). Every lesson has a `resources` list, which also makes the importer replace
+  // the old CodeSandbox link that the reused slug the-box-model-selectors still carries. Each URL below was
+  // fetched and confirmed to exist on 2026-10-29.
   "what-css-is-and-how-a-rule-works": {
     resources: [
       { label: "MDN: What is CSS?", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS" },
       { label: "Chrome DevTools: View and change CSS", url: "https://developer.chrome.com/docs/devtools/css" },
+    ],
+  },
+  "selectors-element-class-and-id": {
+    resources: [{ label: "MDN: Basic CSS selectors", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Basic_selectors" }],
+  },
+  "the-cascade-and-specificity": {
+    resources: [{ label: "MDN: Handling conflicts (cascade and specificity)", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_conflicts" }],
+  },
+  "colour-and-typography": {
+    resources: [
+      { label: "MDN: CSS values and units", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units" },
+      { label: "MDN: Fundamental text and font styling", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals" },
+      { label: "Chrome DevTools: Make your website more readable (contrast)", url: "https://developer.chrome.com/docs/devtools/accessibility/contrast" },
+    ],
+  },
+  "the-box-model-selectors": {
+    resources: [{ label: "MDN: The box model", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model" }],
+  },
+  "flexbox-for-one-dimensional-layouts": {
+    resources: [{ label: "MDN: Flexbox", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox" }],
+  },
+  "wrapping-cards-with-flexbox": {
+    resources: [{ label: "MDN: Flexbox", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox" }],
+  },
+  "responsive-design-reusable-styling-habits": {
+    resources: [
+      { label: "MDN: Responsive web design", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design" },
+      { label: "Chrome DevTools: Simulate mobile devices with Device Mode", url: "https://developer.chrome.com/docs/devtools/device-mode" },
+    ],
+  },
+  "styling-the-form-accessibly": {
+    resources: [
+      { label: "MDN: Styling web forms", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Styling_web_forms" },
+      { label: "MDN: the :focus-visible pseudo-class", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" },
+    ],
+  },
+  "publishing-with-github-pages": {
+    resources: [
+      { label: "GitHub Docs: Configuring a publishing source for your GitHub Pages site", url: "https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site" },
+      { label: "GitHub Docs: Creating a GitHub Pages site", url: "https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site" },
     ],
   },
 

@@ -1,6 +1,6 @@
 # Plan: rewrite the CSS & Responsive UI module
 
-**Status (2026-10-29): outline APPROVED by the owner (2026-10-28/29). Lesson 1 is WRITTEN and awaiting the owner's review; lessons 2-10, the assignment and the mentor notes are not started.** `content-drafts/css-responsive-ui.md` now holds ONLY lesson 1 under a "do not import" comment (the old four lessons are gone from the draft; they are still in git history and in the databases). Step 1 is still only partly done: after the owner reset dev from `main`, the dev data is unchanged (see "Step 1 evidence"), so time estimates and the HTML fix list stay provisional.
+**Status (2026-10-29, later): the whole module is WRITTEN as a draft (lessons 1-10, the assignment, the mentor notes); lesson 1 is approved by the owner, lessons 2-10 and the assignment await the owner's review.** `content-drafts/css-responsive-ui.md` is complete but **not imported anywhere** (see "Lessons 2-10 and the assignment" at the end for tests, reviews, scores and open risks). Step 1 is still only partly done: dev holds no submissions and nothing after 2026-10-20, so the calibration below is from three data points; the owner chose to calibrate in the production dry-run instead.
 
 **Owner decisions (approved):** Grid is dropped as a lesson (assignment stretch only); two Flexbox lessons; the Deployed URL is required, with the four Pages conditions below. **Additions requested with the approval, now part of the outline:**
 - Lessons 1 and 10: a "my CSS change doesn't show" section. Lesson 1 has it (Common mistakes 1: saved, right file, file loaded, crossed-out line, then hard refresh Ctrl+Shift+R / Cmd+Shift+R). Lesson 10 repeats it for the live site and adds the delay before GitHub Pages shows an upload (wording to verify on docs.github.com).
@@ -137,3 +137,47 @@ Same as `docs/plans/html-foundations.md`: audit the outline against the standard
 **Score (lesson checklist, max 28): 26 / 28 = 93%.** All 2 except: **L11 = 1** (the Next link points at `selectors-element-class-and-id`, which does not exist yet; verify when lesson 2 is written) and **L14 = 1** (star criterion: the Chrome DevTools wording, the per-line checkbox and the Ctrl+Shift+R shortcut have not been run on a real Windows or macOS desktop, the same position as HTML lesson 1). So the lesson **does not pass until L14 is 2**: the trainee, who is on Windows, can test it and the owner can then update `Last verified`. L13 = 2 (two verified official pages, in `prisma/media-map.ts`: MDN "What is CSS?" and Chrome "View and change CSS"; the Chrome page does not mention the per-declaration checkbox).
 
 **Rules carried into lessons 2-10:** no terminal commands for opening pages (File Explorer "Open with" only); state which parts of the learner's HTML a task relies on and what to do if theirs differ; put the British spelling traps in the mistakes (`colour`, `centre`); define every term before or where it first appears, including in the outcomes; one gesture per step.
+
+
+## Lessons 2-10 and the assignment: written, reviewed, scored (2026-10-29)
+
+**Status:** all ten lessons, the assignment (`responsive-layout-upgrade`, retitled "Style and Publish Your Profile Site") and `content-drafts/mentor-notes/css-responsive-ui.md` are written. `content-drafts/css-responsive-ui.md` is a complete draft but is **not imported anywhere**; the owner has reviewed lesson 1 only. Next: the owner's review, then a dev dry-run import (the workflow), then production through the workflow, per CLAUDE.md. Do not import before the owner has seen the Praise-progress status in the production dry-run (the importer reports which learners' completion would change).
+
+**Tests (all run in Chromium 153 on Windows 10 against a copy of the HTML assignment's pages):** 146 browser checks pass: every rule, every shown failure and its symptom, every count and width quoted in the text (card counts at 1024, 600, 512, 500, 420, 410, 375 and 341 pixels, the 234/200/166 widths, 320-pixel overflow before and after the `img` rule, header column/row at the breakpoint, Tab order and the 3 px focus ring, `outline` cases, disabled button skipped by Tab, a relative path versus a root-relative path on a local server under `/my-site/`, and the assignment's starter turned into a full solution, which then passes the overflow, contrast and layout checks at 320, 375, 699 and 800). 33 of the module's 35 non-blank, non-broken CSS blocks validate with csstree (the other two are lesson 1's deliberate missing-brace example and a one-line fragment). The starter file validates. Contrast ratios in the text were calculated with the WCAG formula. `npm run validate:content`, `npm run typecheck` and `npm test` (178 tests) pass. A mechanical checker confirmed structure (heading order, 2-4 outcomes, time, Why <= 80 words, no section > 150 words, banned words, 3-5 tagged questions with Predict, Spot the bug and a Recall, answers, recap links, no dead next-links).
+
+**Learner reviews (zero-experience subagents, one per lesson, given only the lesson text) found and led to these fixes:**
+- All: the long "Last verified" paragraph was shortened and the tool names removed; every lesson says which existing rule to edit instead of adding a copy; hooks the lesson needs are checked (lesson 2 step 1) or stated; outcomes now define their terms.
+- L2: hook-check step added; wrong "p rule listed on the card" claim removed; selector-list and class-or-id practice added. L3: class and rule-position assumptions stated; "crossed out" defined; pane order versus file order clarified.
+- L4: DevTools colour picker explained, with a warning that DevTools edits vanish on refresh; duplicate `h2` rule problem removed; AAA dropped. L5: how to select the card itself, the arithmetic written out, a "Choosing a unit" section, and a real `inline-block` explanation for link padding (an inline link's vertical padding does not make room).
+- L6: **the axes swap, not the properties** (the draft said the properties swap, which taught a wrong model). L7: Chrome cannot be dragged narrower than about 500 px, so browser zoom (200%, 300%) is now the main way to see wrapping. L8: cut down (custom properties moved to the guided practice, one worked media query, a second one in "Your turn"); contradictions fixed.
+- L9: `outline: none` mistake rewritten (a plain `input { outline: none; }` is overridden by a `:focus-visible` rule; `input:focus { outline: none; }` is not); ring and border contrast method added. L10: a "Paths that work online" section and a pre-publish check (`/`, `C:` and capitals) added; the hard refresh can no longer be skipped.
+- Assignment: id selector now has something to match (`#projects`); contrast measuring moved after the button exists; Task, checklist, Notes and rubric aligned (card text 4.5, ring 3 px, `rem` sizes, a "two rules disagreed" Notes line that also covers O1's "predict which wins"); backup check and deletion order; "Pages is already on from Lesson 10".
+
+**Scores (lesson checklist, max 28; assignment max 20).** Pass needs every starred criterion at 2. All lessons are held at **L14 = 1** because the DevTools and GitHub screens and the Windows shortcuts were not run on a real desktop (same position as HTML lesson 1); the trainee, on Windows, can close that.
+
+| Item | Score | Criteria below 2 |
+|---|---|---|
+| L1 What CSS is | 27 / 28 | L14 |
+| L2 Selectors | 27 / 28 | L14 |
+| L3 Cascade and specificity | 27 / 28 | L14 |
+| L4 Colour and typography | 27 / 28 | L14 |
+| L5 Box model | 27 / 28 | L14 |
+| L6 Flexbox header and nav | 27 / 28 | L14 |
+| L7 Flexbox cards | 27 / 28 | L14 |
+| L8 Mobile-first, media queries, custom properties | 26 / 28 | L2 (stated time doubtful), L14 |
+| L9 Form and focus | 27 / 28 | L14 |
+| L10 GitHub Pages | 25 / 28 | L2 (stated time doubtful), L7 (several bundled actions; drag and drop on screens never seen), L14 |
+| Assignment | 19 / 20 | A7 (time doubtful) |
+
+Mentor notes: 19 paste-ready comments (2 approve, 10 per acceptance item, 5 likely mistakes, 2 for STUCK), all within 80 words.
+
+**Timing is the open risk.** The simulated beginners estimated **50-90 minutes** for lessons stated at 35-40 (lesson 8: 70-90) and **4.5-5.5 hours** for the assignment stated at 3. Stated times were set with the HTML evidence (about 1.2 x). Simulated learners are pessimistic, but both numbers point the same way. Calibrate with the real trainee's timestamps from the production dry-run, then either raise the numbers or cut content (candidates: lesson 8's guided practice, the assignment's Part 6, the stretch).
+
+**Unverified (stated in each lesson's "Last verified"):** the look of Chrome DevTools (Styles pane checkbox on hover, Computed box diagram, colour picker "Contrast ratio" section, device toolbar); the Ctrl+Shift+R, Ctrl+plus and Win+Shift+S shortcuts; GitHub's screens (Settings, Pages, Source, branch menu, Visit site, the in-between message, Danger Zone "Change visibility", the 404 text); the phone-to-address steps. Verified from official pages: MDN pages (selectors, cascade, units, text, box model, flexbox, responsive, forms, `:focus-visible`), Chrome's device-toolbar and contrast pages, GitHub's publishing-source and creating-a-site pages (button names, up to 10 minutes, Free accounts need a public repository).
+
+**Other findings:**
+- `prisma/media-map.ts` has a `resources` list for every CSS lesson (this also replaces the old CodeSandbox link on the reused `the-box-model-selectors` slug). No video anywhere in the module.
+- Lesson 7 and the assignment's stretch use CSS Grid only as an option; the Grid lesson is dropped (its slug `css-grid-for-two-dimensional-layouts` will be archived by the importer).
+- A reviewer noted the assignment needs the class and id names of the HTML assignment; the text says to use your own names if they differ.
+- Not fixed, by design: no screenshots (the platform has no image hosting).
+- HTML-fix list: unchanged from above (the full HTML data was never available); item 2 (remove the HTML assignment's unverified Pages stretch) matters more now, since lesson 10 owns publishing.
