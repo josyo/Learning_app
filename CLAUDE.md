@@ -84,19 +84,6 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
 - **The Phase 5 "second-path smoke test" status is unknown** — was
   supposed to validate that adding a second LearningPath through the CRUD
   UI works without schema changes. Worth confirming it was actually run.
-- **E2E suite is flaky on a cold server, and has had no clean single pass since
-  2026-10-28.** After the Neon restore, the first full run failed its first three
-  tests (the learner critical path, then the mentor and outcome tests that depend
-  on it). Run alone, the first test passed, and the rest passed in order on that
-  state, so every test has passed but not in one run. The cause was not captured
-  (a rerun wiped `test-results/`); the likely cause is a timeout while the cold
-  `next dev` server compiles the lesson routes, **not confirmed**. Added since:
-  `e2e/global-setup.ts` warms the key routes before the tests (about 77 s on the
-  owner's machine), and every run now saves its HTML report, `results.json`, traces
-  and screenshots under `e2e-runs/<timestamp>/` (git-ignored; the workflow uploads
-  it). **Still open:** do one full run after `npm run test:e2e:setup` and confirm 6/6;
-  if test 1 still fails, read its report in `e2e-runs/` for the real cause. The
-  specs are not idempotent (gotcha 6), so every full run needs a fresh setup.
 - **Only Developer Orientation and HTML Foundations have been rewritten for
   a true beginner.** HTML Foundations (11 lessons plus the assignment) was
   rewritten 2026-10-06 on a branch: it is in `MODULE_SLUGS` but **not yet
@@ -159,9 +146,17 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
 5. **Next.js dev-mode cold compilation breaks Playwright's default
    timeouts.** The first hit to any route in a freshly started `next dev`
    server compiles that route on demand, which can exceed Playwright's
-   default 30s navigation timeout on a slower machine. Fixed by raising
-   timeouts in `playwright.config.ts`, but a warm server (hit the route
-   once manually first) is still meaningfully faster.
+   default 30s navigation timeout on a slower machine. Raising timeouts in
+   `playwright.config.ts` was not enough: after the 2026-10-28 Neon restore the
+   first full run failed its first three tests. **Fixed 2026-10-28** by
+   `e2e/global-setup.ts`, which signs in as each seeded role and requests the key
+   routes before the tests start (about 77 s, read-only); the next full run passed
+   6/6 (test 1 in 54 s). The cause of that one failure was never captured, so the
+   cold-compile explanation rests on that fix working, not on a read report. Every
+   run now saves its report, `results.json`, traces and screenshots under
+   `e2e-runs/<timestamp>/` (git-ignored; the workflow uploads it), so a future
+   failure can be read after a rerun. The specs are not idempotent (gotcha 6):
+   each full run needs a fresh `npm run test:e2e:setup`.
 6. **E2E tests need a separate database, not your working dev DB.**
    `e2e/critical-path.spec.ts` submits and approves real data — running it
    against your real dev DB pollutes it (e.g. approving the Orientation
