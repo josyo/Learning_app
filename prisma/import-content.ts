@@ -3,6 +3,8 @@
  *
  *   npm run import:content               apply content-drafts/*.md to the database
  *   npm run import:content -- --dry-run  write nothing; report what WOULD change
+ *   npm run validate:content             (= --validate-only) parse and check every draft, slug and
+ *                                        media-map entry; needs NO database and reads no credentials
  *
  * Guarantees:
  * - Everything is parsed and validated before the database is touched. Any
@@ -19,11 +21,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parse as parseEnv } from "dotenv";
-import { PrismaClient, type Prisma } from "@prisma/client";
-import { checkDbTarget, describeTarget, parseDbTarget, type DbEnv } from "../lib/db-targets";
+import type { PrismaClient, Prisma } from "@prisma/client";
+import { NO_DATABASE_MESSAGE, checkDbTarget, describeTarget, noDatabaseConfigured, parseDbTarget, type DbEnv } from "../lib/db-targets";
 import { SLOW_TX_OPTIONS, withSlowLinkParams } from "../lib/slow-link";
 import { MEDIA_MAP } from "./media-map";
-import { MODULE_SLUGS, loadAllModules, slugifyTitle } from "./content-source";
+import { HELD_MODULE_SLUGS, MODULE_SLUGS, loadAllModules, slugifyTitle } from "./content-source";
 import type { ParsedModule } from "./content-parser";
 import {
   planIsEmpty,
@@ -83,6 +85,10 @@ function assertTarget() {
   const dotEnvPath = path.resolve(__dirname, "..", ".env");
   const dotEnv: DbEnv | null = fs.existsSync(dotEnvPath) ? parseEnv(fs.readFileSync(dotEnvPath)) : null;
   const env = { ...(dotEnv ?? {}), ...process.env } as DbEnv;
+  if (noDatabaseConfigured(env)) {
+    console.error(`Import refused: ${NO_DATABASE_MESSAGE}`);
+    process.exit(1);
+  }
   const problems = checkDbTarget({ role: "import", env, dotEnv, vercelEnv: process.env.VERCEL_ENV });
   if (problems.length > 0) {
     console.error(`Import refused. Target: ${describeTarget(parseDbTarget(env.DATABASE_URL))}`);
@@ -271,12 +277,36 @@ async function applyModule(db: PrismaClient, p: ModulePlan): Promise<void> {
 
 async function main() {
   const args = process.argv.slice(2);
-  const unknown = args.filter((a) => a !== "--dry-run");
-  if (unknown.length) {
-    console.error(`Unknown argument(s): ${unknown.join(" ")}\nUsage: import-content.ts [--dry-run]`);
+  const unknown = args.filter((a) => a !== "--dry-run" && a !== "--validate-only");
+  if (unknown.length || (args.includes("--dry-run") && args.includes("--validate-only"))) {
+    console.error(`${unknown.length ? `Unknown argument(s): ${unknown.join(" ")}\n` : "Use --dry-run or --validate-only, not both.\n"}Usage: import-content.ts [--dry-run | --validate-only]`);
     process.exit(2);
   }
   const dryRun = args.includes("--dry-run");
+
+  // --validate-only: parse and check every draft, slug and media-map entry and stop.
+  // It never reads DATABASE_URL, .env or any credential and never loads the Prisma
+  // client, so it works in an environment that has no database at all.
+  if (args.includes("--validate-only")) {
+    const loaded = loadAllModules();
+    for (const w of loaded.warnings) console.warn(`warning: ${w}`);
+    if (loaded.errors.length > 0) {
+      console.error(`\nValidation FAILED: ${loaded.errors.length} problem(s) in the content files.\n`);
+      for (const e of loaded.errors) console.error(e + "\n");
+      process.exit(1);
+    }
+    let lessons = 0;
+    let assignments = 0;
+    for (const slug of MODULE_SLUGS) {
+      const m = loaded.modules.get(slug) as ParsedModule;
+      lessons += m.lessons.length;
+      if (m.assignment) assignments += 1;
+      console.log(`  ${slug}: ${m.lessons.length} lesson(s), ${m.assignment ? "1 assignment" : "no assignment"}`);
+    }
+    console.log(`  held, validated but not imported: ${HELD_MODULE_SLUGS.join(", ") || "(none)"}`);
+    console.log(`\nValidation passed: ${MODULE_SLUGS.length} module(s), ${lessons} lesson(s), ${assignments} assignment(s), media-map consistent. No database was used.`);
+    return;
+  }
 
   const { label: target, databaseUrl } = assertTarget();
   console.log(`${dryRun ? "DRY RUN (nothing will be written)" : "IMPORT"} -> ${target}`);
@@ -291,7 +321,8 @@ async function main() {
   }
 
   // datasourceUrl = the guard-checked URL, with connect/pool timeouts raised.
-  const base = new PrismaClient({ datasourceUrl: withSlowLinkParams(databaseUrl) });
+  const { PrismaClient: Client } = await import("@prisma/client");
+  const base = new Client({ datasourceUrl: withSlowLinkParams(databaseUrl) });
   const db = dryRun ? readOnly(base) : base;
   try {
     // 2. Every module slug must exist in the database.

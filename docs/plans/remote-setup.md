@@ -6,14 +6,14 @@ Set up 2026-09-30 so the owner can work for weeks from a phone. Read this with `
 
 | What | Where it runs | Touches |
 |---|---|---|
-| Writing content and code | Claude Code on the web (cloud session, fresh clone, **branches only**) | the **test** branch only (`ep-holy-dream-auynvhak`, disposable) |
+| Writing content and code, `npm run validate:content`, `npm test` | Claude Code on the web (cloud session, fresh clone, **branches only**) | **no database** |
 | Trying a branch's UI | Vercel **Preview** deployment of the branch | dev branch (`DATABASE_URL`/`DIRECT_URL` in Vercel Preview) |
-| Trying an import on seeded data | Cloud session: `npm run test:e2e:setup` (resets and reseeds test, imports the content), then a dry-run | test branch |
-| Checking an import against dev | The **"Import content to dev"** workflow, started by the owner (dry run first) | dev branch |
+| Dry-run or import against dev | **"Import content to dev"** workflow | dev branch |
+| E2E suite | **"E2E on test branch"** workflow | test branch (wiped and reseeded) |
 | Importing to production | **"Import content to production"** workflow, from `main`, after the owner approves | production (secrets live only in the GitHub `production` environment) |
 | Release (merge to `main`) | Owner merges on github.com | Vercel Production and `prisma migrate deploy` on production |
 
-Production credentials exist in exactly two places: Vercel Production variables and the GitHub `production` environment secrets. Never in a cloud environment, a `.env` file, a commit, a chat message or a log.
+Production credentials exist in exactly two places: Vercel Production variables and the GitHub `production` environment secrets. Never in a cloud environment, a `.env` file, a commit, a chat message or a log. **A cloud environment holds no database credentials at all** (production, dev or test): dev and test URLs live only in the GitHub `dev` and `test` environments.
 
 ## 1. Preview sign-in (Better Auth)
 
@@ -37,12 +37,14 @@ This has **not** been tested on a real preview; only the pure function is unit-t
 
 ## 2. GitHub Actions content imports
 
-Two workflows, both run by hand (`workflow_dispatch`):
+Three workflows, all run by hand (`workflow_dispatch`):
 
 - `.github/workflows/import-content-dev.yml` "Import content to dev": any branch, `dry_run` defaults to true, secrets from the `dev` environment.
 - `.github/workflows/import-content-production.yml` "Import content to production": **main only**, `dry_run` defaults to true, a real run also needs `backup_confirmed`, secrets from the `production` environment.
 
-Each runs: `npm ci`, `scripts/assert-db-target.ts` (the secrets really point at that environment; the dev workflow refuses the production endpoint), `scripts/db-guard.ts import`, then `npm run import:content` (with `-- --dry-run` when checked). The result is also written to the run's summary page. This repository is **public**, so logs are public: the importer redacts learner names when `REDACT_LEARNER_NAMES=1` (set by both workflows), and prints only hosts, never credentials.
+- `.github/workflows/e2e-test-branch.yml` "E2E on test branch": any branch, secrets from the `test` environment. It asserts the secrets are the test endpoint (`ep-holy-dream-auynvhak`), then `npm run test:e2e:setup` (reset, migrate, seed, import) and `npm run test:e2e`. The test-branch values are passed as process environment variables; no `.env.test` exists on the runner.
+
+The two import workflows each run: `npm ci`, `scripts/assert-db-target.ts` (the secrets really point at that environment; the dev workflow refuses the production endpoint), `scripts/db-guard.ts import`, then `npm run import:content` (with `-- --dry-run` when checked). The result is also written to the run's summary page. This repository is **public**, so logs are public: the importer redacts learner names when `REDACT_LEARNER_NAMES=1` (set by both workflows), and prints only hosts, never credentials.
 
 ### Add the secrets on github.com (from a phone, use the browser's "Desktop site" option)
 
@@ -66,42 +68,43 @@ Environments with required reviewers work in a public repository on the free pla
 
 The GitHub button labels above follow GitHub's current documentation (fetched 2026-09-30); the label of the add-secret button was documented as "Add Secret" / "Add secret" and may differ in capitalisation on your screen.
 
+**C. The `test` environment** (for "E2E on test branch")
+1. **New environment**, name exactly `test`, **Configure environment**. No reviewers and no branch restriction are needed: the branch is disposable.
+2. **Environment secrets** (names must match exactly):
+   - `DATABASE_URL`: test branch, **pooled**. The host starts with `ep-holy-dream-auynvhak`.
+   - `DIRECT_URL`: test branch, **direct**.
+   - `BETTER_AUTH_SECRET`: a random value used only for E2E, different from every other environment.
+   - `SEED_USER_PASSWORD`: a strong throwaway password for the seeded test accounts (the E2E spec reads the same variable).
+   The workflow refuses to run if either URL is not the test endpoint.
+
+### Secrets at a glance
+Add at github.com: repo, **Settings**, **Secrets and variables**, **Actions**. Environment secrets are added on the environment's own page (**Settings**, **Environments**, pick the environment, **Environment secrets**). No repository-level secret is needed.
+
+| Workflow | Environment | Secret names |
+|---|---|---|
+| Import content to dev | `dev` | `DATABASE_URL`, `DIRECT_URL` |
+| Import content to production | `production` | `DATABASE_URL`, `DIRECT_URL` |
+| E2E on test branch | `test` | `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`, `SEED_USER_PASSWORD` |
+
 ### Running an import
 1. Tap **Actions**, choose **Import content to production** (or **dev**) in the workflow list, tap **Run workflow**.
 2. Choose the branch (`main` for production), leave **dry_run** ticked, tap **Run workflow**.
 3. Open the new run. A yellow box says the run is waiting for review: open **Review deployments**, tick `production`, approve.
 4. When the run finishes, open it and read the **summary**. It must match what the release checklist expects. **Stop if not.**
 5. For a real import: before running, create a Neon branch from `main` (`pre-import-YYYY-MM-DD`) as the snapshot; then run again with **dry_run** unticked and **backup_confirmed** ticked, and approve again.
-6. Afterwards check Praise's view from a machine that has the credentials. `scripts/verify-learner-view.ts` needs real learner data, so it is **not** run in a cloud session.
+6. Afterwards check Praise's view from a machine with credentials; `scripts/verify-learner-view.ts` needs a database, so it is **not** run in the cloud.
 
 The workflows appear in the Actions tab only once they are on `main`.
 
-## 3. Claude Code cloud environment (TEST branch only)
+## 3. Claude Code cloud environment (no database)
 
-Create the environment at claude.ai/code (environment settings). **The cloud environment gets the test branch (`ep-holy-dream-auynvhak`) and nothing else.** Not dev, because dev holds a copy of real user data, and not production. Anyone who uses the environment, and Claude itself in the session, can read its variables. The test branch is disposable and seeded with fake accounts, so exposing it costs nothing.
+Create the environment at claude.ai/code (environment settings). **It holds no database value at all**: anyone who uses the environment, and Claude itself in the session, can read its variables.
 
-There is **no `.env` or `.env.test` file** in a cloud session. The app, Prisma, `scripts/db-guard.ts`, the `*:test` npm scripts and `playwright.config.ts` all work from process environment variables alone. The `test` guard role accepts only the test endpoint, so a wrong URL in the environment makes `npm run test:e2e:setup` refuse instead of resetting the wrong database.
-
-### Environment variables (names only)
-
-- `DATABASE_URL`: **test** branch, **pooled** (host contains `-pooler`)
-- `DIRECT_URL`: **test** branch, **direct**
-- `BETTER_AUTH_SECRET`: a test-only random value (not the Production, Preview or dev one)
-- `BETTER_AUTH_URL`: `http://localhost:3000`
-- `SEED_USER_PASSWORD`: a password for the fake seeded accounts (test only; the E2E tests log in with it)
-
-Do **not** set: any `LEARNING_DB_*`, `ALLOW_PRODUCTION_DB_WRITE`, `ALLOW_SEED`, `GH_TOKEN` (a token could let a session start workflows), anything for the **dev** or **main** branches, or `SEED_ADMIN_PASSWORD` / `SEED_MENTOR_PASSWORD` / `SEED_TRAINEE_PASSWORD` unless you want them to differ.
-
-What a session can then do: `npm run test:e2e:setup` (reset, migrate, seed, import content on the test branch), `npm run test:e2e`, `npm run import:content -- --dry-run` (this reads the test branch, so it shows the create/update/archive plan against seeded data, not against real learners), `npm test`, `npx tsc --noEmit`.
-
-What it cannot do, by design: dry-run against dev or production, or run `scripts/verify-learner-view.ts` on a real learner. Those need the workflows (section 2) and your review.
+### Environment variables
+None are needed. In particular do **not** set `DATABASE_URL`, `DIRECT_URL`, any `LEARNING_DB_*`, `ALLOW_PRODUCTION_DB_WRITE`, `ALLOW_SEED`, `SEED_*` passwords, `GH_TOKEN` (a token could let a session dispatch workflows), or anything that points at any Neon branch.
 
 ### Network access
+The default level (package managers and GitHub) is enough: `npm ci`, `npm test`, `npm run validate:content` and `npm run typecheck` need no other host. Do not add `*.neon.tech`.
 
-- Network access level: **Custom**, with **Also include default list of common package managers** ticked (npm, GitHub and Prisma's engine download host `binaries.prisma.sh` are in the default list).
-- Allowed domains, one per line: `*.neon.tech`
-- E2E also needs a Playwright browser: `npx playwright install chromium` downloads it. The download hosts are **not** in the documented default list and I have not verified which ones Playwright uses today; if the install fails with a network error, read the host from the error and add it, or check whether the cloud image already ships Chromium.
-
-Neon hosts look like `ep-holy-dream-auynvhak-pooler.<region>.aws.neon.tech`. `*.neon.tech` also matches the dev and production hosts at the network level, which is why neither may have credentials in the environment.
-
-**Unverified risk:** Anthropic's documentation describes network access as a domain allowlist and does not say whether raw database connections (Postgres on port 5432, which Prisma uses) pass through it. Test it once, first thing: in a cloud session run `npm run db:guard:test` (no connection) and then `npm run test:e2e:setup`. If the setup cannot connect (`P1001` or a timeout), tell the owner: the fallback is network access **Full** (not recommended) or doing database work only through the workflows.
+### What a session can run
+`npm run validate:content`, `npm test`, `npm run typecheck`. Every database-touching script (`db-guard`, `import:content`, `db:seed`, the `*:test` scripts, Playwright) stops with "no database in this environment" when `DATABASE_URL` is unset. Use the Actions workflows above for those.

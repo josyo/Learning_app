@@ -12,6 +12,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "tsx scripts/db-guard.ts not-production && prisma migrate dev",
     "db:seed": "tsx scripts/db-guard.ts not-production && tsx prisma/seed.ts",
+    "validate:content": "tsx prisma/import-content.ts --validate-only",
     "import:content": "tsx scripts/db-guard.ts import && tsx prisma/import-content.ts",
     "db:studio": "tsx scripts/db-guard.ts not-production && prisma studio",
     "test": "vitest run",

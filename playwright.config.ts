@@ -2,21 +2,22 @@ import fs from "node:fs";
 import path from "path";
 import { defineConfig, devices } from "@playwright/test";
 import { config as loadEnv, parse as parseEnv } from "dotenv";
-import { checkDbTarget, describeTarget, parseDbTarget } from "./lib/db-targets";
-import { resolveTestEnv } from "./lib/test-env";
+import { NO_DATABASE_MESSAGE, checkDbTarget, describeTarget, noDatabaseConfigured, parseDbTarget } from "./lib/db-targets";
 
-// Deliberately .env.test, not .env.local: E2E runs against a separate,
+// Deliberately .env.test, not .env.local — E2E runs against a separate,
 // disposable database (see env.test.example) so this suite can never touch
-// real dev data. Cloud sessions have no env files, so there the same variables
-// come from the process environment (lib/test-env.ts). Either way the target
-// is checked below, and only the Neon test endpoint is accepted.
+// real dev data. Locally the values come from .env.test. In GitHub Actions
+// there is no file: the "E2E on test branch" workflow puts the test-branch
+// values in the process environment, and they are used as they are. With
+// neither, this is a configuration error, never a fall-through to a real
+// database (cloud sessions have no database at all).
 const testEnvPath = path.resolve(__dirname, ".env.test");
-const fileEnv = fs.existsSync(testEnvPath) ? (loadEnv({ path: testEnvPath }).parsed ?? {}) : null;
-const { env: testEnv, source: testEnvSource } = resolveTestEnv(fileEnv, process.env);
-if (!fileEnv && !testEnv.DATABASE_URL) {
-  throw new Error(
-    "No test database configured for Playwright. Locally: create .env.test from env.test.example (Neon 'test' branch). In a cloud session: set DATABASE_URL and DIRECT_URL (test branch) in the environment."
-  );
+const TEST_ENV_KEYS = ["DATABASE_URL", "DIRECT_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "SEED_USER_PASSWORD"];
+const testEnv: Record<string, string> = fs.existsSync(testEnvPath)
+  ? (loadEnv({ path: testEnvPath }).parsed ?? {})
+  : Object.fromEntries(TEST_ENV_KEYS.flatMap((k) => (process.env[k] ? [[k, process.env[k] as string]] : [])));
+if (noDatabaseConfigured(testEnv)) {
+  throw new Error(`Playwright refused to start: ${NO_DATABASE_MESSAGE}`);
 }
 
 // Refuse to run at all unless the test target is a separate database: not
@@ -31,7 +32,7 @@ const effectiveTestEnv = { ...(dotEnv ?? {}), ...testEnv };
 const targetProblems = checkDbTarget({ role: "test", env: effectiveTestEnv, dotEnv });
 if (targetProblems.length > 0) {
   throw new Error(
-    `Playwright refused to start. Unsafe database target (${describeTarget(parseDbTarget(effectiveTestEnv.DATABASE_URL))}, from ${testEnvSource}):\n - ${targetProblems.join("\n - ")}`
+    `Playwright refused to start. Unsafe database target (${describeTarget(parseDbTarget(effectiveTestEnv.DATABASE_URL))}):\n - ${targetProblems.join("\n - ")}`
   );
 }
 

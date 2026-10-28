@@ -11,7 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parse } from "dotenv";
-import { checkDbTarget, dbTargetWarnings, describeTarget, parseDbTarget, type DbEnv, type GuardRole } from "../lib/db-targets";
+import { NO_DATABASE_MESSAGE, checkDbTarget, dbTargetWarnings, describeTarget, noDatabaseConfigured, parseDbTarget, type DbEnv, type GuardRole } from "../lib/db-targets";
 
 const ROLES: GuardRole[] = ["test", "not-production", "import", "build"];
 const role = process.argv[2] as GuardRole;
@@ -30,6 +30,12 @@ const dotEnv: DbEnv | null = fs.existsSync(dotEnvPath) ? parse(fs.readFileSync(d
 // A variable missing from .env.test therefore falls back to dev, and the
 // guard sees that.
 const effectiveEnv = { ...(dotEnv ?? {}), ...process.env } as DbEnv;
+
+// Cloud sessions have no database and no credentials: say so plainly and stop.
+if (role !== "build" && noDatabaseConfigured(effectiveEnv)) {
+  console.error(`db-guard [${role}] REFUSED: ${NO_DATABASE_MESSAGE}`);
+  process.exit(1);
+}
 
 const problems = checkDbTarget({
   role,

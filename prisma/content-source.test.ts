@@ -18,10 +18,17 @@ describe("the real content-drafts/ directory", () => {
     expect([...loaded.modules.keys()].sort()).toEqual([...MODULE_SLUGS].sort());
   });
 
-  it("html-foundations is HELD: validated on every run but never imported until its rewrite", () => {
-    expect(HELD_MODULE_SLUGS).toContain("html-foundations");
-    expect(MODULE_SLUGS as readonly string[]).not.toContain("html-foundations");
-    expect(loaded.modules.has("html-foundations")).toBe(false);
+  it("html-foundations is imported (no module is held back any more)", () => {
+    expect(HELD_MODULE_SLUGS).toEqual([]);
+    expect(MODULE_SLUGS as readonly string[]).toContain("html-foundations");
+    expect(loaded.modules.has("html-foundations")).toBe(true);
+  });
+
+  it("html-foundations has 11 lessons and the semantic-profile-page assignment, and keeps the slugs the database already uses", () => {
+    const m = loaded.modules.get("html-foundations");
+    expect(m?.lessons).toHaveLength(11);
+    expect(m?.lessons.map((l) => l.slug)).toEqual(expect.arrayContaining(["semantic-html", "forms-and-labels"]));
+    expect(m?.assignment?.slug).toBe("semantic-profile-page");
   });
 
   it("every lesson declares a unique slug across the whole path", () => {

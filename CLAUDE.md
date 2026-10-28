@@ -84,8 +84,13 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
 - **The Phase 5 "second-path smoke test" status is unknown** — was
   supposed to validate that adding a second LearningPath through the CRUD
   UI works without schema changes. Worth confirming it was actually run.
-- **Only Developer Orientation has been rewritten for a true beginner.**
-  The other 11 modules (HTML Foundations through Capstone) still have
+- **Only Developer Orientation and HTML Foundations have been rewritten for
+  a true beginner.** HTML Foundations (11 lessons plus the assignment) was
+  rewritten 2026-10-06 on a branch: it is in `MODULE_SLUGS` but **not yet
+  imported anywhere**, and no step has been run on Windows or macOS (lesson
+  criterion L14 is deliberately 1 until the trainee tests it on Windows).
+  Import it **together with** the CSS module (the CSS edits refer to files the
+  new HTML module creates). The other 10 modules (CSS through Capstone) still have
   their original content, which was written assuming *some* baseline
   comfort with a computer, not zero. **A full audit of the whole path for
   the same beginner-friendliness bar was requested and not yet started**
@@ -107,7 +112,8 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
   and updated the Orientation assignment and Lessons 4 and 5), and Praise's
   view was checked. `origin/main` and local `main` were identical at
   `e2722dd` when this was written. HTML Foundations was held out of that
-  import by design, so it is still the older seed content in production.
+  import by design, so it is still the older seed content in production (the
+  rewrite is in the repo, see above).
 
 ## Hard-won gotchas (things that actually went wrong during this build)
 
@@ -238,6 +244,9 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     - **TEST branch `ep-holy-dream-auynvhak` ONLY:** the assistant may reset it
       (`npm run test:e2e:setup`, which runs `prisma migrate reset --force`) and
       run E2E against it without asking each time. It is disposable.
+      (Applies to a session that has database access, i.e. a local one. Cloud
+      sessions have none: E2E runs through the "E2E on test branch" workflow,
+      see "Remote working".)
     - **DEV branch `ep-noisy-pond-auxnlxg5` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
       every write (migration, import, reset, seed) needs the owner's explicit OK
       **every time**. Always show a `--dry-run` first. Production also needs a
@@ -245,10 +254,11 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     - The permission is tied to the endpoint id, not the branch name: verify the
       host (`scripts/db-guard.ts`, or the server-side `neon.endpoint_id`) before
       relying on it, and never extend it to another host.
-    - **HTML Foundations is held out of the importer** (`HELD_MODULE_SLUGS` in
-      `prisma/content-source.ts`): its draft is validated on every run but not
-      imported, and the seed content in the database stays until the module is
-      rewritten. Move it back to `MODULE_SLUGS` with the rewrite.
+    - **Nothing is held out of the importer any more** (`HELD_MODULE_SLUGS` in
+      `prisma/content-source.ts` is empty; HTML Foundations moved into
+      `MODULE_SLUGS` with its rewrite, 2026-10-06). The held mechanism stays
+      for the future. The first import of the rewrite will archive the old seed
+      lessons of that module that are absent from the new draft.
 
 14. **The Vercel Neon integration injects ~20 `LEARNING_DB_*` variables, and we
     leave them alone.** The Marketplace integration adds variables such as
@@ -267,53 +277,57 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     falls back to them) and when a Preview build targets the production host.
     Set `DATABASE_URL` and `DIRECT_URL` by hand for each environment.
 
-## Remote working (set 2026-09-30; the owner is away and works from a phone)
+## Remote working (rewritten 2026-09-30; the owner is away and works from a phone)
 
 Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`).
-Setup details, GitHub secrets steps and the cloud environment list are in
+Setup details, GitHub secrets steps and the cloud environment settings are in
 `docs/plans/remote-setup.md`.
 
-- **Neon dev and test branches were restored (2026-10-28).** The originals expired
-  while the owner was away and were recreated with new endpoints (dev
-  `ep-noisy-pond-auxnlxg5`, test `ep-holy-dream-auynvhak`); the guards, workflows
-  and secrets use these. **Any new Neon branch must be created with expiry off**,
-  otherwise it is deleted on schedule and everything above breaks silently. If an
+- **Neon dev and test branches were restored (2026-10-28).** They expired
+  while the owner was away (the outage of 2026-10-06) and were recreated with new
+  endpoints (dev `ep-noisy-pond-auxnlxg5`, test `ep-holy-dream-auynvhak`); the
+  guards, workflows, secrets and Vercel Preview variables use these. **Any new
+  Neon branch must be created with expiry off**, otherwise it is deleted on
+  schedule and Preview builds, the dev import and the E2E workflow break. If an
   endpoint changes again, update `TEST_ENDPOINT_ID` in `lib/db-targets.ts`,
-  `DEV_ENDPOINT_ID` in `scripts/assert-db-target.ts`, gotcha 13 and this section.
+  `DEV_ENDPOINT_ID` and `TEST_ENDPOINT_ID` in `scripts/assert-db-target.ts`, gotcha 13 and
+  `docs/plans/remote-setup.md`.
+- **A cloud session has NO database and NO database credentials.** The
+  environment holds no `DATABASE_URL`, `DIRECT_URL` or any other connection
+  string, for any branch (production, dev or test). Anything that reads or
+  writes a database runs only in GitHub Actions. Do not try to connect, probe
+  the network, or work around the missing variables.
+- **What a cloud session does:** write and edit content (`content-drafts/*.md`,
+  `prisma/media-map.ts`) and code; check content with
+  `npm run validate:content` (= `import-content.ts --validate-only`: parses
+  every draft, slug and media-map entry, reads no credentials, loads no
+  database client); run `npm test` (unit tests, no database) and
+  `npm run typecheck`.
+- **What goes through GitHub Actions (run by the owner, `workflow_dispatch`):**
+  - **"Import content to dev"**: any branch, `dry_run` defaults to true.
+  - **"Import content to production"**: `main` only, `dry_run` defaults to true,
+    needs the owner's approval in the `production` environment, a real run also
+    needs `backup_confirmed`.
+  - **"E2E on test branch"**: resets and reseeds the disposable test branch,
+    then runs Playwright. Uses the `test` environment.
+  Dry-runs, imports, migrations, seeds and E2E never run in a session.
+- **Scripts refuse cleanly without a database.** `db-guard`, `import:content`,
+  the seed, the `*:test` scripts and Playwright stop with "no database in this
+  environment" when `DATABASE_URL` is unset. Scripts that need no database
+  (`validate:content`, `test`, `typecheck`) work without one. No `.env` or
+  `.env.test` is needed anywhere: the Actions workflows pass the secrets as
+  process environment variables.
 - **Branches only, never `main`.** A cloud session creates a branch, commits and
   pushes **that branch**. It never pushes to, merges into or force-pushes `main`.
-  (This supersedes older "commit, do not push" instructions: a cloud session must
-  push its branch to keep its work.)
 - **Merging to `main` is a production release** (auto-deploy plus
   `prisma migrate deploy`, gotcha 12). Only the owner merges, after
   `docs/release-checklist.md`. Open a pull request and stop.
-- **In a cloud session, `DATABASE_URL` and `DIRECT_URL` point at the TEST
-  branch** (`ep-holy-dream-auynvhak`), nothing else. Not dev (it holds a copy of
-  real user data) and never production, because the variables of a cloud
-  environment are readable by anyone who uses it and by Claude. Production
-  credentials never go into any cloud environment, `.env` file, commit, chat
-  message or log; neither do dev credentials. If a dev or production URL ever
-  appears in a session, stop and tell the owner so it can be rotated.
-- **There is no `.env` or `.env.test` file in a cloud session.** Everything reads
-  the process environment. `scripts/db-guard.ts`, the `*:test` npm scripts
-  (`dotenv-cli` ignores a missing file) and `playwright.config.ts`
-  (`lib/test-env.ts`) work from `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`,
-  `BETTER_AUTH_URL` and `SEED_USER_PASSWORD` alone. The `test` guard role accepts
-  **only** the test endpoint (`TEST_ENDPOINT_ID` in `lib/db-targets.ts`), so
-  `npm run test:e2e:setup` (which resets the database) refuses anything else.
-  Under gotcha 13 you may reset the test branch and run E2E against it without
-  asking. Dry-runs and imports in a session therefore hit the test branch, which
-  is a disposable seeded copy, not a picture of production: a clean result there
-  is useful, but it is not the dev dry-run the owner reviews.
-- **Dev-branch and production imports happen only through the GitHub Actions
-  workflows**, dry run first: "Import content to dev" (any branch) and "Import
-  content to production" (`main` only, approved by the owner in the `production`
-  environment). Never run the importer against dev or production from a session,
-  and never set `ALLOW_PRODUCTION_DB_WRITE` in one. The owner reads the dry-run
-  summary and approves each run (gotcha 13).
+- **Production credentials never go into any cloud environment**, `.env` file,
+  commit, chat message or log. If a connection string of any branch ever appears
+  in a session, stop and tell the owner so it can be rotated.
 - **Keep every existing stop point.** Stop points in a plan or in a request
-  (outline, first lesson, dry-run review) still mean stop and wait, even though
-  the owner replies slowly. Do not "keep going" to save time.
+  (outline, first lesson, validation or dry-run review) still mean stop and
+  wait, even though the owner replies slowly. Do not "keep going" to save time.
 - **Plans live in the repo.** Continue multi-step work from `docs/plans/*.md`
   (currently `docs/plans/html-foundations.md`) and update the plan file when the
   state changes, because the session's conversation will not survive.

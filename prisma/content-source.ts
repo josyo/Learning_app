@@ -11,10 +11,7 @@ import { MEDIA_MAP, type MediaEntry } from "./media-map";
 /** One file per module in content-drafts/, named exactly like the module slug. */
 export const MODULE_SLUGS = [
   "developer-orientation",
-  // "html-foundations" is deliberately NOT imported yet: the seed content in the
-  // database is being kept until the module is rewritten (the current draft
-  // scored 8-9/28 in docs/audits/). It returns to this list with the rewrite.
-  // Its draft is still parsed and validated (see HELD_MODULE_SLUGS).
+  "html-foundations",
   "css-responsive-ui",
   "javascript-fundamentals",
   "git-github",
@@ -29,10 +26,11 @@ export const MODULE_SLUGS = [
 
 /**
  * Modules whose draft file exists and is validated on every run, but which the
- * importer neither reads from nor writes to the database. Move a slug back to
- * MODULE_SLUGS to import it.
+ * importer neither reads from nor writes to the database. Move a slug here to
+ * hold a module back, and back to MODULE_SLUGS to import it. Empty since the
+ * HTML Foundations rewrite (2026-10-06).
  */
-export const HELD_MODULE_SLUGS = ["html-foundations"] as const;
+export const HELD_MODULE_SLUGS: readonly string[] = [];
 
 export const CONTENT_DIR = path.join(__dirname, "..", "content-drafts");
 

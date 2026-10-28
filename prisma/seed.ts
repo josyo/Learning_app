@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { auth } from "../lib/auth";
-import { describeTarget, parseDbTarget } from "../lib/db-targets";
+import { NO_DATABASE_MESSAGE, describeTarget, noDatabaseConfigured, parseDbTarget } from "../lib/db-targets";
 import { FRONTEND_NEXTJS_MODULES } from "./curriculum-data";
 
 const db = new PrismaClient();
@@ -101,6 +101,7 @@ async function getOrCreateSeedUser(name: string, email: string, password: string
  * password has not been provided.
  */
 async function main() {
+  if (noDatabaseConfigured(process.env)) throw new Error(`Seed refused: ${NO_DATABASE_MESSAGE}`);
   // Host and database only: the URL itself contains the password.
   console.log("Connecting to:", describeTarget(parseDbTarget(process.env.DATABASE_URL)));
   if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "true") {
