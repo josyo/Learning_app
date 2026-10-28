@@ -182,7 +182,7 @@ Keep `styles.css` as it is when you finish. Lesson 2 continues from it.
   1. The file is not saved. If the `styles.css` tab shows a dot, press Ctrl+S (Cmd+S on macOS), then refresh.
   2. You edited the wrong file. The tab must be named `styles.css`, and the file must be the one inside `my-site`, not a copy in another folder such as Downloads.
   3. Chrome is not loading your file. Right-click the element, choose **Inspect**, and look at the Styles pane. If you see no rule from `styles.css` at all, only greyed "user agent stylesheet" rules, check the `<link>` line in `<head>`: `href` must be exactly `styles.css`.
-  4. The rule is there but a line in it is crossed out, often with a small warning triangle. Chrome could not read that line. Read mistakes 2, 3 and 4 below.
+  4. The rule is there but a line in it is crossed out, often with a small warning triangle. Chrome could not read that line. Read mistakes 2 to 5 below.
   5. The Styles pane shows the old text of your rule, not what you saved. Chrome keeps a stored copy of files, called the **cache**, so pages load faster, and a normal refresh can reuse the stored `styles.css`. Do a **hard refresh**, which tells Chrome to download everything again: Ctrl+Shift+R on Windows (Ctrl+F5 also works), Cmd+Shift+R on macOS. This is uncommon for files on your own computer. It is the usual reason a live website looks out of date, and you will meet it again in the lesson about publishing your site.
 
 **2. A semicolon is missing.**
