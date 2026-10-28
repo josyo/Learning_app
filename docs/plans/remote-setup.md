@@ -42,7 +42,7 @@ Three workflows, all run by hand (`workflow_dispatch`):
 - `.github/workflows/import-content-dev.yml` "Import content to dev": any branch, `dry_run` defaults to true, secrets from the `dev` environment.
 - `.github/workflows/import-content-production.yml` "Import content to production": **main only**, `dry_run` defaults to true, a real run also needs `backup_confirmed`, secrets from the `production` environment.
 
-- `.github/workflows/e2e-test-branch.yml` "E2E on test branch": any branch, secrets from the `test` environment. It asserts the secrets are the test endpoint (`ep-green-bread-aue0kwbf`), then `npm run test:e2e:setup` (reset, migrate, seed, import) and `npm run test:e2e`. The test-branch values are passed as process environment variables; no `.env.test` exists on the runner.
+- `.github/workflows/e2e-test-branch.yml` "E2E on test branch": any branch, secrets from the `test` environment. It asserts the secrets are the test endpoint (`ep-holy-dream-auynvhak`), then `npm run test:e2e:setup` (reset, migrate, seed, import) and `npm run test:e2e`. The test-branch values are passed as process environment variables; no `.env.test` exists on the runner.
 
 The two import workflows each run: `npm ci`, `scripts/assert-db-target.ts` (the secrets really point at that environment; the dev workflow refuses the production endpoint), `scripts/db-guard.ts import`, then `npm run import:content` (with `-- --dry-run` when checked). The result is also written to the run's summary page. This repository is **public**, so logs are public: the importer redacts learner names when `REDACT_LEARNER_NAMES=1` (set by both workflows), and prints only hosts, never credentials.
 
@@ -64,14 +64,14 @@ Environments with required reviewers work in a public repository on the free pla
 **B. The `dev` environment**
 1. **New environment**, name exactly `dev`, **Configure environment**.
 2. Recommended: tick **Required reviewers** and add yourself (unticked "Prevent self-review"), so every dev write needs one tap from you. This keeps `CLAUDE.md` gotcha 13 ("every dev write needs the owner's OK every time") true even if someone else could start a run. Do not restrict branches: dev imports must run from content branches.
-3. **Environment secrets**: `DATABASE_URL` (dev branch, **pooled**) and `DIRECT_URL` (dev branch, **direct**). The dev host starts with `ep-silent-band-aup0hqps`. The workflow refuses to run if either secret is the production endpoint or not the dev endpoint.
+3. **Environment secrets**: `DATABASE_URL` (dev branch, **pooled**) and `DIRECT_URL` (dev branch, **direct**). The dev host starts with `ep-noisy-pond-auxnlxg5`. The workflow refuses to run if either secret is the production endpoint or not the dev endpoint.
 
 The GitHub button labels above follow GitHub's current documentation (fetched 2026-09-30); the label of the add-secret button was documented as "Add Secret" / "Add secret" and may differ in capitalisation on your screen.
 
 **C. The `test` environment** (for "E2E on test branch")
 1. **New environment**, name exactly `test`, **Configure environment**. No reviewers and no branch restriction are needed: the branch is disposable.
 2. **Environment secrets** (names must match exactly):
-   - `DATABASE_URL`: test branch, **pooled**. The host starts with `ep-green-bread-aue0kwbf`.
+   - `DATABASE_URL`: test branch, **pooled**. The host starts with `ep-holy-dream-auynvhak`.
    - `DIRECT_URL`: test branch, **direct**.
    - `BETTER_AUTH_SECRET`: a random value used only for E2E, different from every other environment.
    - `SEED_USER_PASSWORD`: a strong throwaway password for the seeded test accounts (the E2E spec reads the same variable).

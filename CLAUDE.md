@@ -241,13 +241,13 @@ read of the repo won't tell you: decisions, history, and known sharp edges.
     **Follow `docs/release-checklist.md` step by step; do not improvise a release.**
 
 13. **Standing permission rule for database writes (set 2026-09-29 by the owner).**
-    - **TEST branch `ep-green-bread-aue0kwbf` ONLY:** the assistant may reset it
+    - **TEST branch `ep-holy-dream-auynvhak` ONLY:** the assistant may reset it
       (`npm run test:e2e:setup`, which runs `prisma migrate reset --force`) and
       run E2E against it without asking each time. It is disposable.
       (Applies to a session that has database access, i.e. a local one. Cloud
       sessions have none: E2E runs through the "E2E on test branch" workflow,
       see "Remote working".)
-    - **DEV branch `ep-silent-band-aup0hqps` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
+    - **DEV branch `ep-noisy-pond-auxnlxg5` and PRODUCTION (`ep-red-mode-aur8z6oc`):**
       every write (migration, import, reset, seed) needs the owner's explicit OK
       **every time**. Always show a `--dry-run` first. Production also needs a
       fresh `pg_dump`, and nothing is pushed to `main` without approval (gotcha 12).
@@ -283,20 +283,15 @@ Applies to Claude Code on the web (cloud sessions: fresh clone, no local `.env`)
 Setup details, GitHub secrets steps and the cloud environment settings are in
 `docs/plans/remote-setup.md`.
 
-- **KNOWN OUTAGE (2026-10-06): the Neon `dev` and `test` branches were deleted
-  (they expired).** Until the owner recreates them: Vercel **Preview** builds
-  fail, the "Import content to dev" and "E2E on test branch" workflows cannot
-  work, and the endpoint ids written in gotcha 13, `scripts/assert-db-target.ts`
-  (`DEV_ENDPOINT_ID`, `TEST_ENDPOINT_ID`), `.github/workflows/e2e-test-branch.yml`
-  and `docs/plans/remote-setup.md` point at branches that no longer exist.
-  **Do not try to fix this from a session.** The only pre-release check is the
-  **production dry-run** ("Import content to production" with `dry_run` on, from
-  `main`), plus `npm run validate:content` and the unit tests. Owner's recovery
-  list, after the trip: (1) recreate the `dev` and `test` branches in Neon **with
-  no expiry**; (2) put the new endpoint ids into `scripts/assert-db-target.ts`,
-  the workflows, gotcha 13 and `docs/plans/remote-setup.md`; (3) update the Vercel
-  **Preview** `DATABASE_URL` / `DIRECT_URL` to the new dev branch; (4) update the
-  GitHub `dev` and `test` environment secrets (`DATABASE_URL`, `DIRECT_URL`).
+- **Neon dev and test branches were restored (2026-10-28).** They expired
+  while the owner was away (the outage of 2026-10-06) and were recreated with new
+  endpoints (dev `ep-noisy-pond-auxnlxg5`, test `ep-holy-dream-auynvhak`); the
+  guards, workflows, secrets and Vercel Preview variables use these. **Any new
+  Neon branch must be created with expiry off**, otherwise it is deleted on
+  schedule and Preview builds, the dev import and the E2E workflow break. If an
+  endpoint changes again, update `TEST_ENDPOINT_ID` in `lib/db-targets.ts`,
+  `DEV_ENDPOINT_ID` and `TEST_ENDPOINT_ID` in `scripts/assert-db-target.ts`, gotcha 13 and
+  `docs/plans/remote-setup.md`.
 - **A cloud session has NO database and NO database credentials.** The
   environment holds no `DATABASE_URL`, `DIRECT_URL` or any other connection
   string, for any branch (production, dev or test). Anything that reads or

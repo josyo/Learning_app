@@ -1,6 +1,6 @@
 name: E2E on test branch
 
-# Runs the Playwright E2E suite against the TEST Neon branch (ep-green-bread-aue0kwbf).
+# Runs the Playwright E2E suite against the TEST Neon branch (ep-holy-dream-auynvhak).
 # That branch is disposable: test:e2e:setup wipes, migrates, seeds and imports content
 # into it first, which is what the E2E tests expect. It can run from any branch.
 # Uses the secrets of the "test" environment. A target assertion refuses anything

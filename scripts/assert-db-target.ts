@@ -10,10 +10,10 @@
 import { describeTarget, isProductionTarget, parseDbTarget } from "../lib/db-targets";
 
 /** Neon endpoint id of the dev branch (see CLAUDE.md, gotcha 13). Non-secret. */
-const DEV_ENDPOINT_ID = "ep-silent-band-aup0hqps";
+const DEV_ENDPOINT_ID = "ep-noisy-pond-auxnlxg5";
 
 /** Neon endpoint id of the test branch (disposable, reset by test:e2e:setup). Non-secret. */
-const TEST_ENDPOINT_ID = "ep-green-bread-aue0kwbf";
+const TEST_ENDPOINT_ID = "ep-holy-dream-auynvhak";
 
 const expected = process.argv[2];
 if (expected !== "production" && expected !== "dev" && expected !== "test") {
