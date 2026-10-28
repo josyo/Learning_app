@@ -22,7 +22,6 @@ export interface MediaEntry {
 const YT = (id: string) => `https://www.youtube.com/embed/${id}`;
 
 // Module-level videos — applied to every lesson slug in that module below.
-const CSS_VIDEO = YT("ieTHC78giGQ"); // freeCodeCamp — CSS Full Course (incl. Flexbox & Grid)
 const JS_VIDEO = YT("jS4aFq5-91M"); // freeCodeCamp — JavaScript Programming, Full Course
 const GIT_VIDEO = YT("mAFoROnOfHs"); // freeCodeCamp — Git & GitHub Crash Course for Beginners
 const TS_VIDEO = YT("SpwzRDUQ1GI"); // Learn TypeScript — Full Course for Beginners
@@ -50,11 +49,16 @@ export const MEDIA_MAP: Record<string, MediaEntry> = {
   // how-assignments-and-reviews-work, a-tour-of-a-real-project-s-folders: no video —
   // these are conceptual/tour lessons with nothing to install or watch happen on screen.
 
-  // CSS & Responsive UI
-  "the-box-model-selectors": { videoUrl: CSS_VIDEO, resources: [{ label: "Live CSS playground", url: CODESANDBOX_HOME }] },
-  "flexbox-for-one-dimensional-layouts": { videoUrl: CSS_VIDEO },
-  "css-grid-for-two-dimensional-layouts": { videoUrl: CSS_VIDEO },
-  "responsive-design-reusable-styling-habits": { videoUrl: CSS_VIDEO },
+  // CSS & Responsive UI: no video. The old entries pointed every lesson at one uncut full-course video
+  // (breaks content-standard L12). When lessons 5, 6 and 8 reuse their old slugs, add `resources: []`
+  // for them so the importer clears the old CodeSandbox link from the existing rows.
+
+  "what-css-is-and-how-a-rule-works": {
+    resources: [
+      { label: "MDN: What is CSS?", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS" },
+      { label: "Chrome DevTools: View and change CSS", url: "https://developer.chrome.com/docs/devtools/css" },
+    ],
+  },
 
   // JavaScript Fundamentals
   "variables-data-types-functions": { videoUrl: JS_VIDEO, resources: [{ label: "Live JS playground", url: CODESANDBOX_HOME }] },

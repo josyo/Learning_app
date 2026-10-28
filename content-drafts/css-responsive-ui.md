@@ -1,217 +1,288 @@
-# Content Approach & Worked Example — CSS & Responsive UI
+# Module: CSS and Responsive UI
 
-## The lesson template we're using going forward
+*Style the profile site you built in HTML Foundations: type, colour, spacing, layout with Flexbox, phone-sized screens, an accessible form, and a live address on GitHub Pages. Builds on HTML Foundations: you work in the same `my-site` folder, on the same `styles.css` that your pages already link to. Written for a learner with no prior experience; Windows first, macOS differences noted.*
 
-Every lesson follows the same shape, in this order:
+<!-- WORK IN PROGRESS (see docs/plans/css-responsive-ui.md). This file holds ONLY lesson 1. Lessons 2-10, the assignment and the mentor notes are not written yet. DO NOT IMPORT this file until the module is complete: the importer would archive every other CSS lesson the learner has. -->
 
-1. **Why this matters** — one short paragraph, the real problem before the syntax.
-2. **The core idea** — explained plainly, with one worked example.
-3. **Try it yourself** — a concrete, specific action to do in their own project right now (not a hypothetical).
-4. **A mistake beginners actually make** — one, named directly, not a vague "be careful."
+### Lesson 1 — What CSS is and how a rule works
+<!-- slug: what-css-is-and-how-a-rule-works -->
 
-Assignments are different on purpose: real, open-ended, closer to a ticket than a worksheet — the productive-struggle model works *because* a mentor is reviewing it, which is the safety net platforms like The Odin Project don't have.
+**By the end you can:**
 
----
+- Write a **CSS rule** (an instruction that styles part of a page) in `styles.css`, save it, and see it change `index.html` in Chrome.
+- Name the **selector**, the **property** and the **value** in a rule: the part that picks the elements, the thing to change, and the setting.
+- Open Chrome's **Styles pane** (the list of rules that apply to the element you selected) and switch one line of a rule off and on.
+- Fix a rule that has no effect by checking the likely causes in a fixed order.
 
-## Module: CSS & Responsive UI
+**Before you start:** You finished HTML Foundations. Your `my-site` folder holds `index.html`, `contact.html`, `styles.css` and an `images` folder, and both pages link to `styles.css` in the `<head>`. You can open a page in Chrome (HTML Foundations, "Your first web page").
 
-*Selectors, box model, Flexbox, Grid, responsive design, reusable styling habits. Builds on HTML Foundations.*
+**Time:** ~40 min
 
-### Lesson 1 — The Box Model & Selectors
-<!-- slug: the-box-model-selectors -->
+**Last verified:** 2026-10-29 on Windows 10 with Chromium 153 (the engine inside Chrome). Every rule and every "nothing changes" case below was run in the browser. **Not yet run on a real Windows or macOS desktop screen:** the exact look of the panel Chrome opens when you choose Inspect (the small checkbox beside a line, the label "user agent stylesheet") and the shortcut Ctrl+Shift+R. If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
-**Why this matters**
+## Why this matters
 
-Every layout bug you'll ever fight traces back to one thing: not knowing what box you're actually looking at. Before Flexbox, before Grid, before anything else — you need to know exactly what `padding`, `border`, and `margin` are doing to an element's size, because CSS's default behavior here surprises almost everyone the first time.
+Your pages work, but they look like every plain page on the internet: black text on white. **CSS**, the language that controls how a page looks, changes that. The first time you write it, though, the biggest problem is rarely the CSS itself. It is a change that does not show, and you cannot tell whether you made a typing mistake or Chrome is showing an old copy. This lesson shows you how to find out in two minutes.
 
-**The core idea**
+## What CSS is
 
-Every HTML element is a rectangular box. Four layers, from the inside out:
+**CSS** (Cascading Style Sheets) is the language that tells a browser how HTML should look: colours, sizes, spacing and layout. HTML says what is on the page ("this is a heading"). CSS says how it looks ("dark blue, in the middle").
 
-```
-content → padding → border → margin
-```
+CSS lives in a **stylesheet**, a file whose name ends in `.css`. You already have one: `styles.css`. Your pages load it with the line `<link rel="stylesheet" href="styles.css">` in the `<head>`. Until now it held only a **comment**, a note for people that the browser ignores. A CSS comment starts with `/*` and ends with `*/`.
 
-Here's the part that trips people up: by default, `width: 200px` sets the *content* width only. Padding and border get added on top of it. So this:
+## The parts of a rule
+
+A **rule** says "find these elements and change them like this". This is one:
 
 ```css
-.card {
-  width: 200px;
-  padding: 20px;
-  border: 2px solid black;
+h1 {
+  color: darkslateblue;
+  text-align: center;
 }
 ```
 
-...actually renders **244px wide** (200 + 20 + 20 + 2 + 2), not 200px. This is almost never what you want, which is why nearly every real project starts with:
+- The **selector** says which elements the rule is for. Here it is `h1`, so the rule applies to every `<h1>` on the page.
+- The curly braces `{ }` wrap the **declarations**.
+- A **declaration** is one change, such as `color: darkslateblue;`. It has four parts:
+  - a **property**, which is what to change (`color` sets the colour of the text);
+  - a colon;
+  - a **value**, which is the setting (`darkslateblue` is a **colour name**, one of many that Chrome understands);
+  - a semicolon that ends the declaration.
+
+The second declaration, `text-align: center;`, puts the text in the middle of its line. CSS property names use American spelling, so the code says `color`, not `colour`. This course writes "colour" in its sentences and `color` in its code.
+
+## Worked example
+
+You will put the rule above into `styles.css` and then look at it inside Chrome. Do these steps on your computer.
+
+1. In VS Code, open the `my-site` folder. In the Explorer (the file list on the left), click `styles.css`.
+
+   You should see: one line, the comment `/* My styles. The CSS module starts here. */`.
+   If you see something else:
+   - If the file is empty, that is fine. Carry on.
+   - If the Explorer has no `styles.css`, create it with **New File**, as in HTML Foundations, "The skeleton of every page", and carry on.
+
+2. Open `index.html` and look in the `<head>` for this line, between `<title>` and `</head>`:
+
+   ```html
+   <link rel="stylesheet" href="styles.css">
+   ```
+
+   You should see: that line, spelled exactly like this.
+   If you see something else: if the line is missing, add it on a new line directly above `</head>` and save. Do the same in `contact.html`. If it says `style.css` or anything else in `href`, change it to `styles.css`.
+
+3. Open `index.html` in Chrome. In VS Code, right-click `index.html` in the Explorer and choose **Reveal in File Explorer** on Windows, or **Reveal in Finder** on macOS. In the window that opens, right-click `index.html`, choose **Open with**, then **Google Chrome**. (This is the way from HTML Foundations lesson 1. If you prefer the terminal command from that lesson, use it.)
+
+   You should see: your page in a Chrome window, in plain black and white, with the `<h1>` heading at the left.
+   If you see something else: if the page opened in another browser such as Edge, close it and repeat with **Open with**, then **Google Chrome**. Keep both Chrome and VS Code open from now on, and switch between them with Alt+Tab on Windows or Cmd+Tab on macOS.
+
+4. Predict first: after you add the `h1` rule and refresh, which text on the page will change? Decide your answer before you go on. Step 8 tells you what really happens, so check your prediction against it.
+
+5. Go back to VS Code. Copy the code below from this page: drag across it with the mouse, then press Ctrl+C (Cmd+C on macOS).
+
+   ```css
+   /* My styles. The CSS module starts here. */
+
+   h1 {
+     color: darkslateblue;
+     text-align: center;
+   }
+   ```
+
+   You should see: the code highlighted on this page.
+   If you see something else: if only part of it is highlighted, click once elsewhere on the page and drag again.
+
+6. Click in `styles.css`, select everything (Ctrl+A on Windows, Cmd+A on macOS) and paste (Ctrl+V, or Cmd+V).
+
+   You should see: the comment and the rule in several colours, and a **dot** on the `styles.css` tab. VS Code shows a dot while a file has changes that are not saved.
+   If you see something else: if the text is all one colour, check that the tab is named `styles.css`.
+
+7. Save: press Ctrl+S on Windows or Cmd+S on macOS.
+
+   You should see: the dot on the tab turns into an **×** (the close button), which means saved.
+   If you see something else: if the dot stays, click in the editor and press the keys again.
+
+8. Go to Chrome and refresh: press Ctrl+R on Windows or Cmd+R on macOS, which is a normal refresh.
+
+   You should see: the main heading in dark blue and in the middle of the line. Everything else is unchanged, because only the `<h1>` matched the selector. If you predicted that only the heading changes, you were right.
+   If you see something else: read Common mistakes, number 1. It lists the causes in the order to check them.
+
+9. Right-click the heading in Chrome and choose **Inspect**.
+
+   You should see: a panel opens inside the Chrome window, at the right or at the bottom. This is **DevTools**, tools built into Chrome for looking inside a page. The **Elements** tab is selected and the line with `<h1>` is highlighted.
+   If you see something else: if no panel opens, right-click directly on the heading text, not on blank space.
+
+10. Find the **Styles pane**: the part of DevTools that lists the CSS rules that apply to the selected element. It is a tab named **Styles**, next to the `<h1>` line when DevTools is wide, or under it when DevTools is narrow, so scroll down if you do not see it.
+
+    You should see: a rule that starts `h1 {` and holds your two declarations, with `styles.css:3` at its right. That is the file name and the line number where the rule starts. If your file has a different number of blank lines, the number differs; that is fine. Further down there are greyed rules labelled **user agent stylesheet**. That is the browser's own built-in style, and it is the reason an `<h1>` is big and bold before you write any CSS. You may also see other groups; ignore them for now.
+    If you see something else: if no rule from `styles.css` is listed, read Common mistakes, number 1, item 3.
+
+11. Move the mouse over the line `color: darkslateblue;` in your rule. A small checkbox appears in the space to the left of the property name. Click it.
+
+    You should see: the checkbox empty and the text of that line struck through (a line drawn through it), and the heading turns black at once. Click the checkbox again and the blue returns. This changes only the copy of the page inside Chrome. Your file is not touched, and refreshing the page undoes every change made in DevTools.
+    If you see something else: if no checkbox appears, move the mouse slowly across the line from the left edge of the rule towards the property name, until the box shows.
+
+12. Close DevTools with the **×** at the top right of its panel.
+
+    You should see: the page fills the window again.
+
+## Guided practice
+
+Now you add two rules of your own, with blanks to fill. The colour names you can use are `darkgreen`, `firebrick`, `navy`, `darkslategray`, `lightgray` and `lightyellow`. `color` sets the colour of text, and `background-color` sets the colour behind it. Choose a dark colour (`darkgreen`, `firebrick`, `navy` or `darkslategray`) for the text and a light one (`lightgray` or `lightyellow`) for the background, so that the text stays readable.
 
 ```css
-*, *::before, *::after {
-  box-sizing: border-box;
+p {
+  color: TODO;
+}
+
+footer {
+  background-color: TODO;
 }
 ```
 
-This makes `width` include padding and border, so `width: 200px` means 200px, full stop. Put this at the top of every stylesheet you write from now on — it's not optional polish, it's the default the web should have shipped with.
+1. Your `index.html` from the HTML assignment has paragraphs and a `<footer>` that holds a `<p>`, so both rules have something to match. In `styles.css`, add these two rules under the `h1` rule, with a blank line between rules. Replace each `TODO` with a colour name from the list. Delete the word `TODO` itself. Save.
 
-For selecting things: use a class (`.card`) for anything you'll style more than once, an element selector (`button`) sparingly for true defaults, and avoid IDs for styling entirely — they're for JavaScript hooks and page anchors, and their specificity makes them a pain to override later.
+   You should see: the tab shows ×.
+   If you see something else: if a `TODO` is left in, Chrome ignores that declaration. Replace it and save again.
 
-**Try it yourself**
+2. Predict first: which text on `index.html` will change colour, and what will change in the footer? Decide before you refresh.
 
-Open your `my-site` folder in VS Code and open the `styles.css` file from HTML Foundations (your pages already link to it, so anything you write there applies). Add `box-sizing: border-box` globally, then pick one element and deliberately add padding and a border to it. Then watch what happens to its size with and without the `box-sizing` rule, using Chrome's **DevTools** (a panel built into the browser that shows how a page is put together):
+3. Refresh Chrome.
 
-1. Open your page in Chrome. Right-click the element you gave padding and a border, and choose **Inspect**.
-   You should see: a panel opens with the **Elements** tab selected, and the element's line highlighted.
-2. Find the **Styles** tab in that panel. It lists the CSS rules that apply to the selected element.
-   You should see: your `.card` (or similar) rule with its declarations, each on its own line.
-3. Hover over the `box-sizing: border-box` line in the rule that has it (the `*, *::before, *::after` one) and click the checkbox that appears next to it to switch it off. Click it again to switch it back on.
-   You should see: the element's size change on the page each time. This change is only in the browser, not in your file.
-   If you see something else: if you cannot find the line, click other lines in the Elements tab until the Styles tab shows the rule. Reloading the page undoes your DevTools changes, which is fine.
+   You should see: every paragraph in your text colour, including the site name at the top and the sentence in the footer, because all of them are `<p>` elements in the page you built. The footer has a coloured strip behind its text. The headings are unchanged.
+   If you see something else: if the text is hard to read, choose another pair of colours. Lesson 4 shows you how to measure whether text is readable.
 
-**A mistake beginners actually make**
+4. Right-click one paragraph, choose **Inspect**, and find your `p` rule in the Styles pane. Switch its `color` declaration off and on with the checkbox, as in step 11 above. Close DevTools.
 
-Setting `margin` on both a parent and child element and being confused why the spacing looks doubled or oddly shifted — this is margin collapse, a real CSS behavior where adjacent vertical margins merge into one instead of adding together. It's not a bug in your code; it's just a rule worth knowing exists so you're not debugging something that isn't broken.
+   You should see: the paragraph text changes between your colour and black.
 
----
+## Your turn
 
-### Lesson 2 — Flexbox for One-Dimensional Layouts
-<!-- slug: flexbox-for-one-dimensional-layouts -->
+**Goal:** make the three `<h2>` headings on `index.html` (one for each section of your page) a different colour from the paragraphs, and italic. You write the rule yourself. Use the element selector `h2`, the property `color` with any colour name from the list above, and the property `font-style` with the value `italic`. Your headings can have your own words; the check is about their colour and style.
 
-**Why this matters**
+Then open `contact.html` in Chrome and refresh it.
 
-Before Flexbox, centering something vertically was a genuine running joke in web development — it took hacks nobody remembers fondly. Flexbox exists to solve exactly one kind of problem well: arranging items in a single row or column, with control over spacing, alignment, and how they grow or shrink. Most navigation bars, button groups, and card rows you've ever seen are Flexbox.
+**Check yourself:** save and refresh. All of these should be true:
 
-**The core idea**
+- [ ] Your new rule starts with `h2 {` and ends with `}`, and each declaration inside it ends with a semicolon.
+- [ ] On `index.html`, the three `<h2>` headings have a new colour and are italic, and the main `<h1>` is still dark blue and in the middle.
+- [ ] In the Styles pane for one of the `<h2>` headings, your rule is listed with `styles.css` and a line number, and nothing in it is crossed out.
+- [ ] In `contact.html`, the "Contact" heading is also dark blue and in the middle. One stylesheet styles both pages.
+- [ ] The `styles.css` tab in VS Code shows ×, not a dot.
 
-You turn a container into a flex container, and its direct children become flex items you can control:
+Keep `styles.css` as it is when you finish. Lesson 2 continues from it.
 
-```css
-.nav {
-  display: flex;
-  justify-content: space-between; /* spacing along the main axis */
-  align-items: center;             /* alignment along the cross axis */
-  gap: 1rem;                       /* space between items — no margin hacks needed */
-}
-```
+## Common mistakes
 
-The mental model that actually helps: Flexbox has a **main axis** (the direction items flow — row by default) and a **cross axis** (perpendicular to it). `justify-content` controls the main axis, `align-items` controls the cross axis. Almost every "how do I center this" question is answered by those two properties together.
+**1. My CSS change does not show.**
 
-**Try it yourself**
+- Symptom: you saved a rule and refreshed Chrome, and the page looks the same.
+- Cause: one of five things, listed here in the order to check them. Most often it is number 1.
+- Fix: go down the list and stop at the first one that applies. This happens to every developer, so it is normal.
+  1. The file is not saved. If the `styles.css` tab shows a dot, press Ctrl+S (Cmd+S on macOS), then refresh.
+  2. You edited the wrong file. The tab must be named `styles.css`, and the file must be the one inside `my-site`, not a copy in another folder such as Downloads.
+  3. Chrome is not loading your file. Right-click the element, choose **Inspect**, and look at the Styles pane. If you see no rule from `styles.css` at all, only greyed "user agent stylesheet" rules, check the `<link>` line in `<head>`: `href` must be exactly `styles.css`.
+  4. The rule is there but a line in it is crossed out, often with a small warning triangle. Chrome could not read that line. Read mistakes 2, 3 and 4 below.
+  5. The Styles pane shows the old text of your rule, not what you saved. Chrome keeps a stored copy of files, called the **cache**, so pages load faster, and a normal refresh can reuse the stored `styles.css`. Do a **hard refresh**, which tells Chrome to download everything again: Ctrl+Shift+R on Windows (Ctrl+F5 also works), Cmd+Shift+R on macOS. This is uncommon for files on your own computer. It is the usual reason a live website looks out of date, and you will meet it again in the lesson about publishing your site.
 
-Take the navigation section of your profile page (or add one if you don't have it yet) and lay it out with Flexbox: a title on the left, links on the right, vertically centered, using `justify-content: space-between`. Then try changing `flex-direction: row` to `column` and watch `justify-content` and `align-items` swap which axis they control — that swap is the single most common source of Flexbox confusion, so it's worth seeing happen once on purpose.
+**2. A semicolon is missing.**
 
-**A mistake beginners actually make**
+- Symptom: the rule is in the file, but neither of its lines has an effect. With this rule the heading is not navy and not in the middle:
 
-Reaching for Flexbox on things that aren't really one row or one column — like a photo gallery grid that needs to align in both directions at once. That's a sign you want Grid instead, which is exactly what's next.
-
----
-
-### Lesson 3 — CSS Grid for Two-Dimensional Layouts
-<!-- slug: css-grid-for-two-dimensional-layouts -->
-
-**Why this matters**
-
-Flexbox is one-dimensional by design — great for a row of buttons, bad for an actual page layout with a header, sidebar, and content area that all need to line up in two directions at once. Grid is what you reach for when rows *and* columns both matter.
-
-**The core idea**
-
-Define a grid, then place things on it:
-
-```css
-.page-layout {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  grid-template-rows: auto 1fr auto;
-  gap: 1rem;
-  min-height: 100vh;
-}
-```
-
-`grid-template-columns: 200px 1fr` means: a fixed 200px column, then one column that takes up all remaining space. `fr` (fraction) is Grid's own unit — it means "a share of the leftover space," and it's usually the right tool instead of percentages.
-
-A common, genuinely useful pattern for card layouts:
-
-```css
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-}
-```
-
-This creates as many columns as fit, each at least 220px wide, and reflows automatically as the screen resizes — no media query needed for this specific case, which surprises people the first time they see it.
-
-**Try it yourself**
-
-Rebuild your page's overall structure (header, main content, footer) using Grid instead of stacked `<div>`s with margins. Then try the `auto-fit`/`minmax` card grid pattern above on any repeated content you have — even three placeholder boxes is enough to see it work.
-
-**A mistake beginners actually make**
-
-Using Grid for everything, including things that are really just a single row — like a button group. If it's genuinely one-dimensional, Flexbox is simpler and it's the right call to use it. Knowing when *not* to reach for Grid is as useful as knowing Grid itself.
-
----
-
-### Lesson 4 — Responsive Design & Reusable Styling Habits
-<!-- slug: responsive-design-reusable-styling-habits -->
-
-**Why this matters**
-
-More people will load your site on a phone than on the desktop you're building it on. If you design for a wide screen first and try to "fix" mobile afterward, you'll fight your own CSS the whole way. Designing mobile-first — starting narrow, then adding complexity as space allows — is less work, not more, once it's a habit.
-
-**The core idea**
-
-A mobile-first media query starts with the small-screen styles as your defaults, then overrides them as the screen gets wider:
-
-```css
-.card-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* one column by default — the mobile case */
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .card-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+  ```css
+  h1 {
+    color: navy
+    text-align: center;
   }
-}
-```
+  ```
 
-`min-width` (not `max-width`) is the mobile-first convention — you're saying "once the screen is *at least* this wide, apply this." Fighting this convention by writing desktop-first with `max-width` overrides tends to produce messier, harder-to-follow stylesheets as a project grows.
+  In the Styles pane the two lines appear as one crossed-out line.
+- Cause: without the semicolon after `navy`, Chrome reads the two lines as one long, invalid declaration and drops both.
+- Fix: end every declaration with a semicolon. Save and refresh. This is normal: every developer forgets one.
 
-For reusable habits: keep a small set of spacing values (`0.5rem`, `1rem`, `1.5rem`, `2rem`) and reuse them everywhere instead of inventing a new pixel value every time you need a gap. Consistency here is what makes a page feel deliberately designed instead of randomly assembled — it costs nothing and it's the difference beginners' projects are usually missing.
+**3. A property is spelled the British way.**
 
-**Try it yourself**
+- Symptom: the heading stays black although you wrote a colour. It may still be centred, because only the misspelled line is dropped:
 
-Make your whole profile page responsive: pick one breakpoint (768px is a reasonable default), and make sure nothing overflows horizontally or looks cramped at a narrow width. Resize your browser window slowly from wide to narrow while watching what breaks — that's the fastest way to find the layout's actual weak points.
+  ```css
+  h1 {
+    colour: navy;
+    text-align: center;
+  }
+  ```
 
-Then check a phone-sized screen with DevTools' **device toolbar** (a mode that makes the page render at a phone's width):
+  In the Styles pane, `colour: navy;` is crossed out, usually with a warning triangle.
+- Cause: CSS property names use American spelling. Chrome does not know a property called `colour`.
+- Fix: write `color`. Only the property name is affected: colour *names* such as `navy` are fine. This is normal, and the error is quiet.
 
-1. Open your page in Chrome, right-click an empty part of the page, and choose **Inspect**.
-2. Click the **Toggle device toolbar** icon at the top of the DevTools panel (it looks like a phone and a tablet).
-   You should see: the page shrinks into a narrower frame with a bar of size controls above it.
-3. In that bar, open the **Dimensions** dropdown. Choose **Responsive**, then type `375` in the first (width) box.
-   You should see: the page laid out at 375 pixels wide, roughly a phone. Scroll it to check that nothing runs off the right edge.
-   If you see something else: if the page looks tiny and zoomed out, your `<head>` is missing the `<meta name="viewport" content="width=device-width, initial-scale=1">` line from HTML Foundations. Add it and reload.
+**4. A closing brace is missing.**
 
-**A mistake beginners actually make**
+- Symptom: the first rule works, but the rule written straight after it has no effect. With this file the heading is navy and in the middle, but the paragraphs stay black:
 
-Testing responsiveness only by resizing the browser window on a laptop, never an actual phone-sized viewport in dev tools. Browser window resizing and a real mobile viewport behave differently enough (address bars, safe areas, touch target sizing) that it's worth checking both.
+  ```css
+  h1 {
+    color: navy;
+    text-align: center;
 
----
+  p {
+    color: firebrick;
+  }
+  ```
 
-## Assignment: Responsive Layout Upgrade
+- Cause: the `}` that closes the `h1` rule is missing, so Chrome treats the `p` rule as part of the `h1` rule. No error message appears.
+- Fix: add the missing `}` on its own line after the last declaration of the first rule. Save and refresh.
 
-**Instructions:**
+**5. A colour name is misspelled or does not exist.**
 
-Take the semantic profile page you built in HTML Foundations and rebuild its layout using what you've learned in this module. This isn't a new project from scratch — it's the same content, meaningfully improved.
+- Symptom: the heading keeps its old colour, although the rule is there and the other line works. With this rule the heading stays black but is still centred:
 
-**Requirements:**
-- Global `box-sizing: border-box`.
-- At least one section laid out with Flexbox (e.g. navigation or a button row).
-- At least one section laid out with Grid (e.g. a card grid, or the overall page structure).
-- Mobile-first responsive design with at least one `min-width` media query — the page should look intentional at both a narrow (< 480px) and wide (> 768px) viewport, not just "not broken."
-- Consistent spacing values reused throughout, not one-off pixel values scattered around.
+  ```css
+  h1 {
+    color: darkslatebue;
+    text-align: center;
+  }
+  ```
 
-**What to submit:**
-- A GitHub repo link: use the same repo as HTML Foundations and upload your changed files through the GitHub website again (Git comes later, in its own module).
-- A deployed URL, only if you turned on GitHub Pages for that repo. It is optional; leave it empty otherwise.
-- In your notes: which layout decision you're least sure about. (Not a trick question — this tells your mentor exactly where to focus feedback.)
+  In the Styles pane, the `color` line is crossed out, usually with a warning triangle.
+- Cause: Chrome does not know a colour called `darkslatebue`, so it drops that line. Chrome gives no other message. Names such as `teal-blue` do not exist either.
+- Fix: compare the name with the list in Guided practice, letter by letter, and correct it. Save and refresh. This is normal: a crossed-out line in the Styles pane is Chrome telling you it rejected the value.
+
+## Check your understanding
+
+1. **(Predict)** `styles.css` contains `h2 { color: firebrick; }`. `index.html` has one `<h1>`, three `<h2>` headings and several paragraphs. `contact.html` has an `<h1>`, a form and no `<h2>`. Which elements change colour, and does anything change on `contact.html`?
+2. **(Spot the bug)** Kofi writes this rule, saves, and refreshes. His paragraphs are neither navy nor italic. What is wrong, and what will the Styles pane show?
+
+   ```css
+   p {
+     color: navy
+     font-style: italic;
+   }
+   ```
+
+3. **(Recall — The skeleton of every page)** Which line in the `<head>` makes a page use `styles.css`? If its `href` said `style.css`, what would you see in the Styles pane?
+4. **(Predict)** You switch off a declaration with its checkbox in DevTools and then press Ctrl+R. What does the page show, and has `styles.css` changed?
+5. **(Spot the bug)** Mia wants her heading navy and in the middle. It turns navy, but it stays at the left. What is wrong, and how can she see it in the Styles pane?
+
+   ```css
+   h1 {
+     color: navy;
+     text-align: centre;
+   }
+   ```
+
+## Answers
+
+1. The three `<h2>` headings turn firebrick, and nothing else changes: the selector `h2` matches only `<h2>` elements. `contact.html` has no `<h2>`, so nothing changes there.
+2. A semicolon is missing after `navy`. Chrome reads `navy font-style: italic` as one invalid value and drops both lines, so neither takes effect. The Styles pane shows the two lines as one crossed-out line. The fix is `color: navy;` with a semicolon.
+3. The line is `<link rel="stylesheet" href="styles.css">`. With `style.css` in `href`, Chrome cannot find the file, so the Styles pane lists only the greyed "user agent stylesheet" rules and none from your file.
+4. Pressing Ctrl+R reloads the page, so Chrome reads your files again and the DevTools change disappears: the page shows your saved styles. `styles.css` never changed, because DevTools edits only the copy of the page inside Chrome.
+5. The value is spelled the British way. CSS says `center`, so Chrome rejects `centre` and drops that one line; the `color` line still works. In the Styles pane the `text-align: centre;` line is crossed out, usually with a warning triangle. The fix is `text-align: center;`.
+
+## Recap
+
+- A CSS rule has a selector, then declarations in curly braces; each declaration is a property, a colon, a value and a semicolon. You wrote rules in `styles.css` and saw them change both pages.
+- You named the parts of a rule: `h1` is the selector, `color` the property, `darkslateblue` the value, and the whole line `color: darkslateblue;` is a declaration.
+- In Chrome you right-click, choose **Inspect**, and use the Styles pane to see which rules apply and to switch a declaration off and on. A refresh undoes DevTools changes.
+- When a change does not show, check in this order: saved, right file, file loaded, no crossed-out line (a typo, a missing semicolon or brace, or a misspelled value), then hard refresh with Ctrl+Shift+R (Cmd+Shift+R on macOS).
+
+Next: [Selectors: element, class and id](/learner/roadmap/css-responsive-ui/selectors-element-class-and-id)
