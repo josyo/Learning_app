@@ -22,7 +22,6 @@ export interface MediaEntry {
 const YT = (id: string) => `https://www.youtube.com/embed/${id}`;
 
 // Module-level videos — applied to every lesson slug in that module below.
-const CSS_VIDEO = YT("ieTHC78giGQ"); // freeCodeCamp — CSS Full Course (incl. Flexbox & Grid)
 const JS_VIDEO = YT("jS4aFq5-91M"); // freeCodeCamp — JavaScript Programming, Full Course
 const GIT_VIDEO = YT("mAFoROnOfHs"); // freeCodeCamp — Git & GitHub Crash Course for Beginners
 const TS_VIDEO = YT("SpwzRDUQ1GI"); // Learn TypeScript — Full Course for Beginners
@@ -50,11 +49,56 @@ export const MEDIA_MAP: Record<string, MediaEntry> = {
   // how-assignments-and-reviews-work, a-tour-of-a-real-project-s-folders: no video —
   // these are conceptual/tour lessons with nothing to install or watch happen on screen.
 
-  // CSS & Responsive UI
-  "the-box-model-selectors": { videoUrl: CSS_VIDEO, resources: [{ label: "Live CSS playground", url: CODESANDBOX_HOME }] },
-  "flexbox-for-one-dimensional-layouts": { videoUrl: CSS_VIDEO },
-  "css-grid-for-two-dimensional-layouts": { videoUrl: CSS_VIDEO },
-  "responsive-design-reusable-styling-habits": { videoUrl: CSS_VIDEO },
+  // CSS & Responsive UI: no video. The old entries pointed every lesson at one uncut full-course video
+  // (breaks content-standard L12). Every lesson has a `resources` list, which also makes the importer replace
+  // the old CodeSandbox link that the reused slug the-box-model-selectors still carries. Each URL below was
+  // fetched and confirmed to exist on 2026-10-29.
+  "what-css-is-and-how-a-rule-works": {
+    resources: [
+      { label: "MDN: What is CSS?", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS" },
+      { label: "Chrome DevTools: View and change CSS", url: "https://developer.chrome.com/docs/devtools/css" },
+    ],
+  },
+  "selectors-element-class-and-id": {
+    resources: [{ label: "MDN: Basic CSS selectors", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Basic_selectors" }],
+  },
+  "the-cascade-and-specificity": {
+    resources: [{ label: "MDN: Handling conflicts (cascade and specificity)", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Handling_conflicts" }],
+  },
+  "colour-and-typography": {
+    resources: [
+      { label: "MDN: CSS values and units", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units" },
+      { label: "MDN: Fundamental text and font styling", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals" },
+      { label: "Chrome DevTools: Make your website more readable (contrast)", url: "https://developer.chrome.com/docs/devtools/accessibility/contrast" },
+    ],
+  },
+  "the-box-model-selectors": {
+    resources: [{ label: "MDN: The box model", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model" }],
+  },
+  "flexbox-for-one-dimensional-layouts": {
+    resources: [{ label: "MDN: Flexbox", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox" }],
+  },
+  "wrapping-cards-with-flexbox": {
+    resources: [{ label: "MDN: Flexbox", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox" }],
+  },
+  "responsive-design-reusable-styling-habits": {
+    resources: [
+      { label: "MDN: Responsive web design", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design" },
+      { label: "Chrome DevTools: Simulate mobile devices with Device Mode", url: "https://developer.chrome.com/docs/devtools/device-mode" },
+    ],
+  },
+  "styling-the-form-accessibly": {
+    resources: [
+      { label: "MDN: Styling web forms", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Styling_web_forms" },
+      { label: "MDN: the :focus-visible pseudo-class", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" },
+    ],
+  },
+  "publishing-with-github-pages": {
+    resources: [
+      { label: "GitHub Docs: Configuring a publishing source for your GitHub Pages site", url: "https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site" },
+      { label: "GitHub Docs: Creating a GitHub Pages site", url: "https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site" },
+    ],
+  },
 
   // JavaScript Fundamentals
   "variables-data-types-functions": { videoUrl: JS_VIDEO, resources: [{ label: "Live JS playground", url: CODESANDBOX_HOME }] },
