@@ -16,7 +16,7 @@
 
 **Before you start:** You finished HTML Foundations. Your `my-site` folder holds `index.html`, `contact.html`, `styles.css` and an `images` folder, and both pages link to `styles.css` in the `<head>`. You can open a page in Chrome (HTML Foundations, "Your first web page").
 
-**Time:** ~40 min
+**Time:** ~50 min
 
 **Last verified:** 2026-10-29 on Windows 10 with Chromium 153 (the engine inside Chrome). Every rule and every "nothing changes" case below was run in the browser. **Not yet run on a real Windows or macOS desktop screen:** the exact look of the panel Chrome opens when you choose Inspect (the small checkbox beside a line, the label "user agent stylesheet") and the shortcut Ctrl+Shift+R. If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -301,7 +301,7 @@ Next: [Selectors: element, class and id](/learner/roadmap/css-responsive-ui/sele
 
 **Before you start:** Lesson 1 of this module (rules, and opening the Styles pane with right-click, **Inspect**) and the HTML Foundations lesson "Classes, ids and DevTools". Your `index.html` is the page from the HTML assignment, so it has the classes `site-name`, `nav` and `card`, and the ids `about`, `interests` and `projects`. Step 1 below checks that. In this module you add rules to the end of `styles.css`. If a rule for the same selector is already in your file, add the new lines to that rule instead of writing a second copy.
 
-**Time:** ~35 min
+**Time:** ~45 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** the exact look of the Styles pane. If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -523,7 +523,7 @@ Next: [The cascade and specificity](/learner/roadmap/css-responsive-ui/the-casca
 
 **Before you start:** Lessons 1 and 2 of this module. You can open the Styles pane (right-click, **Inspect**; Lesson 1, steps 9 to 11). Your `styles.css` has the rules you wrote there, including a `p` rule with a colour, a `.card` rule with a `lightyellow` background and a `#projects` rule with a `lightgray` background. In your `index.html`, the site name at the top is a `<p class="site-name">`, as in the HTML assignment. "Crossed out" in this lesson means a line drawn through a line of CSS in the Styles pane.
 
-**Time:** ~35 min
+**Time:** ~45 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** the exact look of crossed-out lines in the Styles pane. If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -718,7 +718,7 @@ Next: [Colour and typography](/learner/roadmap/css-responsive-ui/colour-and-typo
 
 **Before you start:** Lessons 1 to 3 of this module, and how to open the Styles pane (right-click, **Inspect**; Lesson 1). Your `styles.css` has an `h1` rule, a `p` rule with a colour name, an `h2` rule, a `footer p` rule and a `body` rule with a colour from Lesson 3. Changes you make in DevTools disappear when you refresh, so every colour you choose must also be typed into `styles.css` in VS Code. If a rule for a selector already exists, edit it instead of writing a second copy.
 
-**Time:** ~40 min
+**Time:** ~50 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** the colour picker and its "Contrast ratio" section in DevTools (Chrome's documentation describes them, but their exact look was not checked). If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -954,7 +954,7 @@ Next: [The box model](/learner/roadmap/css-responsive-ui/the-box-model-selectors
 
 **Before you start:** Lessons 1 to 4 of this module, and how to open the Styles pane (right-click, **Inspect**; Lesson 1). Your `styles.css` has a `.card` rule with a background colour, a `body` rule, and the type rules from Lesson 4. Your cards are `<article class="card">` elements, as in the HTML assignment. If a rule for a selector already exists in your file (for example `main`), add the new lines to it instead of writing a second copy.
 
-**Time:** ~40 min
+**Time:** ~50 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** where DevTools shows the size of an element (the box diagram on the Computed tab, and the size label when you point at a line in the Elements panel). If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -1169,7 +1169,7 @@ Next: [Flexbox: the header and the navigation](/learner/roadmap/css-responsive-u
 
 **Before you start:** Lessons 1 to 5 of this module. You can open the Styles pane (right-click, **Inspect**; Lesson 1). Your `index.html` has a `<header>` that holds a `<p class="site-name">` and a `<nav class="nav">` with a list of links, as in the HTML assignment. Two rules can style the same element and their lines combine (Lesson 3), but if you already have a plain `header` rule, add new lines to it.
 
-**Time:** ~35 min
+**Time:** ~45 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** the look of the Styles pane. If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -1360,7 +1360,7 @@ Next: [Flexbox: a wrapping row of cards](/learner/roadmap/css-responsive-ui/wrap
 
 **Before you start:** Lessons 5 and 6 of this module (the box model, flex container, flex items, `gap`). If a rule for `.card` or `.card-grid` already exists in your file, add the new lines to it instead of writing a second copy. Your `index.html` has a `<div class="card-grid">` that holds three `<article class="card">` elements, as in the HTML assignment.
 
-**Time:** ~35 min
+**Time:** ~45 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** pressing the zoom keys in Chrome, and the look of the Styles pane. If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -1539,7 +1539,7 @@ Next: [Mobile-first, media queries and reusable values](/learner/roadmap/css-res
 
 **Before you start:** Lessons 1 to 7 of this module, and how to open the Styles pane (right-click, **Inspect**; Lesson 1). Your `<head>` has the line `<meta name="viewport" content="width=device-width, initial-scale=1">` from HTML Foundations, and your `index.html` has an image with `width="300"`. Your `styles.css` has a `header` rule with `display: flex` from Lesson 6, a `header, footer` rule with padding from Lesson 5, and `.card` and `.card-grid` rules from Lesson 7. If a rule for a selector already exists, edit it instead of writing a second copy.
 
-**Time:** ~40 min
+**Time:** ~65 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule, every measurement at 320, 375, 640 and 768 pixels and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** the look of Chrome's device toolbar (Chrome's documentation names the **Toggle device toolbar** icon, the **Dimensions** menu and **Responsive**, but their exact look was not checked). If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -1755,7 +1755,7 @@ Next: [Styling the form so everyone can use it](/learner/roadmap/css-responsive-
 
 **Before you start:** Lessons 1 to 8 of this module. Your `contact.html` has a form with three labelled boxes (a text box, an email box and a message box) and a Send button, as in the HTML assignment, with each label and box pair inside its own `<div>`. If your pairs are not in a `<div>`, the rule `form div` below matches nothing; write the same `margin-bottom` on `label` instead. Your `styles.css` has `* { box-sizing: border-box; }` from Lesson 5 and a `:root` block with the `--space-1`, `--space-2` and `--space-3` names from Lesson 8. If a rule for a selector already exists, add the lines to it.
 
-**Time:** ~40 min
+**Time:** ~50 min
 
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). Every rule and every "nothing changes" case below was run there. **Not yet run on a real Windows or macOS screen:** the look of the focus ring in Chrome on your computer, and Chrome's colour picker with its contrast section (the number may show as 6.7 instead of 6.70). If a step does not match your screen, message your mentor on WhatsApp and say which step number you are on.
 
@@ -1972,7 +1972,7 @@ Next: [Publishing your site with GitHub Pages](/learner/roadmap/css-responsive-u
 
 **Before you start:** Lessons 1 to 9 of this module, and the HTML Foundations lesson "Putting your site on GitHub". You have a GitHub account and a **public** repository named `my-site` with `index.html`, `contact.html`, `styles.css` and an `images` folder at its top level.
 
-**Time:** ~35 min
+**Time:** ~60 min
 
 **Last verified:** 2026-10-29. The steps follow GitHub's own documentation page "Configuring a publishing source for your GitHub Pages site", read on that date; the 10-minute delay and the rule that a Free account needs a public repository are quoted from it. The relative-path claims were tested on a local web server. **Not yet run on a real Windows or macOS computer, and not checked on GitHub's screens:** the exact look of Settings and Pages, what is shown while the site is publishing, and the text of GitHub's "404" page. If a name below does not match your screen, look for the same idea, or message your mentor on WhatsApp and say which step number you are on.
 
@@ -2167,7 +2167,7 @@ Next: [Assignment: style and publish your profile site](/learner/roadmap/css-res
 ## Assignment: Style and Publish Your Profile Site
 <!-- slug: responsive-layout-upgrade -->
 
-**Time:** about 3 hours
+**Time:** about 4–5 hours, over two or three sittings. A good place to stop the first time is after Part 3, when your layout works on your computer. A second good place is after Part 5, when everything is built and only checking and publishing are left.
 **Scaffold:** Level 3. A starter `styles.css` is written out below for you to copy. It gives you the structure and the names. You write the rules and choose the values.
 **Builds on → feeds into:** Lessons 1–10 of this module and the two pages from HTML Foundations → JavaScript Fundamentals, where you add behaviour to a page and need a live address, and Git and GitHub, which reuses the same repository.
 **Last verified:** 2026-10-29 on Windows 10, in Chromium 153 (the open-source browser that Chrome is built on). The starter file was checked with a CSS validator, and a complete worked solution built from it was tested in the browser at widths 320, 375, 700 and 1024 pixels. **Not yet run on a real Windows or macOS computer:** the steps on GitHub's website and in DevTools. If a step does not match your screen, use "If you get stuck" below.
@@ -2262,6 +2262,8 @@ If you see something else: if a colour does not appear, look for a crossed-out l
 You should see: both pages styled, with a centred column, a header that stacks, a row of links and wrapping cards.
 If you see something else: if a layout does not work, compare it with the lesson for that rule (Lessons 5, 6 and 7).
 
+You can stop here for now. Keep `old-styles.txt` in `my-site`, and save your work. When you come back, start at Part 4.
+
 ### Part 4: Phones (assesses O5)
 
 1. In section 6, add a `@media (min-width: ...)` block that turns the header into a row (name on the left, links on the right). Choose the width yourself, between `600px` and `800px`.
@@ -2279,6 +2281,8 @@ If you see something else: look for the element that sticks out, and read Lesson
 
 You should see: a visible ring on every link, every box and the button, in order, and four ratios of at least 4.5 in the comment.
 If you see something else: if a stop shows no ring, read Lesson 9, "Common mistakes".
+
+You can stop here for now. Everything is built; only the DevTools check and publishing are left. When you come back, start at Part 6.
 
 ### Part 6: Check with DevTools (assesses O7, O1)
 

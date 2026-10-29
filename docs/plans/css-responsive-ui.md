@@ -157,17 +157,17 @@ Same as `docs/plans/html-foundations.md`: audit the outline against the standard
 
 | Item | Score | Criteria below 2 |
 |---|---|---|
-| L1 What CSS is | 27 / 28 | L14 |
+| L1 What CSS is | 26 / 28 | L2 (time now 50), L14 |
 | L2 Selectors | 27 / 28 | L14 |
 | L3 Cascade and specificity | 27 / 28 | L14 |
-| L4 Colour and typography | 27 / 28 | L14 |
-| L5 Box model | 27 / 28 | L14 |
+| L4 Colour and typography | 26 / 28 | L2 (time now 50), L14 |
+| L5 Box model | 26 / 28 | L2 (time now 50), L14 |
 | L6 Flexbox header and nav | 27 / 28 | L14 |
 | L7 Flexbox cards | 27 / 28 | L14 |
-| L8 Mobile-first, media queries, custom properties | 26 / 28 | L2 (stated time doubtful), L14 |
-| L9 Form and focus | 27 / 28 | L14 |
-| L10 GitHub Pages | 25 / 28 | L2 (stated time doubtful), L7 (several bundled actions; drag and drop on screens never seen), L14 |
-| Assignment | 19 / 20 | A7 (time doubtful) |
+| L8 Mobile-first, media queries, custom properties | 26 / 28 | L2 (time now 65), L14 |
+| L9 Form and focus | 26 / 28 | L2 (time now 50), L14 |
+| L10 GitHub Pages | 25 / 28 | L2 (time now 60), L7 (several bundled actions; drag and drop on screens never seen), L14 |
+| Assignment | 19 / 20 | A7 (time now 4-5 h) |
 
 Mentor notes: 19 paste-ready comments (2 approve, 10 per acceptance item, 5 likely mistakes, 2 for STUCK), all within 80 words.
 
@@ -181,3 +181,9 @@ Mentor notes: 19 paste-ready comments (2 approve, 10 per acceptance item, 5 like
 - A reviewer noted the assignment needs the class and id names of the HTML assignment; the text says to use your own names if they differ.
 - Not fixed, by design: no screenshots (the platform has no image hosting).
 - HTML-fix list: unchanged from above (the full HTML data was never available); item 2 (remove the HTML assignment's unverified Pages stretch) matters more now, since lesson 10 owns publishing.
+
+## Stated times raised (2026-10-29, owner's request; no content cut)
+
+Lesson times were multiplied by about 1.3 and rounded, with lessons 8 and 10 set higher because their simulated-learner reviews were the longest. Old to new: L1 40 to 50, L2 35 to 45, L3 35 to 45, L4 40 to 50, L5 40 to 50, L6 35 to 45, L7 35 to 45, L8 40 to 65, L9 40 to 50, L10 35 to 60 minutes. The module's lessons now total about 505 minutes (8.4 hours). The assignment says "about 4-5 hours, over two or three sittings", with suggested stopping points after Part 3 and after Part 5 (a "You can stop here for now" line closes each).
+
+**Conflict with the content standard, accepted for now:** criterion L2 gives full marks only for `N <= 45` minutes ("longer: split"), and A7 only for `<= 3 h` unless the module is the capstone. Six lessons (1, 4, 5, 8, 9, 10) and the assignment are now over those limits and are scored 1 for those criteria. The honest alternatives are to split those lessons or trim the content; the owner chose to wait for the trainee's real timestamps before doing either. If the real data supports the new numbers, split lesson 8 (device toolbar and mobile-first, then custom properties) and lesson 10 (publish, then update and hard refresh) and move the assignment's Parts 6 and 7 into a short second assignment or a lesson, instead of keeping long single items.
